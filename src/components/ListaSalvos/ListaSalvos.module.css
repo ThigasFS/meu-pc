@@ -1,0 +1,10 @@
+.containerLista{
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+}
+
+.divLista{
+    grid-column: 2;
+    display: flex;
+    gap: 20px;
+}

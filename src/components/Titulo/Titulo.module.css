@@ -1,0 +1,16 @@
+.titulo{
+    font-size: 1.5em;
+    color: #0FFCBE;
+}
+
+.left{
+    text-align: left;
+}
+
+.center{
+    text-align: center;
+}
+
+.right{
+    text-align: right;
+}
