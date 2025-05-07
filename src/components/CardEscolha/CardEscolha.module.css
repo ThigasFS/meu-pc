@@ -1,0 +1,28 @@
+.containerPlaca {
+    background-color: #f0f0f0;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    max-width: 325px;
+    max-height: 275px;
+}
+
+.containerPlaca:hover {
+    transform: scale(1.05);
+    background-color: #e0e0e0;
+}
+
+.imagemComponente {
+    width: 80%;
+    height: 175px;
+    object-fit: contain;
+}
+
+.selecionado {
+    border: 1px solid;
+    border-color: #007bff;
+    background-color: #e6f0ff;
+}

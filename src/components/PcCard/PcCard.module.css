@@ -1,20 +1,45 @@
-.containerPC{
+.containerPC {
     background-color: #F2F0EF;
     padding: 1.5em;
     border-radius: 1em;
-    width: 200px;
-    height: 125px;
+    width: 275px;
+    height: 200px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     align-items: center;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.divImagem{
-    width: 200px;
-    height: 100px;
-}
-
-img{
+.divImagem {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    height: 100%;
+}
+
+.logoProcessador {
+    max-width: 80%;
+    max-height: 175px;
+    object-fit: contain;
+}
+
+.fechar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+p {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+.barra{
+    width: 100%;
+    border: #333 1px solid;
 }

@@ -1,23 +1,17 @@
 import style from './ListaSalvos.module.css'
 import PcCard from '../PcCard/PcCard'
-import PC from '../../interfaces/pc'
+import PC from '../../interfaces/pcsalvo'
 
-function ListaSalvos() {
-    try{
-        localStorage.getItem('listaDePcs')
-    }catch(erro){
-        console.error(erro)
-    }
-    const listaStorage = localStorage.getItem('listaDePcs')
-    let lista
-    if(listaStorage){
-        lista = JSON.parse(listaStorage)
-        console.log(lista)
-    }
+interface Props {
+    pcs: PC[],
+    onRemove: (id: number) => void
+}
+
+function ListaSalvos({pcs, onRemove}: Props) {
   return (
     <div className={style.containerLista}>
         <ul className={style.divLista}>
-            {!lista ? <p>Não há nenhum PC salvo</p> : lista.map((pc: PC) => <PcCard processador={pc.processador} descricao={pc.descricao} />)}
+            {pcs.length === 0 ? <p>Não há nenhum PC salvo</p> : pcs.map((pc: PC) => <PcCard key={pc.id} id={pc.id} processador={pc.processador} descricao={pc.descricao} onRemove={onRemove}/>)}
         </ul>
     </div>
   )
