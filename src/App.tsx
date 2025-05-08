@@ -4,6 +4,12 @@ import Home from "./pages/Home/Home"
 import CriarPC from './pages/CriarPC/CriarPC'
 import EscolherProcessador from './components/Escolhas/EscolherProcessador'
 import EscolherPlacaMae from './components/Escolhas/EscolherPlacaMae'
+import EscolherPlacaVideo from './components/Escolhas/EscolherPlacaVideo'
+import EscolherMemoriaRAM from './components/Escolhas/EscolherMemoriaRam'
+import EscolherArmazenamento from './components/Escolhas/EscolherArmazenamento'
+import EscolherFonte from './components/Escolhas/EscolherFonte'
+import EscolherGabinete from './components/Escolhas/EscolherGabinete'
+import Finalizacao from './components/Finalizacao/Finalizacao'
 
 function App() {
   return (
@@ -13,11 +19,12 @@ function App() {
         <Route path='/criar-novo-pc' element={<CriarPC />}>
           <Route path='placamae' element={<EscolherPlacaMae />} />
           <Route path='processador' element={<EscolherProcessador />} />
-          <Route path='placadevideo' element={<EscolherProcessador />} />
-          <Route path='armazenamento' element={<EscolherProcessador />} />
-          <Route path='memoriaram' element={<EscolherProcessador />} />
-          <Route path='fonte' element={<EscolherProcessador />} />
-          <Route path='gabinete' element={<EscolherProcessador />} />
+          <Route path='placavideo' element={<EscolherPlacaVideo />} />
+          <Route path='memoriaram' element={<EscolherMemoriaRAM />} />
+          <Route path='armazenamento' element={<EscolherArmazenamento />} />
+          <Route path='fonte' element={<EscolherFonte />} />
+          <Route path='gabinete' element={<EscolherGabinete />} />
+          <Route path='finalizacao' element={<Finalizacao />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -6,8 +6,8 @@
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.2s ease;
-    max-width: 325px;
-    max-height: 275px;
+    max-width: 350px;
+    max-height: 325px;
 }
 
 .containerPlaca:hover {

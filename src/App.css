@@ -1,6 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
 body{
-    background-color: #F5F2D0;
+    background-color: #0D0D0D;
     font-family: 'Rubik', sans-serif;
+}
+
+h3{
+    margin: 0;
+    color:#52F2B8
+}
+
+h2{
+    margin: 0;
+    color:#52F2B8
+}
+
+a{
+    text-decoration: none;
+}
+
+a:visited{
+    color: #52F2B8;
 }

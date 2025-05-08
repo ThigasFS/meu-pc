@@ -1,8 +1,8 @@
-import style from './Cabecalho.module.css'
+import Titulo from '../Titulo/Titulo'
 
 function Cabecalho() {
   return (
-    <div className={style.titulo}>Meu PC</div>
+    <Titulo tamanho={2.25}>Meu PC</Titulo>
   )
 }
 

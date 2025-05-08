@@ -1,0 +1,30 @@
+.containerCardResumo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: white;
+    margin-top: 1em;
+    width: 50%;
+    height: 500px;
+    border-radius: 1.5em;
+    padding: 1.5em;
+}
+
+.containerDetalhes{
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    width: 80%;
+}
+
+.imagem{
+    width: 375px;
+    height: 375px;
+}
+
+.containerSpecs{
+    display: flex;
+    flex-direction: column;
+    gap: .05em;
+}

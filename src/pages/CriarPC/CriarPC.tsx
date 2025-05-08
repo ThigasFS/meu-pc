@@ -1,16 +1,21 @@
 import { Link, Outlet } from "react-router-dom"
 import PC from "../../interfaces/pc"
+import { useState } from "react"
 
 function CriarPC() {
-    const PC: PC = {
+    const [pcMontado, setPcMontado] = useState<Partial<PC>>({})
+    console.log(pcMontado);
 
+    function cancelarPc(){
+        setPcMontado({})
     }
+    
     return (
         <>
             <Link to='/'>
-                <div>Voltar</div>
+                <div onClick={cancelarPc}>Cancelar Montagem</div>
             </Link>
-            <Outlet />
+            <Outlet context={{pcMontado, setPcMontado}}/>
         </>
     )
 }
