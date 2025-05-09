@@ -12,12 +12,16 @@
     flex-direction: column;
 }
 
+.label{
+    margin-top: 2em;
+    color: #52F2B8;
+}
+
 .inputNome {
-    width: 325px;
+    width: 500px;
     padding: 10px;
     border: 1px solid black;
     border-radius: .5em;
-
 }
 
 .opcoesFinalizacao{

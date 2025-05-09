@@ -20,13 +20,26 @@ function EscolherFonte() {
     function selecionarModelo(modeloSelecionado: string) {
         setModeloSelecionado(modeloSelecionado)
         const fonteSelecionada = listaFontes.find(fonte => fonte.modelo === modeloSelecionado)
-        setPcMontado(prev => ({ ...prev, fonte: fonteSelecionada }))
+        if (fonteSelecionada) {
+            setPcMontado(prev => {
+                const valorAnterior = prev.fonte?.preco ?? 0
+                const valorNovo = fonteSelecionada.preco ?? 0
+                const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior + valorNovo
+
+                return {
+                    ...prev,
+                    fonte: fonteSelecionada,
+                    valorTotal: valorTotalAtualizado
+                }
+            })
+        }
     }
 
     useEffect(() => {
         const listaReserva: Fonte[] = [
             {
                 tipo: 'fonte',
+                nome: 'Fonte',
                 marca: 'MSI',
                 modelo: 'MAG A650BN',
                 fabricante: 'MSI',
@@ -41,10 +54,11 @@ function EscolherFonte() {
                     { tipo: 'FDD  (4 pinos)', quantidade: 1 },
                 ],
                 imagem: 'https://images8.kabum.com.br/produtos/fotos/369658/fonte-msi-mag-a650bn-atx-650w-80-plus-bronze-pfc-ativo-entrada-bivolt-preto-306-7zp2b22-ce0_1665770996_g.jpg',
-                preco: '319,99'
+                preco: 319.99
             },
             {
                 tipo: 'fonte',
+                nome: 'Fonte',
                 marca: 'Corsair',
                 modelo: 'CX Series CX750',
                 fabricante: 'Corsair',
@@ -59,10 +73,11 @@ function EscolherFonte() {
                     { tipo: 'FDD  (4 pinos)', quantidade: 1 },
                 ],
                 imagem: 'https://images7.kabum.com.br/produtos/fotos/516057/fonte-corsair-cx-series-cx750-750w-80-plus-bronze-sem-cabo-preto-cp-9020279-br_1714484853_g.jpg',
-                preco: '509,99'
+                preco: 509.99
             },
             {
                 tipo: 'fonte',
+                nome: 'Fonte',
                 marca: 'Gamemax',
                 modelo: 'GS600',
                 fabricante: 'Gamemax',
@@ -76,7 +91,7 @@ function EscolherFonte() {
                     { tipo: 'Molex (4 pinos)', quantidade: 2 },
                 ],
                 imagem: 'https://m.media-amazon.com/images/I/71BVs22e9TL._AC_SX679_.jpg',
-                preco: '239,90'
+                preco: 239.90
             },
         ]
 
@@ -96,12 +111,18 @@ function EscolherFonte() {
       }
 
     const potenciaNecessaria = calcularPotenciaTotal(pcMontado)
-    console.log(potenciaNecessaria);
+    function cancelarEscolha() {
+        setPcMontado(prev => {
+            const valorAnterior = prev.fonte?.preco ?? 0
+            const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior 
+            return { ...prev, fonte: undefined, valorTotal: valorTotalAtualizado }
+        })
+    }
 
     return (
         <div>
             <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/armazenamento'><h3>Anterior</h3></Link>
+                <Link to='/criar-novo-pc/armazenamento' onClick={cancelarEscolha}><h3>Anterior</h3></Link>
                 <Titulo pos='center'>Escolha sua Fonte</Titulo>
                 <Link to='/criar-novo-pc/gabinete'><h3>Próximo</h3></Link>
             </div>
@@ -123,6 +144,7 @@ function EscolherFonte() {
                     />
                 )}
             </div>
+            <Subtitulo pos='center' cor='#fff'>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Subtitulo>
         </div>
     )
 }

@@ -4,7 +4,7 @@ interface Props {
   imagem: string,
   marca: string,
   modelo: string,
-  preco: string,
+  preco: number,
   socket?: string,
   videoIntegrado?: boolean
   aoSelecionar: (modelo: string) => void,
@@ -100,7 +100,7 @@ function CardEscolha({ imagem, marca, modelo, preco, socket, selecionado, aoSele
     <div className={`${style.containerPlaca} ${selecionado ? style.selecionado : ''}`} onClick={selecionar}>
       <img src={imagem} alt='Imagem da Placa' className={style.imagemComponente} />
       {renderizarDetalhesPorComponente()}
-      <p>R$ {preco}</p>
+      <p>{preco.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</p>
     </div>
   )
 }

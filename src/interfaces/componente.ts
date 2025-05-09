@@ -1,5 +1,6 @@
 export interface PlacaMae {
     tipo: 'placamae',
+    nome: 'Placa Mãe',
     marca: string,
     modelo: string,
     fabricante: string,
@@ -7,11 +8,12 @@ export interface PlacaMae {
     potencia: number,
     ddr: number,
     imagem: string,
-    preco: string
+    preco: number
 }
 
 export interface Processador {
     tipo: 'processador',
+    nome: 'Processador',
     marca: string,
     modelo: string,
     fabricante: string,
@@ -20,11 +22,12 @@ export interface Processador {
     potencia: number,
     videoIntegrado: boolean,
     imagem: string,
-    preco: string
+    preco: number
 }
 
 export interface MemoriaRAM {
     tipo: 'memoriaram',
+    nome: 'Memória RAM',
     marca: string,
     modelo: string,
     fabricante: string,
@@ -33,8 +36,9 @@ export interface MemoriaRAM {
     velocidade: number,
     potencia: number,
     ddr: number,
+    cl: number,
     imagem: string,
-    preco: string,
+    preco: number,
 }
 
 type tipoCabo = 'ATX (24 pinos)' | 'EPS (8 pinos)' | 'PCI-E (6+2 pinos)' | 'SATA (15 pinos)' | 'Molex (4 pinos)' | 'FDD  (4 pinos)' | 'EPS (4 pinos)'
@@ -46,6 +50,7 @@ export interface Cabo {
 
 export interface Fonte {
     tipo: 'fonte',
+    nome: 'Fonte',
     marca: string,
     modelo: string,
     fabricante: string,
@@ -53,34 +58,37 @@ export interface Fonte {
     certificacao: string,
     cabos: Cabo[],
     imagem: string,
-    preco: string
+    preco: number
 }
 
 export interface PlacaVideo {
     tipo: 'placavideo',
+    nome: 'Placa de Vídeo',
     marca: string,
     modelo: string,
     fabricante: string,
     potencia: number,
     vram: number,
     imagem: string,
-    preco: string,
+    preco: number,
     gddr: number
 }
 
 export interface Gabinete {
     tipo: 'gabinete',
+    nome: 'Gabinete',
     marca: string,
     modelo: string,
     fabricante: string,
     qtdFans: number,
     cor: string,
     imagem: string,
-    preco: string
+    preco: number
 }
 
 export interface Armazenamento{
     tipo: 'armazenamento',
+    nome: 'Armazenamento',
     marca: string,
     modelo: string,
     fabricante: string,
@@ -92,7 +100,7 @@ export interface Armazenamento{
     velocidadeLeitura: number,
     velocidadeGravacao: number,
     imagem: string,
-    preco: string
+    preco: number
 }
 
 export type Componente = Armazenamento | PlacaMae | PlacaVideo | Processador | Gabinete | Fonte | MemoriaRAM

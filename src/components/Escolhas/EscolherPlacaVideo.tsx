@@ -21,23 +21,25 @@ function EscolherPlacaVideo() {
         const listaReserva: PlacaVideo[] = [
             {
                 tipo: 'placavideo',
+                nome: 'Placa de Vídeo',
                 marca: 'AMD',
                 modelo: 'RX 7600',
                 fabricante: 'AMD',
                 potencia: 165,
                 imagem: 'https://images7.kabum.com.br/produtos/fotos/475647/placa-de-video-rx-7600-gaming-oc-8g-radeon-gigabyte-8gb-gddr6-128bits-rgb-gv-r76gaming-oc-8gd_1698435450_g.jpg',
-                preco: '1.849,99',
+                preco: 1849.99,
                 vram: 8,
                 gddr: 6,
             },
             {
                 tipo: 'placavideo',
+                nome: 'Placa de Vídeo',
                 marca: 'Nvidia',
                 modelo: 'RTX 4060',
                 fabricante: 'Nvidia',
                 potencia: 115,
                 imagem: 'https://images5.kabum.com.br/produtos/fotos/581685/placa-de-video-rtx-4060-infinity-2-palit-nvidia-geforce-8gb-gddr6-dlss-ray-tracing-g-sync-ne64060019p1-1070l_1715956390_g.jpg',
-                preco: '2.299,90',
+                preco: 2299.90,
                 vram: 8,
                 gddr: 6
             },
@@ -48,12 +50,33 @@ function EscolherPlacaVideo() {
     function selecionarModelo(modeloSelecionado: string) {
         setModeloSelecionado(modeloSelecionado)
         const placaVideoSelecionada = listaPlacaVideo.find(placa => placa.modelo === modeloSelecionado)
-        setPcMontado(prev => ({...prev, placaVideo: placaVideoSelecionada}))
+        if (placaVideoSelecionada) {
+            setPcMontado(prev => {
+                const valorAnterior = prev.placaVideo?.preco ?? 0
+                const valorNovo = placaVideoSelecionada.preco ?? 0
+                const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior + valorNovo
+
+                return {
+                    ...prev,
+                    placaVideo: placaVideoSelecionada,
+                    valorTotal: valorTotalAtualizado
+                }
+            })
+        }
     }
+
+    function cancelarEscolha() {
+        setPcMontado(prev => {
+            const valorAnterior = prev.placaVideo?.preco ?? 0
+            const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior 
+            return { ...prev, placaVideo: undefined, valorTotal: valorTotalAtualizado }
+        })
+    }
+
     return (
         <div>
             <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/processador'><h3>Anterior</h3></Link>
+                <Link to='/criar-novo-pc/processador' onClick={cancelarEscolha}><h3>Anterior</h3></Link>
                 <Titulo>Escolha sua Placa de Video</Titulo>
                 <Link to='/criar-novo-pc/memoriaram'><h3>Próximo</h3></Link>
             </div>
@@ -74,6 +97,7 @@ function EscolherPlacaVideo() {
                     />
                 ))}
             </div>
+            <Subtitulo pos='center' cor='#fff'>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Subtitulo>
         </div>
     )
 }

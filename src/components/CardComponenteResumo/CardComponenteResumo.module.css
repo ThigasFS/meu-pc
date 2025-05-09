@@ -9,6 +9,7 @@
     height: 500px;
     border-radius: 1.5em;
     padding: 1.5em;
+    gap: 2em;
 }
 
 .containerDetalhes{

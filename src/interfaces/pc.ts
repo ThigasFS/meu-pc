@@ -11,6 +11,7 @@ interface PCComVideo {
     gabinete?: Gabinete,
     fonte: Fonte,
     memoriaRam: MemoriaRAM,
+    valorTotal: number
 }
 
 interface PCSemVideo{
@@ -24,6 +25,7 @@ interface PCSemVideo{
     gabinete?: Gabinete,
     fonte: Fonte,
     memoriaRam: MemoriaRAM,
+    valorTotal: number
 }
 
 type PC = PCComVideo | PCSemVideo

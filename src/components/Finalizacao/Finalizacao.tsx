@@ -19,6 +19,7 @@ function Finalizacao() {
     const pcFinalizado: PC = {
       id: ID(),
       nome: nomePc,
+      valorTotal: pcMontado.valorTotal,
       armazenamento: pcMontado.armazenamento,
       fonte: pcMontado.fonte,
       memoriaRam: pcMontado.memoriaRam,
@@ -46,6 +47,10 @@ function Finalizacao() {
     setPcMontado({})
   }
   
+  console.log(pcMontado.processador.videoIntegrado);
+  console.log(pcMontado.placaVideo);
+  
+
   return (
     <div>
         <div className={style.cabecalhoFinalizacao}>
@@ -53,14 +58,22 @@ function Finalizacao() {
         </div>
         <Subtitulo pos='center'>Verifique o resumo para poder finalizar</Subtitulo>
         <div className={style.containerResumo}>
-          <input onChange={colocarNome} className={style.inputNome}/>
+          <label htmlFor='nome' className={style.label}>Insira um nome para seu PC</label>
+          <input onChange={colocarNome} className={style.inputNome} id='nome'/>
           <CardComponenteResumo componente={pcMontado.placaMae} />
+          <CardComponenteResumo componente={pcMontado.processador} />
+          {pcMontado.placaVideo ? <CardComponenteResumo componente={pcMontado.placaVideo}/> : ''}
+          <CardComponenteResumo componente={pcMontado.memoriaRam} />
+          <CardComponenteResumo componente={pcMontado.armazenamento} />
+          <CardComponenteResumo componente={pcMontado.fonte} />
+          {pcMontado.gabinete ? <CardComponenteResumo componente={pcMontado.gabinete} /> : ''}
         </div>
+        <Titulo pos='center' cor='#FFF'>Seu computador ficou com um total de: {pcMontado.valorTotal.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Titulo>
         <div>
             <Titulo pos='center'>Deseja Finalizar?</Titulo>
             <div className={style.opcoesFinalizacao}>
-                <Link to='/criar-novo-pc/placamae' onClick={resetarPc}><Subtitulo>Voltar para o começo</Subtitulo></Link>
-                <Link to='/' onClick={finalizarPC}><Subtitulo>Finalizar</Subtitulo></Link>
+                <Link to='/criar-novo-pc/placamae' onClick={resetarPc}><Subtitulo cor='#fff'>Voltar para o começo</Subtitulo></Link>
+                <Link to='/' onClick={finalizarPC}><Subtitulo cor='#fff'>Finalizar</Subtitulo></Link>
             </div>
         </div>
     </div>
