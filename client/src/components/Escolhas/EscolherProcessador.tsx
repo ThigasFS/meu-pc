@@ -15,7 +15,7 @@ type ContextType = {
 
 function EscolherProcessador() {
     const [listaProcessadores, setListaProcessador] = useState<Processador[]>([])
-    const [modeloSelecionado, setModeloSelecionado] = useState<string | null>(null)
+    const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
 
     useEffect(() => {
@@ -26,18 +26,14 @@ function EscolherProcessador() {
                 const filtrados = socketAtual
                     ? todos.filter(proc => proc.socket === socketAtual)
                     : todos
-                console.log(socketAtual);
-                console.log(filtrados);
-                console.log(todos);
-                
                 setListaProcessador(filtrados)
             })
             .catch(erro => console.error(erro));
     }, [pcMontado.placaMae?.socket])
 
-    function selecionarModelo(modeloSelecionado: string) {
+    function selecionarModelo(modeloSelecionado: number) {
         setModeloSelecionado(modeloSelecionado)
-        const processadorSelecionado = listaProcessadores.find(processador => processador.modelo === modeloSelecionado)
+        const processadorSelecionado = listaProcessadores.find(processador => processador.id === modeloSelecionado)
         if (processadorSelecionado) {
             setPcMontado(prev => {
                 const valorAnterior = prev.processador?.preco ?? 0
@@ -76,7 +72,7 @@ function EscolherProcessador() {
                 {listaProcessadores.map((processador) => (
                     <CardEscolha
                         componente="processador"
-                        key={processador.modelo}
+                        key={processador.id}
                         imagem={processador.imagem}
                         marca={processador.marca}
                         modelo={processador.modelo}
@@ -84,7 +80,8 @@ function EscolherProcessador() {
                         socket={processador.socket}
                         videoIntegrado={processador.videoIntegrado}
                         aoSelecionar={selecionarModelo}
-                        selecionado={modeloSelecionado === processador.modelo}
+                        selecionado={modeloSelecionado === processador.id}
+                        id={processador.id}
                     />
                 ))}
             </div>

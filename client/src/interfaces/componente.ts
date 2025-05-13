@@ -1,6 +1,7 @@
 export interface PlacaMae {
     tipo: 'placamae',
     nome: 'Placa Mãe',
+    id: number,
     marca: string,
     modelo: string,
     fabricante: string,
@@ -14,6 +15,7 @@ export interface PlacaMae {
 export interface Processador {
     tipo: 'processador',
     nome: 'Processador',
+    id: number,
     marca: string,
     modelo: string,
     fabricante: string,
@@ -28,6 +30,7 @@ export interface Processador {
 export interface MemoriaRAM {
     tipo: 'memoriaram',
     nome: 'Memória RAM',
+    id: number,
     marca: string,
     modelo: string,
     fabricante: string,
@@ -41,7 +44,7 @@ export interface MemoriaRAM {
     preco: number,
 }
 
-type tipoCabo = 'ATX (24 pinos)' | 'EPS (8 pinos)' | 'PCI-E (6+2 pinos)' | 'SATA (15 pinos)' | 'Molex (4 pinos)' | 'FDD  (4 pinos)' | 'EPS (4 pinos)'
+type tipoCabo = 'ATX (24 pinos)' | 'EPS (8 pinos)' | 'PCI-E (6+2 pinos)' | 'SATA (15 pinos)' | 'Molex (4 pinos)' | 'FDD  (4 pinos)' | 'EPS (4 pinos)' | 'PCI (12 pinos)' | 'PCI (16 pinos)'
 
 export interface Cabo {
     tipo: tipoCabo,
@@ -51,6 +54,7 @@ export interface Cabo {
 export interface Fonte {
     tipo: 'fonte',
     nome: 'Fonte',
+    id: number,
     marca: string,
     modelo: string,
     fabricante: string,
@@ -64,6 +68,7 @@ export interface Fonte {
 export interface PlacaVideo {
     tipo: 'placavideo',
     nome: 'Placa de Vídeo',
+    id: number,
     marca: string,
     modelo: string,
     fabricante: string,
@@ -77,6 +82,7 @@ export interface PlacaVideo {
 export interface Gabinete {
     tipo: 'gabinete',
     nome: 'Gabinete',
+    id: number,
     marca: string,
     modelo: string,
     fabricante: string,
@@ -89,12 +95,13 @@ export interface Gabinete {
 export interface Armazenamento{
     tipo: 'armazenamento',
     nome: 'Armazenamento',
+    id: number,
     marca: string,
     modelo: string,
     fabricante: string,
     capacidade: number,
     potencia: number,
-    unidade: 'GB' | 'TB'
+    unidade: 'GB' | 'TB',
     tipoArmazenamento: 'HD' | 'SSD',
     tipoConexao: 'SATA II' | 'SATA III' | 'SATA 3.5' | 'M2',
     velocidadeLeitura: number,

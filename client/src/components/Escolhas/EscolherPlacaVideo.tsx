@@ -6,6 +6,7 @@ import CardEscolha from "../CardEscolha/CardEscolha"
 import { Link, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
 import Subtitulo from "../Subtitulo/Subtitulo"
+import axios from "axios"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -14,42 +15,18 @@ type ContextType = {
 
 function EscolherPlacaVideo() {
     const [listaPlacaVideo, setListaPlacaVideo] = useState<PlacaVideo[]>([])
-    const [modeloSelecionado, setModeloSelecionado] = useState<string | null>(null)
+    const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const {pcMontado, setPcMontado} = useOutletContext<ContextType>()
 
     useEffect(() => {
-        const listaReserva: PlacaVideo[] = [
-            {
-                tipo: 'placavideo',
-                nome: 'Placa de Vídeo',
-                marca: 'AMD',
-                modelo: 'RX 7600',
-                fabricante: 'AMD',
-                potencia: 165,
-                imagem: 'https://images7.kabum.com.br/produtos/fotos/475647/placa-de-video-rx-7600-gaming-oc-8g-radeon-gigabyte-8gb-gddr6-128bits-rgb-gv-r76gaming-oc-8gd_1698435450_g.jpg',
-                preco: 1849.99,
-                vram: 8,
-                gddr: 6,
-            },
-            {
-                tipo: 'placavideo',
-                nome: 'Placa de Vídeo',
-                marca: 'Nvidia',
-                modelo: 'RTX 4060',
-                fabricante: 'Nvidia',
-                potencia: 115,
-                imagem: 'https://images5.kabum.com.br/produtos/fotos/581685/placa-de-video-rtx-4060-infinity-2-palit-nvidia-geforce-8gb-gddr6-dlss-ray-tracing-g-sync-ne64060019p1-1070l_1715956390_g.jpg',
-                preco: 2299.90,
-                vram: 8,
-                gddr: 6
-            },
-        ]
-        setListaPlacaVideo(listaReserva)
+        axios.get('http://localhost:3000/api/placasvideo')
+        .then(res => setListaPlacaVideo(res.data))
+        .catch(erro => console.error(erro));
     }, [])
 
-    function selecionarModelo(modeloSelecionado: string) {
+    function selecionarModelo(modeloSelecionado: number) {
         setModeloSelecionado(modeloSelecionado)
-        const placaVideoSelecionada = listaPlacaVideo.find(placa => placa.modelo === modeloSelecionado)
+        const placaVideoSelecionada = listaPlacaVideo.find(placa => placa.id === modeloSelecionado)
         if (placaVideoSelecionada) {
             setPcMontado(prev => {
                 const valorAnterior = prev.placaVideo?.preco ?? 0
@@ -86,15 +63,16 @@ function EscolherPlacaVideo() {
                 {listaPlacaVideo.map((placaVideo) => (
                     <CardEscolha
                         componente="placavideo"
-                        key={placaVideo.modelo}
+                        key={placaVideo.id}
                         imagem={placaVideo.imagem}
                         marca={placaVideo.marca}
                         modelo={placaVideo.modelo}
                         preco={placaVideo.preco}
                         aoSelecionar={selecionarModelo}
-                        selecionado={modeloSelecionado === placaVideo.modelo}
+                        selecionado={modeloSelecionado === placaVideo.id}
                         gddr={placaVideo.gddr}
                         vram={placaVideo.vram}
+                        id={placaVideo.id}
                     />
                 ))}
             </div>

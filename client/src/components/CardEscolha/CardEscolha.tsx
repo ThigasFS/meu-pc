@@ -1,13 +1,15 @@
+import { Cabo } from '../../interfaces/componente';
 import style from './CardEscolha.module.css'
 
 interface Props {
+  id: number,
   imagem: string,
   marca: string,
   modelo: string,
   preco: number,
   socket?: string,
   videoIntegrado?: boolean
-  aoSelecionar: (modelo: string) => void,
+  aoSelecionar: (id: number) => void,
   selecionado: boolean,
   componente: string,
   vram?: number,
@@ -25,13 +27,14 @@ interface Props {
   potencia?: number,
   certificacao?: string,
   fans?: number,
-  cor?: string
+  cor?: string,
+  cabos?: Cabo[]
 }
 
-function CardEscolha({ imagem, marca, modelo, preco, socket, selecionado, aoSelecionar, videoIntegrado, componente, gddr, vram, ddr, quantidade, velocidade, memoria, capacidade, tipoArmazenamento, tipoConexao, unidade, velocidadeGravacao, velocidadeLeitura, certificacao, potencia, fans, cor }: Props) {
+function CardEscolha({ id,imagem, marca, modelo, preco, socket, selecionado, aoSelecionar, videoIntegrado, componente, gddr, vram, ddr, quantidade, velocidade, memoria, capacidade, tipoArmazenamento, tipoConexao, unidade, velocidadeGravacao, velocidadeLeitura, certificacao, potencia, fans, cor }: Props) {
   function selecionar(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
-    aoSelecionar(modelo)
+    aoSelecionar(id);
   }
 
   function renderizarDetalhesPorComponente() {

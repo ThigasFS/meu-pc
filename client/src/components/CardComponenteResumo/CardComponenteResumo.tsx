@@ -16,7 +16,6 @@ function CardComponenteResumo({ componente }: Props) {
     `
 
     function renderizarSpecsEspeciais(componente: Componente) {
-        console.log(componente)
         if (componente.tipo === 'placamae') {
             return (
                 <>
@@ -74,7 +73,7 @@ function CardComponenteResumo({ componente }: Props) {
             return (
                 <>
                     <Paragrafo>Potência: {componente.potencia}W</Paragrafo>
-                    <Paragrafo>Cabos: {componente.cabos.map((cabo) => <Paragrafo>{cabo.tipo} x{cabo.quantidade}</Paragrafo>)}</Paragrafo>
+                    <Paragrafo>Cabos: {componente.cabos.map((cabo) => <>{cabo.tipo} x{cabo.quantidade} <br /></>)}</Paragrafo>
                 </>
             )
         }

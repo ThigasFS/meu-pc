@@ -15,12 +15,12 @@ type ContextType = {
 
 function EscolherPlacaMae() {
     const [listaPlacasMaes, setListaPlacasMaes] = useState<PlacaMae[]>([])
-    const [modeloSelecionado, setModeloSelecionado] = useState<string | null>(null)
+    const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
 
-    function selecionarModelo(modeloSelecionado: string) {
+    function selecionarModelo(modeloSelecionado: number) {
         setModeloSelecionado(modeloSelecionado)
-        const placaMaeSelecionada = listaPlacasMaes.find(placa => placa.modelo === modeloSelecionado)
+        const placaMaeSelecionada = listaPlacasMaes.find(placa => placa.id === modeloSelecionado)
         if (placaMaeSelecionada) {
             setPcMontado(prev => {
                 const valorAnterior = prev.placaMae?.preco ?? 0
@@ -53,7 +53,7 @@ function EscolherPlacaMae() {
                 {listaPlacasMaes.map((placa) => (
                     <CardEscolha
                         componente="placamae"
-                        key={placa.modelo}
+                        key={placa.id}
                         imagem={placa.imagem}
                         marca={placa.marca}
                         modelo={placa.modelo}
@@ -61,7 +61,8 @@ function EscolherPlacaMae() {
                         socket={placa.socket}
                         ddr={placa.ddr}
                         aoSelecionar={selecionarModelo}
-                        selecionado={modeloSelecionado === placa.modelo}
+                        selecionado={modeloSelecionado === placa.id}
+                        id={placa.id}
                     />
                 ))}
             </div>

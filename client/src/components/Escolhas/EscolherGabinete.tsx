@@ -6,6 +6,7 @@ import { Gabinete } from '../../interfaces/componente'
 import CardEscolha from '../CardEscolha/CardEscolha'
 import PC from '../../interfaces/pc'
 import Subtitulo from '../Subtitulo/Subtitulo'
+import axios from 'axios'
 
 type ContextType = {
     pcMontado: PC
@@ -14,63 +15,18 @@ type ContextType = {
 
 function EscolherGabinete() {
     const [listaGabinetes, setListaGabinetes] = useState<Gabinete[]>([])
-    const [modeloSelecionado, setModeloSelecionado] = useState<string | null>(null)
+    const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const {pcMontado, setPcMontado} = useOutletContext<ContextType>()
 
     useEffect(() => {
-        const listaReserva: Gabinete[] = [
-            {
-                tipo: 'gabinete',
-                nome: 'Gabinete',
-                marca: 'TGT',
-                modelo: 'Legion',
-                fabricante: 'TGT',
-                qtdFans: 5,
-                cor: 'Preto',
-                imagem: 'https://media.pichau.com.br/media/catalog/product/cache/2f958555330323e505eba7ce930bdf27/t/g/tgt-lgn-bk145455564.jpg',
-                preco: 149.99
-            },
-            {
-                tipo: 'gabinete',
-                nome: 'Gabinete',
-                marca: 'Pichau',
-                modelo: 'Apus',
-                fabricante: 'Pichau',
-                qtdFans: 3,
-                cor: 'Preto',
-                imagem: 'https://media.pichau.com.br/media/catalog/product/cache/2f958555330323e505eba7ce930bdf27/p/g/pg-aps-rgb01.jpg',
-                preco: 299.99
-            },
-            {
-                tipo: 'gabinete',
-                nome: 'Gabinete',
-                marca: 'Liketec',
-                modelo: 'Heydar Snow',
-                fabricante: 'Liketec',
-                qtdFans: 4,
-                cor: 'Branco',
-                imagem: 'https://img.terabyteshop.com.br/produto/g/gabinete-gamer-liketec-heydar-snow-mid-tower-cube-design-atx-vidro-temperado-branco-sem-fan-lc-cb-heydar-2087_202644.jpg',
-                preco: 169.90
-            },
-            {
-                tipo: 'gabinete',
-                nome: 'Gabinete',
-                marca: 'Mancer',
-                modelo: 'Narok V2',
-                fabricante: 'Mancer',
-                qtdFans: 3,
-                cor: 'Branco',
-                imagem: 'https://media.pichau.com.br/media/catalog/product/cache/2f958555330323e505eba7ce930bdf27/m/c/mcr-nrkwh-v2.jpg',
-                preco: 219.99
-            },
-        ]
-
-        setListaGabinetes(listaReserva)
+        axios.get('http://localhost:3000/api/gabinetes')
+        .then(res => setListaGabinetes(res.data))
+        .catch(erro => console.error(erro))
     }, [])
 
-    function selecionarModelo(modeloSelecionado: string){
+    function selecionarModelo(modeloSelecionado: number){
         setModeloSelecionado(modeloSelecionado)
-        const gabineteSelecionado = listaGabinetes.find(gabinete => gabinete.modelo === modeloSelecionado)
+        const gabineteSelecionado = listaGabinetes.find(gabinete => gabinete.id === modeloSelecionado)
         if (gabineteSelecionado) {
             setPcMontado(prev => {
                 const valorAnterior = prev.gabinete?.preco ?? 0
@@ -107,15 +63,16 @@ function EscolherGabinete() {
                 {listaGabinetes.map((gabinete) =>
                     <CardEscolha
                         componente='gabinete'
-                        key={gabinete.modelo}
+                        key={gabinete.id}
                         marca={gabinete.marca}
                         modelo={gabinete.modelo}
                         imagem={gabinete.imagem}
                         preco={gabinete.preco}
                         aoSelecionar={selecionarModelo}
-                        selecionado={modeloSelecionado === gabinete.modelo}
+                        selecionado={modeloSelecionado === gabinete.id}
                         fans={gabinete.qtdFans}
                         cor={gabinete.cor}
+                        id={gabinete.id}
                     />
                 )}
             </div>

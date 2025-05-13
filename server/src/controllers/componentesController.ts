@@ -68,11 +68,165 @@ export const listarProcessadores = async (req: Request, res: Response) => {
     }
 };
 
+export const listarPlacasVideo = async (req: Request, res: Response) => {
+    try {
+        const [result] = await db.query(`
+        SELECT
+            placasvideo.id,
+            placasvideo.modelo,
+            placasvideo.potencia,
+            CAST(placasvideo.preco AS DECIMAL(10,2)) AS preco,
+            placasvideo.imagem,
+            placasvideo.vram,
+            placasvideo.gddr,
+            marcas.nome AS marca,
+            componente.tipo as tipo,
+            componente.nome as nome
+        FROM placasvideo
+        INNER JOIN marcas ON placasvideo.marcaID = marcas.id
+        INNER JOIN componente ON placasvideo.componenteID = componente.id
+        `);
+
+        const resultadoFormatado = (result as any[]).map(item => ({
+            ...item,
+            preco: parseFloat(item.preco)
+        }));
+
+        res.json(resultadoFormatado);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar placa de vídeo' });
+    }
+};
+
 export const listarMemorias = async (req: Request, res: Response) => {
     try {
-        const [result] = await db.query('SELECT * FROM memoriasram');
-        res.json(result);
+        const [result] = await db.query(`
+        SELECT
+            memoriasram.id,
+            CONCAT(memoriasram.modelo,' ',memoriasram.quantidade) as modelo,
+            memoriasram.potencia,
+            CAST(memoriasram.preco AS DECIMAL(10,2)) AS preco,
+            memoriasram.imagem,
+            memoriasram.velocidade,
+            memoriasram.cl,
+            memoriasram.memoria,
+            ddr.versao as ddr,
+            marcas.nome AS marca,
+            componente.tipo as tipo,
+            componente.nome as nome
+        FROM memoriasram
+        INNER JOIN marcas ON memoriasram.marcaID = marcas.id
+        INNER JOIN componente ON memoriasram.componenteID = componente.id
+        INNER JOIN ddr ON memoriasram.ddrID = ddr.id
+        `);
+
+        const resultadoFormatado = (result as any[]).map(item => ({
+            ...item,
+            preco: parseFloat(item.preco)
+        }));
+
+        res.json(resultadoFormatado);
     } catch (error) {
         res.status(500).json({ error: 'Erro ao buscar memórias RAM' });
+    }
+};
+
+export const listarArmazenamento = async (req: Request, res: Response) => {
+    try {
+        const [result] = await db.query(`
+        SELECT
+            armazenamento.id,
+            armazenamento.modelo,
+            armazenamento.potencia,
+            CAST(armazenamento.preco AS DECIMAL(10,2)) AS preco,
+            armazenamento.imagem,
+            armazenamento.capacidade,
+            armazenamento.unidade,
+            armazenamento.tipoArmazenamento,
+            armazenamento.tipoConexao,
+            armazenamento.velocidadeLeitura,
+            armazenamento.velocidadeGravacao,
+            marcas.nome AS marca,
+            componente.tipo as tipo,
+            componente.nome as nome
+        FROM armazenamento
+        INNER JOIN marcas ON armazenamento.marcaID = marcas.id
+        INNER JOIN componente ON armazenamento.componenteID = componente.id
+        `);
+
+        const resultadoFormatado = (result as any[]).map(item => ({
+            ...item,
+            preco: parseFloat(item.preco)
+        }));
+
+        res.json(resultadoFormatado);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar armazenamento' });
+    }
+};
+
+export const listarFontes = async (req: Request, res: Response) => {
+    try {
+        const [result] = await db.query(`
+        SELECT
+            fontes.id,
+            fontes.modelo,
+            fontes.potencia,
+            CAST(fontes.preco AS DECIMAL(10,2)) AS preco,
+            fontes.imagem,
+            fontes.certificacao,
+            marcas.nome AS marca,
+            componente.tipo as tipo,
+            componente.nome as nome,
+            JSON_ARRAYAGG(
+                JSON_OBJECT(
+                'tipo', cabos.tipo,
+                'quantidade', cabos.quantidade
+                )
+            ) AS cabos
+        FROM fontes
+        INNER JOIN marcas ON fontes.marcaID = marcas.id
+        INNER JOIN componente ON fontes.componenteID = componente.id
+        INNER JOIN cabos ON fontes.id = cabos.fonteID
+        GROUP BY fontes.id
+        `);
+
+        const resultadoFormatado = (result as any[]).map(item => ({
+            ...item,
+            preco: parseFloat(item.preco)
+        }));
+
+        res.json(resultadoFormatado);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar armazenamento' });
+    }
+};
+
+export const listarGabinetes = async (req: Request, res: Response) => {
+    try {
+        const [result] = await db.query(`
+        SELECT
+            gabinetes.id,
+            gabinetes.modelo,
+            CAST(gabinetes.preco AS DECIMAL(10,2)) AS preco,
+            gabinetes.imagem,
+            gabinetes.cor,
+            gabinetes.qtdFans,
+            marcas.nome AS marca,
+            componente.tipo as tipo,
+            componente.nome as nome
+        FROM gabinetes
+        INNER JOIN marcas ON gabinetes.marcaID = marcas.id
+        INNER JOIN componente ON gabinetes.componenteID = componente.id
+        `);
+
+        const resultadoFormatado = (result as any[]).map(item => ({
+            ...item,
+            preco: parseFloat(item.preco)
+        }));
+
+        res.json(resultadoFormatado);
+    } catch (error) {
+        res.status(500).json({ error: 'Erro ao buscar armazenamento' });
     }
 };
