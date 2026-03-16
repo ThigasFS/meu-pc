@@ -45,18 +45,28 @@ function EscolherFonte() {
     }, [])
 
     function calcularPotenciaTotal(pc: Partial<PC>): number {
-        const potencias: (number | undefined)[] = [
-          pc.armazenamento?.potencia,
-          pc.memoriaRam?.potencia,
-          pc.placaMae?.potencia,
-          pc.placaVideo?.potencia,
-          pc.processador?.potencia,
-        ];
-      
-        return potencias.reduce((total: number, potencia) => total + (potencia ?? 0), 0);
-      }
+        const tdpCPU = pc.processador?.tdp ?? 0
+        const tdpGPU = pc.placaVideo?.tdp ?? 0
+        const ram = (pc.memoriaRam?.modulos ?? 1) * 5
+        const placamae = 50
+        const armazenamento = 5
+
+        const consumoTotal = tdpCPU + tdpGPU + placamae + ram + armazenamento
+
+        return consumoTotal
+    }
+
+    function calcularUsoFonte(potenciaFonte: number) {
+        return Math.round((potenciaNecessaria / potenciaFonte) * 100)
+    }
 
     const potenciaNecessaria = calcularPotenciaTotal(pcMontado)
+    const potenciaRecomendada = potenciaNecessaria + 200
+    const fontesFiltradas = listaFontes.filter(
+        fonte => fonte.potencia >= potenciaRecomendada
+    )
+    const usoFonte = calcularUsoFonte(potenciaNecessaria)
+
     function cancelarEscolha() {
         setPcMontado(prev => {
             const valorAnterior = prev.fonte?.preco ?? 0
@@ -74,9 +84,10 @@ function EscolherFonte() {
             </div>
             <Subtitulo pos='center'>Filtrando pela potencia mínima necessaria: {potenciaNecessaria}W</Subtitulo>
             <Subtitulo pos='center'>Potência recomendada: {potenciaNecessaria+200}W</Subtitulo>
+            <Subtitulo pos='center'>Uso estimado da fonte: {usoFonte}%</Subtitulo>
             <Subtitulo pos='right' tamanho={1.5} weight={600} cor='#fff'>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Subtitulo>
             <div className={style.containerEscolhas}>
-                {listaFontes.map((fonte) =>
+                {fontesFiltradas.map((fonte) =>
                     <CardEscolha
                         componente='fonte'
                         key={fonte.id}
@@ -89,7 +100,6 @@ function EscolherFonte() {
                         potencia={fonte.potencia}
                         certificacao={fonte.certificacao}
                         id={fonte.id}
-                        cabos={fonte.cabos}
                     />
                 )}
             </div>

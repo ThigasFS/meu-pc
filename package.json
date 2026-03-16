@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mysql2": "^3.19.1",
+    "tsx": "^4.21.0"
+  },
+  "scripts": {
+    "scrape": "tsx server/src/runScraper.ts",
+    "dev": "vite ts-node-dev src/index.ts"
+  }
+}

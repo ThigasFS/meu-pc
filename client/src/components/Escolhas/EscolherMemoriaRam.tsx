@@ -77,8 +77,8 @@ function EscolherMemoriaRAM() {
                         selecionado={modeloSelecionado === memoria.id}
                         ddr={memoria.ddr}
                         velocidade={memoria.velocidade}
-                        quantidade={memoria.quantidade}
-                        memoria={memoria.memoria}
+                        modulos={memoria.modulos}
+                        capacidadeRam={memoria.capacidade}
                         id={memoria.id}
                     />
                 ))}

@@ -6,10 +6,14 @@ export interface PlacaMae {
     modelo: string,
     fabricante: string,
     socket: string,
-    potencia: number,
+    chipset: string,
+    formato: 'ATX' | 'MicroATX' | 'MiniATX';
+    maxRam: number;
     ddr: number,
     imagem: string,
-    preco: number
+    preco: number,
+    url: string,
+    loja: string
 }
 
 export interface Processador {
@@ -21,10 +25,12 @@ export interface Processador {
     fabricante: string,
     socket: string,
     velocidade: number,
-    potencia: number,
+    tdp: number,
     videoIntegrado: boolean,
     imagem: string,
-    preco: number
+    preco: number,
+    url: string,
+    loja: string
 }
 
 export interface MemoriaRAM {
@@ -34,21 +40,15 @@ export interface MemoriaRAM {
     marca: string,
     modelo: string,
     fabricante: string,
-    memoria: number,
-    quantidade: string,
+    capacidade: number,
+    modulos: number,
     velocidade: number,
-    potencia: number,
     ddr: number,
     cl: number,
     imagem: string,
     preco: number,
-}
-
-type tipoCabo = 'ATX (24 pinos)' | 'EPS (8 pinos)' | 'PCI-E (6+2 pinos)' | 'SATA (15 pinos)' | 'Molex (4 pinos)' | 'FDD  (4 pinos)' | 'EPS (4 pinos)' | 'PCI (12 pinos)' | 'PCI (16 pinos)'
-
-export interface Cabo {
-    tipo: tipoCabo,
-    quantidade: number
+    url: string,
+    loja: string
 }
 
 export interface Fonte {
@@ -57,12 +57,16 @@ export interface Fonte {
     id: number,
     marca: string,
     modelo: string,
-    fabricante: string,
     potencia: number,
+    fabricante: string,
     certificacao: string,
-    cabos: Cabo[],
+    pcieConectores: number,
+    sataConectores: number,
+    epsConectores: number,
     imagem: string,
-    preco: number
+    preco: number,
+    url: string,
+    loja: string
 }
 
 export interface PlacaVideo {
@@ -72,11 +76,13 @@ export interface PlacaVideo {
     marca: string,
     modelo: string,
     fabricante: string,
-    potencia: number,
     vram: number,
+    tdp: number,
     imagem: string,
     preco: number,
-    gddr: number
+    gddr: number,
+    url: string,
+    loja: string
 }
 
 export interface Gabinete {
@@ -89,7 +95,9 @@ export interface Gabinete {
     qtdFans: number,
     cor: string,
     imagem: string,
-    preco: number
+    preco: number,
+    url: string,
+    loja: string
 }
 
 export interface Armazenamento{
@@ -100,14 +108,16 @@ export interface Armazenamento{
     modelo: string,
     fabricante: string,
     capacidade: number,
-    potencia: number,
     unidade: 'GB' | 'TB',
     tipoArmazenamento: 'HD' | 'SSD',
-    tipoConexao: 'SATA II' | 'SATA III' | 'SATA 3.5' | 'M2',
+    interface: 'SATA' | 'NVME',
+    formato: '2.5' | '3.5' | 'M2',
     velocidadeLeitura: number,
     velocidadeGravacao: number,
     imagem: string,
-    preco: number
+    preco: number,
+    url: string,
+    loja: string
 }
 
 export type Componente = Armazenamento | PlacaMae | PlacaVideo | Processador | Gabinete | Fonte | MemoriaRAM

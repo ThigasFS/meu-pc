@@ -1,4 +1,3 @@
-import { Cabo } from '../../interfaces/componente';
 import style from './CardEscolha.module.css'
 
 interface Props {
@@ -15,9 +14,9 @@ interface Props {
   vram?: number,
   gddr?: number,
   ddr?: number,
-  quantidade?: string,
+  modulos?: number,
   velocidade?: number,
-  memoria?: number,
+  capacidadeRam?: number,
   tipoArmazenamento?: string,
   tipoConexao?: string,
   velocidadeLeitura?: number,
@@ -28,10 +27,9 @@ interface Props {
   certificacao?: string,
   fans?: number,
   cor?: string,
-  cabos?: Cabo[]
 }
 
-function CardEscolha({ id,imagem, marca, modelo, preco, socket, selecionado, aoSelecionar, videoIntegrado, componente, gddr, vram, ddr, quantidade, velocidade, memoria, capacidade, tipoArmazenamento, tipoConexao, unidade, velocidadeGravacao, velocidadeLeitura, certificacao, potencia, fans, cor }: Props) {
+function CardEscolha({ id,imagem, marca, modelo, preco, socket, selecionado, aoSelecionar, videoIntegrado, componente, gddr, vram, ddr, capacidade, velocidade, modulos, capacidadeRam, tipoArmazenamento, tipoConexao, unidade, velocidadeGravacao, velocidadeLeitura, certificacao, potencia, fans, cor }: Props) {
   function selecionar(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
     aoSelecionar(id);
@@ -69,7 +67,7 @@ function CardEscolha({ id,imagem, marca, modelo, preco, socket, selecionado, aoS
     if (componente === 'memoriaram') {
       return (
         <>
-          <p>{marca} {modelo}, {memoria}GB {quantidade}, {velocidade}MHz, DDR{ddr} </p>
+          <p>{marca} {modelo}, {capacidadeRam}GB {modulos}, {velocidade}MHz, DDR{ddr} </p>
         </>
       )
     }
