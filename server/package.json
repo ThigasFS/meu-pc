@@ -1,19 +1,21 @@
 {
   "dependencies": {
     "cheerio": "^1.2.0",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "dotenv": "^16.6.1",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "mysql2": "^3.14.1",
     "puppeteer": "^24.39.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.18",
-    "@types/express": "^5.0.1",
+    "@types/express": "^5.0.6",
     "ts-node-dev": "^2.0.0"
   },
   "scripts": {
-    "dev": "npx tsx ./src/database/teste.ts"
+    "teste": "npx tsx ./src/database/teste.ts",
+    "scrape": "npx tsx ./src/runScraper.ts",
+    "dev": "npx tsx ./src/server.ts"
   },
   "name": "server",
   "version": "1.0.0",

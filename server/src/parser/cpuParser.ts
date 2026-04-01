@@ -1,3 +1,25 @@
+function extrairTDP(texto?: string): number | null{
+  if (!texto) return null
+
+  const numeros = texto.match(/\d+/g)
+
+  if(!numeros) return null
+  
+  const valores = numeros.map(Number)
+
+  return Math.max(...valores)
+}
+
+function verificarVideoIntegrado(nome: string): boolean {
+  const n = nome.toLocaleLowerCase()
+
+  return (
+    n.includes("g") ||
+    n.includes("with graphics") ||
+    n.includes("integrado")
+  )
+}
+
 export function parseCpu(produto: any) {
 
   if (!produto?.nome) return null
@@ -33,12 +55,6 @@ export function parseCpu(produto: any) {
   const threads = threadMatch ? Number(threadMatch[1]) : null
 
 
-  // vídeo integrado
-  const video_integrado =
-    nome.toLowerCase().includes("vídeo integrado") ||
-    nome.toLowerCase().includes("com vídeo")
-
-
   // modelo limpo
   const modelo = nome
     .replace("Processador", "")
@@ -53,7 +69,8 @@ export function parseCpu(produto: any) {
     clock,
     cores,
     threads,
-    video_integrado,
+    tdp: extrairTDP(produto.specs?.tdp),
+    video_integrado: verificarVideoIntegrado(produto.nome),
     preco: produto.preco,
     imagem: produto.imagem,
     url: produto.url,

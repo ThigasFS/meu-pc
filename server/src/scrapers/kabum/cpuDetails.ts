@@ -1,49 +1,31 @@
-export async function scrapeKabumCPUDetails(page, url: string) {
+export async function scrapeKabumCPUDetails(page: any, url: string) {
 
-    try {
+    await page.goto(url, { waitUntil: "domcontentloaded" })
 
-        await page.goto(url, { waitUntil: "domcontentloaded" })
+    await page.waitForFunction(() => {
+        return document.body.innerText.length > 1000
+    }, { timeout: 20000 })
 
-        await page.waitForSelector("body", { timeout: 5000 })
+    const dados = await page.evaluate(() => {
 
-        const specs = await page.evaluate(() => {
+        const texto = document.body.innerText
 
-            const dados: any = {}
+        // 🧠 regex inteligente
+        const clockMatch = texto.match(/(\d+[\.,]?\d*)\s*GHz/i)
+        const tdpMatch = texto.match(/(\d+)\s*W/i)
 
-            const elementos = document.querySelectorAll("li, tr, p")
+        const socketMatch = texto.match(/AM\d|LGA\s?\d+/i)
 
-            elementos.forEach(el => {
+        const videoIntegrado =
+            /vídeo integrado|integrated graphics/i.test(texto)
 
-                const texto = el.textContent?.trim()
+        return {
+            clock: clockMatch ? parseFloat(clockMatch[1].replace(",", ".")) : null,
+            tdp: tdpMatch ? parseInt(tdpMatch[1]) : null,
+            socket: socketMatch ? socketMatch[0] : null,
+            video_integrado: videoIntegrado
+        }
+    })
 
-                if (!texto) return
-
-                if (texto.toLowerCase().includes("socket"))
-                    dados.socket = texto
-
-                if (texto.toLowerCase().includes("tdp"))
-                    dados.tdp = texto
-
-                if (texto.toLowerCase().includes("ghz"))
-                    dados.clock = texto
-
-                if (texto.toLowerCase().includes("núcleo") || texto.toLowerCase().includes("core"))
-                    dados.cores = texto
-
-            })
-
-            return dados
-
-        })
-
-        return specs
-
-    } catch (erro) {
-
-        console.log("⚠ Erro ao coletar specs:", erro)
-
-        return {}
-
-    }
-
+    return dados
 }

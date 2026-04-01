@@ -14,19 +14,29 @@ type ContextType = {
 }
 
 function EscolherProcessador() {
-    const [listaProcessadores, setListaProcessador] = useState<Processador[]>([])
+    const [listaProcessadores, setListaProcessadores] = useState<Processador[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/processadores')
+        axios.get('http://localhost:3000/api/cpus')
             .then(res => {
                 const todos = res.data as Processador[]
                 const socketAtual = pcMontado.placaMae?.socket
                 const filtrados = socketAtual
                     ? todos.filter(proc => proc.socket === socketAtual)
                     : todos
-                setListaProcessador(filtrados)
+
+                const validos = filtrados.filter(proc =>
+                    proc &&
+                    proc.id &&
+                    proc.modelo &&
+                    proc.preco !== null &&
+                    proc.imagem &&
+                    proc.socket
+                )
+
+                setListaProcessadores(validos)
             })
             .catch(erro => console.error(erro));
     }, [pcMontado.placaMae?.socket])

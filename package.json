@@ -5,6 +5,6 @@
   },
   "scripts": {
     "scrape": "tsx server/src/runScraper.ts",
-    "dev": "vite ts-node-dev src/index.ts"
+    "dev": "vite ts-node-dev src/server.ts"
   }
 }

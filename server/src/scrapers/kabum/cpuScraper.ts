@@ -4,15 +4,15 @@ import { scrapeKabumCPUDetails } from "./cpuDetails"
 export async function scrapeKabumCPU() {
 
     const browser = await puppeteer.launch({
-        headless: true, // Interface: OFF
-        defaultViewport: null
+        headless: true,
+        defaultViewport: null,
+        args: ["--no-sandbox"]
     })
 
     const page = await browser.newPage()
 
     const produtosTotais: any[] = []
-
-    const paginas = 1
+    const paginas = 3
 
     for (let p = 1; p <= paginas; p++) {
 
@@ -22,72 +22,44 @@ export async function scrapeKabumCPU() {
 
         await page.goto(url, { waitUntil: "domcontentloaded" })
 
-        await page.waitForSelector('[class*="productCard"]', { timeout: 15000 })
+        await page.waitForFunction(() => {
+            return document.querySelectorAll('a[href*="/produto/"]').length > 10
+        }, { timeout: 20000 })
 
         const produtos = await page.evaluate(() => {
 
-        const lista: any[] = []
+            const lista: any[] = []
 
-        const cards = document.querySelectorAll('[class*="productCard"]')
+            const links = document.querySelectorAll('a[href*="/produto/"]')
 
-        cards.forEach(card => {
+            links.forEach(link => {
 
-            const nome =
-                card.querySelector('[class*="nameCard"]')?.textContent?.trim() || ""
+                const href = link.getAttribute("href")
+                const nome = link.textContent?.trim() || ""
 
-            const precoTexto =
-                card.querySelector('[class*="priceCard"]')?.textContent || ""
+                if (!href || !href.includes("/produto/")) return
+                if (nome.length < 10) return
 
-            const preco = Number(
-                precoTexto
-                    .replace("R$", "")
-                    .replace(/\./g, "")
-                    .replace(",", ".")
-            )
-
-            const imagem =
-                card.querySelector("img")?.getAttribute("src") || ""
-
-            const link =
-                card.querySelector("a")?.getAttribute("href") || ""
-
-            if (link) {
+                const imagem =
+                    link.querySelector("img")?.getAttribute("src") || ""
 
                 lista.push({
                     nome,
-                    preco,
+                    preco: null,
                     imagem,
-                    url: "https://www.kabum.com.br" + link
+                    url: "https://www.kabum.com.br" + href
                 })
 
-            }
-
-        })
-
-        return lista
-
-    })
-
-        console.log(`🔎 ${produtos.length} produtos encontrados`)
-
-        for (const produto of produtos.slice(0,1)) {
-
-            console.log("\n➡ Abrindo produto:", produto.nome)
-
-            const productPage = await browser.newPage()
-
-            const specs = await scrapeKabumCPUDetails(productPage, produto.url)
-
-            await productPage.close()
-
-            produtosTotais.push({
-                ...produto,
-                specs
             })
 
-            console.log("✔ Specs coletadas")
+            const unique = Array.from(
+                new Map(lista.map(item => [item.url, item])).values()
+            )
 
-        }
+            return unique
+        })
+
+        console.log(`🔎 ${produtos.length} produtos encontrados`)
 
     }
 
