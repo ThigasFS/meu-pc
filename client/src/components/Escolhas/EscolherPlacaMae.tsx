@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import Titulo from "../Titulo/Titulo"
 import style from './Escolhas.module.css'
 import { PlacaMae } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
 import { Link, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
-import Subtitulo from "../Subtitulo/Subtitulo"
 import axios from "axios"
+import { Typography } from "@mui/material"
+import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -45,10 +45,11 @@ function EscolherPlacaMae() {
     return (
         <div>
             <div className={style.cabecalhoEscolha}>
-                <Titulo>Escolha sua Placa Mãe</Titulo>
-                <Link to='/criar-novo-pc/processador'><h3>Próximo</h3></Link>
+                <Link to='/criar-novo-pc/processador'><BotaoEscolhas prev/></Link>
+                <Typography>Escolha sua Placa Mãe</Typography>
+                <Link to='/criar-novo-pc/placavideo'><BotaoEscolhas /></Link>
             </div>
-            <Subtitulo pos='right' tamanho={1.5} weight={600} cor='#fff'>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Subtitulo>
+            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
             <div className={style.containerEscolhas}>
                 {listaPlacasMaes.map((placa) => (
                     <CardEscolha

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import Titulo from "../Titulo/Titulo"
 import style from './Escolhas.module.css'
 import { PlacaVideo} from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
 import { Link, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
-import Subtitulo from "../Subtitulo/Subtitulo"
 import axios from "axios"
+import { Typography } from "@mui/material"
+import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -53,12 +53,12 @@ function EscolherPlacaVideo() {
     return (
         <div>
             <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/processador' onClick={cancelarEscolha}><h3>Anterior</h3></Link>
-                <Titulo>Escolha sua Placa de Video</Titulo>
-                <Link to='/criar-novo-pc/memoriaram'><h3>Próximo</h3></Link>
+                <Link to='/criar-novo-pc/placamae' onClick={cancelarEscolha}><BotaoEscolhas prev/></Link>
+                <Typography>Escolha sua Placa de Video</Typography>
+                <Link to='/criar-novo-pc/memoriaram'><BotaoEscolhas /></Link>
             </div>
-            <Subtitulo pos="center">{pcMontado.processador?.videoIntegrado ? 'Seu processador já contém vídeo integrado, a Placa de Vídeo é opcional': ''}</Subtitulo>
-            <Subtitulo pos='right' tamanho={1.5} weight={600} cor='#fff'>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Subtitulo>
+            <Typography>{pcMontado.processador?.videoIntegrado ? 'Seu processador já contém vídeo integrado, a Placa de Vídeo é opcional': ''}</Typography>
+            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
             <div className={style.containerEscolhas}>
                 {listaPlacaVideo.map((placaVideo) => (
                     <CardEscolha

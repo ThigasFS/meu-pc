@@ -10,6 +10,7 @@ import EscolherArmazenamento from './components/Escolhas/EscolherArmazenamento'
 import EscolherFonte from './components/Escolhas/EscolherFonte'
 import EscolherGabinete from './components/Escolhas/EscolherGabinete'
 import Finalizacao from './components/Finalizacao/Finalizacao'
+import SobreNos from './pages/About'
 
 function App() {
   return (
@@ -17,8 +18,8 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/criar-novo-pc' element={<CriarPC />}>
-          <Route path='placamae' element={<EscolherPlacaMae />} />
           <Route path='processador' element={<EscolherProcessador />} />
+          <Route path='placamae' element={<EscolherPlacaMae />} />
           <Route path='placavideo' element={<EscolherPlacaVideo />} />
           <Route path='memoriaram' element={<EscolherMemoriaRAM />} />
           <Route path='armazenamento' element={<EscolherArmazenamento />} />
@@ -26,6 +27,7 @@ function App() {
           <Route path='gabinete' element={<EscolherGabinete />} />
           <Route path='finalizacao' element={<Finalizacao />} />
         </Route>
+        <Route path='/sobre-nos' element={<SobreNos />}/>
       </Routes>
     </BrowserRouter>
   )

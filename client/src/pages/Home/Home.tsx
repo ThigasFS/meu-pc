@@ -1,17 +1,18 @@
+import { Box, Stack } from "@mui/material"
 import Cabecalho from "../../components/Cabecalho/Cabecalho"
 import Salvos from "../../components/Salvos/Salvos"
 import style from './Home.module.css'
 
 function Home() {
     return (
-        <div className={style.bodyContainer}>
-            <header>
+        <Box className={style.bodyContainer}>
+            <Stack>
                 <Cabecalho />
-            </header>
+            </Stack>
             <main>
                 <Salvos />
             </main>
-        </div>
+        </Box>
     )
 }
 

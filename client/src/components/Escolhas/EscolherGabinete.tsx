@@ -1,12 +1,12 @@
 import { Link, useOutletContext } from 'react-router-dom'
 import style from './Escolhas.module.css'
-import Titulo from '../Titulo/Titulo'
 import { useEffect, useState } from 'react'
 import { Gabinete } from '../../interfaces/componente'
 import CardEscolha from '../CardEscolha/CardEscolha'
 import PC from '../../interfaces/pc'
-import Subtitulo from '../Subtitulo/Subtitulo'
 import axios from 'axios'
+import { Typography } from '@mui/material'
+import BotaoEscolhas from '../BotaoEscolhas/BotaoEscolhas'
 
 type ContextType = {
     pcMontado: PC
@@ -53,12 +53,12 @@ function EscolherGabinete() {
     return (
         <div>
             <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/fonte' onClick={cancelarEscolha}><h3>Anterior</h3></Link>
-                <Titulo pos='center'>Escolha seu Gabinete</Titulo>
-                <Link to='/criar-novo-pc/finalizacao'><h3>Finalizar</h3></Link>
+                <Link to='/criar-novo-pc/fonte' onClick={cancelarEscolha}><BotaoEscolhas prev/></Link>
+                <Typography>Escolha seu Gabinete</Typography>
+                <Link to='/criar-novo-pc/finalizacao'><BotaoEscolhas /></Link>
             </div>
-            <Subtitulo pos='center'>A escolha do gabinete não é obrigatória, é possível finalizar sem ele</Subtitulo>
-            <Subtitulo pos='right' tamanho={1.5} weight={600} cor='#fff'>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Subtitulo>
+            <Typography>A escolha do gabinete não é obrigatória, é possível finalizar sem ele</Typography>
+            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
             <div className={style.containerEscolhas}>
                 {listaGabinetes.map((gabinete) =>
                     <CardEscolha

@@ -1,11 +1,10 @@
 import { Link, useOutletContext } from 'react-router-dom'
-import Subtitulo from '../Subtitulo/Subtitulo'
-import Titulo from '../Titulo/Titulo'
 import style from './Finalizacao.module.css'
 import PC from '../../interfaces/pc'
 import ID from '../../id'
 import { useState } from 'react'
 import CardComponenteResumo from '../CardComponenteResumo/CardComponenteResumo'
+import { Typography } from '@mui/material'
 
 type ContextType = {
   pcMontado: PC,
@@ -50,9 +49,9 @@ function Finalizacao() {
   return (
     <div>
         <div className={style.cabecalhoFinalizacao}>
-            <Titulo pos='center'>Resumo do PC</Titulo>
+            <Typography>Resumo do PC</Typography>
         </div>
-        <Subtitulo pos='center'>Verifique o resumo para poder finalizar</Subtitulo>
+        <Typography>Verifique o resumo para poder finalizar</Typography>
         <div className={style.containerResumo}>
           <label htmlFor='nome' className={style.label}>Insira um nome para seu PC</label>
           <input onChange={colocarNome} className={style.inputNome} id='nome'/>
@@ -64,12 +63,12 @@ function Finalizacao() {
           <CardComponenteResumo componente={pcMontado.fonte} />
           {pcMontado.gabinete ? <CardComponenteResumo componente={pcMontado.gabinete} /> : ''}
         </div>
-        <Titulo pos='center' cor='#FFF'>Seu computador ficou com um total de: {pcMontado.valorTotal.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Titulo>
+        <Typography>Seu computador ficou com um total de: {pcMontado.valorTotal.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
         <div>
-            <Titulo pos='center'>Deseja Finalizar?</Titulo>
+            <Typography>Deseja Finalizar?</Typography>
             <div className={style.opcoesFinalizacao}>
-                <Link to='/criar-novo-pc/placamae' onClick={resetarPc}><Subtitulo cor='#fff'>Voltar para o começo</Subtitulo></Link>
-                <Link to='/' onClick={finalizarPC}><Subtitulo cor='#fff'>Finalizar</Subtitulo></Link>
+                <Link to='/criar-novo-pc/placamae' onClick={resetarPc}><Typography>Voltar para o começo</Typography></Link>
+                <Link to='/' onClick={finalizarPC}><Typography>Finalizar</Typography></Link>
             </div>
         </div>
     </div>

@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import PC from '../../interfaces/pc'
 import { Armazenamento } from '../../interfaces/componente'
 import { Link, useOutletContext } from 'react-router-dom'
-import Titulo from '../Titulo/Titulo'
 import style from './Escolhas.module.css'
 import CardEscolha from '../CardEscolha/CardEscolha'
-import Subtitulo from '../Subtitulo/Subtitulo'
 import axios from 'axios'
+import { Typography } from '@mui/material'
+import BotaoEscolhas from '../BotaoEscolhas/BotaoEscolhas'
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -53,11 +53,11 @@ function EscolherArmazenamento() {
     return (
         <div>
             <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/memoriaram' onClick={cancelarEscolha}><h3>Anterior</h3></Link>
-                <Titulo pos='center'>Escolha seu Armazenamento</Titulo>
-                <Link to='/criar-novo-pc/fonte'><h3>Próximo</h3></Link>
+                <Link to='/criar-novo-pc/memoriaram' onClick={cancelarEscolha}><BotaoEscolhas prev/></Link>
+                <Typography>Escolha seu Armazenamento</Typography>
+                <Link to='/criar-novo-pc/fonte'><BotaoEscolhas /></Link>
             </div>
-            <Subtitulo pos='right' tamanho={1.5} weight={600} cor='#fff'>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Subtitulo>
+            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
             <div className={style.containerEscolhas}>
                 {listaArmazenamento.map(armazenamento => 
                     (
@@ -72,7 +72,6 @@ function EscolherArmazenamento() {
                             selecionado={modeloSelecionado === armazenamento.id} 
                             tipoArmazenamento={armazenamento.tipoArmazenamento}
                             capacidade={armazenamento.capacidade}
-                            tipoConexao={armazenamento.tipoConexao}
                             unidade={armazenamento.unidade}
                             velocidadeLeitura={armazenamento.velocidadeLeitura}
                             velocidadeGravacao={armazenamento.velocidadeGravacao}

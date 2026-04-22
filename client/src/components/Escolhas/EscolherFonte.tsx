@@ -1,12 +1,12 @@
 import { Link, useOutletContext } from 'react-router-dom'
-import Titulo from '../Titulo/Titulo'
 import style from './Escolhas.module.css'
 import PC from '../../interfaces/pc'
 import { useEffect, useState } from 'react'
 import { Fonte } from '../../interfaces/componente'
 import CardEscolha from '../CardEscolha/CardEscolha'
-import Subtitulo from '../Subtitulo/Subtitulo'
 import axios from 'axios'
+import { Typography } from '@mui/material'
+import BotaoEscolhas from '../BotaoEscolhas/BotaoEscolhas'
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -78,14 +78,14 @@ function EscolherFonte() {
     return (
         <div>
             <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/armazenamento' onClick={cancelarEscolha}><h3>Anterior</h3></Link>
-                <Titulo pos='center'>Escolha sua Fonte</Titulo>
-                <Link to='/criar-novo-pc/gabinete'><h3>Próximo</h3></Link>
+                <Link to='/criar-novo-pc/armazenamento' onClick={cancelarEscolha}><BotaoEscolhas prev/></Link>
+                <Typography>Escolha sua Fonte</Typography>
+                <Link to='/criar-novo-pc/gabinete'><BotaoEscolhas /></Link>
             </div>
-            <Subtitulo pos='center'>Filtrando pela potencia mínima necessaria: {potenciaNecessaria}W</Subtitulo>
-            <Subtitulo pos='center'>Potência recomendada: {potenciaNecessaria+200}W</Subtitulo>
-            <Subtitulo pos='center'>Uso estimado da fonte: {usoFonte}%</Subtitulo>
-            <Subtitulo pos='right' tamanho={1.5} weight={600} cor='#fff'>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Subtitulo>
+            <Typography>Filtrando pela potencia mínima necessaria: {potenciaNecessaria}W</Typography>
+            <Typography>Potência recomendada: {potenciaNecessaria+200}W</Typography>
+            <Typography>Uso estimado da fonte: {usoFonte}%</Typography>
+            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
             <div className={style.containerEscolhas}>
                 {fontesFiltradas.map((fonte) =>
                     <CardEscolha

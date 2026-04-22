@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import Titulo from "../Titulo/Titulo"
 import style from './Escolhas.module.css'
 import { Processador } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
 import { Link, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
-import Subtitulo from "../Subtitulo/Subtitulo"
 import axios from "axios"
+import { Box, Typography } from "@mui/material"
+import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -22,12 +22,8 @@ function EscolherProcessador() {
         axios.get('http://localhost:3000/api/cpus')
             .then(res => {
                 const todos = res.data as Processador[]
-                const socketAtual = pcMontado.placaMae?.socket
-                const filtrados = socketAtual
-                    ? todos.filter(proc => proc.socket === socketAtual)
-                    : todos
 
-                const validos = filtrados.filter(proc =>
+                const validos = todos.filter(proc =>
                     proc &&
                     proc.id &&
                     proc.modelo &&
@@ -60,24 +56,14 @@ function EscolherProcessador() {
         }
     }
 
-    function cancelarEscolha() {
-        setPcMontado(prev => {
-            const valorAnterior = prev.processador?.preco ?? 0
-            const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior
-            return { ...prev, processador: undefined, valorTotal: valorTotalAtualizado, videoIntegrado: false}
-        })
-    }
-
-
     return (
         <div>
-            <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/placamae' onClick={cancelarEscolha}><h3>Anterior</h3></Link>
-                <Titulo>Escolha seu Processador</Titulo>
-                <Link to='/criar-novo-pc/placavideo'><h3>Próximo</h3></Link>
-            </div>
-            <Subtitulo pos="center">{listaProcessadores.length === 0 ? 'Não há nenhum processador compatível com este socket' : `Apenas mostrando os processadores com o socket: ${pcMontado.placaMae?.socket}`}</Subtitulo>
-            <Subtitulo pos='right' tamanho={1.5} weight={600} cor='#fff'>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Subtitulo>
+            <Box sx={{display: 'flex', gap: 3, justifyContent: 'center', alignItems: 'center'}}>
+                <Typography sx={{fontWeight: 600, fontSize: 32, color: 'white'}}>Escolha seu Processador</Typography>
+                <Link to='/criar-novo-pc/placamae'><BotaoEscolhas /></Link>
+            </Box>
+            <Typography sx={{color: 'white', textAlign: 'center'}}>Socket atual: {pcMontado.processador?.socket ?? 'N/A'}</Typography>
+            <Typography sx={{color: 'white', textAlign: 'center'}}>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
             <div className={style.containerEscolhas}>
                 {listaProcessadores.map((processador) => (
                     <CardEscolha

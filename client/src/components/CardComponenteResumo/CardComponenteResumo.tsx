@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { Componente } from '../../interfaces/componente'
-import Subtitulo from '../Subtitulo/Subtitulo'
 import style from './CardComponenteResumo.module.css'
+import { Typography } from '@mui/material'
 
 interface Props {
     componente: Componente
@@ -21,7 +21,6 @@ function CardComponenteResumo({ componente }: Props) {
                 <>
                     <Paragrafo>Socket: {componente.socket}</Paragrafo>
                     <Paragrafo>DDR: DDR{componente.ddr}</Paragrafo>
-                    <Paragrafo>Potência: {componente.potencia}W</Paragrafo>
                 </>
             )
         }
@@ -31,7 +30,7 @@ function CardComponenteResumo({ componente }: Props) {
                 <>
                     <Paragrafo>Socket: {componente.socket}</Paragrafo>
                     <Paragrafo>Velocidade Clock: {componente.velocidade}MHz</Paragrafo>
-                    <Paragrafo>Potência: {componente.potencia}W</Paragrafo>
+                    <Paragrafo>TDP: {componente.tdp}W</Paragrafo>
                 </>
             )
         }
@@ -41,7 +40,7 @@ function CardComponenteResumo({ componente }: Props) {
                 <>
                     <Paragrafo>VRAM: {componente.vram}GB</Paragrafo>
                     <Paragrafo>GDDR: {componente.gddr}MHz</Paragrafo>
-                    <Paragrafo>Potência: {componente.potencia}W</Paragrafo>
+                    <Paragrafo>TDP: {componente.tdp}W</Paragrafo>
                 </>
             )
         }
@@ -49,10 +48,9 @@ function CardComponenteResumo({ componente }: Props) {
         if (componente.tipo === 'memoriaram') {
             return (
                 <>
-                    <Paragrafo>Tamanho: {componente.memoria}GB {componente.quantidade}</Paragrafo>
+                    <Paragrafo>Tamanho: {componente.capacidade}GB {componente.modulos}</Paragrafo>
                     <Paragrafo>DDR: DDR{componente.ddr}</Paragrafo>
                     <Paragrafo>Velocidade: {componente.velocidade}MHZ</Paragrafo>
-                    <Paragrafo>Potência: {componente.potencia}W</Paragrafo>
                 </>
             )
         }
@@ -60,11 +58,10 @@ function CardComponenteResumo({ componente }: Props) {
         if (componente.tipo === 'armazenamento') {
             return (
                 <>
-                    <Paragrafo>Tipo: {componente.tipoArmazenamento} {componente.tipoConexao}</Paragrafo>
+                    <Paragrafo>Tipo: {componente.tipoArmazenamento} {componente.interface}</Paragrafo>
                     <Paragrafo>Tamanho: {componente.capacidade}{componente.unidade}</Paragrafo>
                     <Paragrafo>Leitura: {componente.velocidadeLeitura}MB/s</Paragrafo>
                     <Paragrafo>Gravação: {componente.velocidadeGravacao}MB/s</Paragrafo>
-                    <Paragrafo>Potência: {componente.potencia}W</Paragrafo>
                 </>
             )
         }
@@ -72,8 +69,10 @@ function CardComponenteResumo({ componente }: Props) {
         if (componente.tipo === 'fonte') {
             return (
                 <>
-                    <Paragrafo>Potência: {componente.potencia}W</Paragrafo>
-                    <Paragrafo>Cabos: {componente.cabos.map((cabo) => <>{cabo.tipo} x{cabo.quantidade} <br /></>)}</Paragrafo>
+                    <Typography>Certificação: {componente.certificacao}</Typography>
+                    <Typography>Conectores EPS: {componente.epsConectores}</Typography>
+                    <Typography>Conectores PCIe: {componente.pcieConectores}</Typography>
+                    <Typography>Conectores SATA: {componente.sataConectores}</Typography>
                 </>
             )
         }
@@ -90,7 +89,7 @@ function CardComponenteResumo({ componente }: Props) {
 
     return (
         <div className={style.containerCardResumo}>
-            <Subtitulo tamanho={2}>{componente.nome}</Subtitulo>
+            <Typography>{componente.nome}</Typography>
             <div className={style.containerDetalhes}>
                 <img src={componente.imagem} className={style.imagem} />
                 <div className={style.containerSpecs}>

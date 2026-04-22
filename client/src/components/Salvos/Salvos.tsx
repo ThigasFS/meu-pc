@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import PC from '../../interfaces/pc.ts'
 import ListaSalvos from '../ListaSalvos/ListaSalvos.tsx'
-import Titulo from '../Titulo/Titulo.tsx'
 import style from './Salvos.module.css'
 import { Link } from 'react-router-dom'
+import { Button, Stack, Typography } from '@mui/material'
 
 function Salvos() {
     const [listaSalvos, setListaSalvos] = useState<PC[]>([])
@@ -22,13 +22,13 @@ function Salvos() {
     }
 
   return (
-    <div className={style.container}>
-        <Titulo pos='center'>Seus PCs salvos</Titulo>
+    <Stack sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3}}>
+        <Typography sx={{color: 'white'}}>Seus PCs salvos</Typography>
         <ListaSalvos pcs={listaSalvos} onRemove={removerPc}/>
-        <Link to='/criar-novo-pc/placamae' className={style.containerBotao}>
-          <button className={style.botaoCriar}>Criar novo PC</button>
+        <Link to='/criar-novo-pc/processador' className={style.containerBotao}>
+          <Button sx={{background: '#52F2B8', color: 'black', padding: 1.5}}>Criar novo PC</Button>
         </Link>
-    </div>
+    </Stack>
   )
 }
 
