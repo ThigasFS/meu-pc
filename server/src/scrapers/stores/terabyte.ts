@@ -37,10 +37,21 @@ export class TerabyteScraper implements Scraper {
                             ?.replace(/[^\w\sÀ-ÿ\-(),.%]/g, "")
                             .replace(/\s+/g, " ")
                             .trim() || ""
+                        const textoPreco = el.textContent?.match(/R\$\s?\d{1,3}(?:\.\d{3})*,\d{2}/g)
+
+                        const preco = textoPreco?.length
+                            ? Number(
+                                textoPreco[textoPreco.length - 1]
+                                    .replace("R$", "")
+                                    .replace(/\s/g, "")
+                                    .replace(/\./g, "")
+                                    .replace(",", ".")
+                            )
+                            : null
 
                         return {
                             nome,
-                            preco: null,
+                            preco,
                             imagem: "",
                             url: href || "",
                             loja: "Terabyte"

@@ -1,7 +1,9 @@
+import { saveCpu } from "../database/salvarCPU"
 import { filterCPUProducts } from "./filters/cpu"
 import { KabumScraper } from "./stores/kabum"
 import { PichauScraper } from "./stores/pichau"
 import { TerabyteScraper } from "./stores/terabyte"
+import { parseCpu } from "../parsers/cpuParser"
 
 export async function runScrapers() {
     const scrapers = [
@@ -21,5 +23,15 @@ export async function runScrapers() {
         )
         .flatMap(result => result.value)
 
-    return filterCPUProducts(produtos)
+    const produtosFiltrados = filterCPUProducts(produtos)
+
+    const cpusParseadas = produtosFiltrados
+        .map(parseCpu)
+        .filter((cpu): cpu is NonNullable<typeof cpu> => cpu !== null)
+
+    await Promise.all(
+        cpusParseadas.map(cpu => saveCpu(cpu))
+    )
+
+    return cpusParseadas
 }

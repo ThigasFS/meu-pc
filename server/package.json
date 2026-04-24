@@ -13,8 +13,9 @@
     "ts-node-dev": "^2.0.0"
   },
   "scripts": {
-    "teste": "npx tsx ./src/database/teste.ts",
-    "scrape": "npx tsx ./src/runScraper.ts",
+    "testeDB": "npx tsx ./src/database/teste.ts",
+    "testeCPU": "npx tsx ./src/scripts/testeCPU.ts",
+    "scrape": "npx tsx ./src/scrapers/runScrapers.ts",
     "dev": "npx tsx ./src/server.ts"
   },
   "name": "server",

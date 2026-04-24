@@ -32,17 +32,30 @@ export class KabumScraper implements Scraper {
             els => {
                 const lista = els
                     .map(el => {
-                        const href = el.getAttribute("href")
-                        const nome = el.textContent
-                            ?.replace(/[^\w\sÀ-ÿ\-(),.%]/g, "")
-                            .replace(/\s+/g, " ")
-                            .trim() || ""
+                        const href = el.getAttribute("href") || ""
+
+                        const nomeEl = el.querySelector('span.sc-cdc9b13f-3, [class*="ProductName"], h2, span')
+                        const nome = nomeEl?.textContent?.replace(/\s+/g, " ").trim()
+                            || el.getAttribute("title")
+                            || ""
+
+                        const textoPreco = el.textContent?.match(/R\$\s?\d{1,3}(?:\.\d{3})*,\d{2}/g)
+
+                        const preco = textoPreco?.length
+                            ? Number(
+                                textoPreco[textoPreco.length - 1]
+                                    .replace("R$", "")
+                                    .replace(/\s/g, "")
+                                    .replace(/\./g, "")
+                                    .replace(",", ".")
+                            )
+                            : null
 
                         return {
                             nome,
-                            preco: null,
+                            preco,
                             imagem: "",
-                            url: href || "",
+                            url: href,
                             loja: "Kabum"
                         }
                     })
