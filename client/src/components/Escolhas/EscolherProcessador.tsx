@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import style from './Escolhas.module.css'
-import { Processador } from "../../interfaces/componente"
+import { PrecoLoja, Processador, ProcessadorAPI } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
 import { Link, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
@@ -18,24 +18,58 @@ function EscolherProcessador() {
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
 
+    function definirSocket(microarquitetura: string): string {
+        const arch = microarquitetura.toLowerCase();
+
+        //AMD
+        if (arch.includes("zen 5")) return "AM5"
+        if (arch.includes("zen 4")) return "AM5"
+        if (arch.includes("zen 3")) return "AM4"
+        if (arch.includes("zen 2")) return "AM4"
+
+        return "Desconhecido"
+    }
+
+    function definirMarca(nome: string): string {
+        const n = nome.toLowerCase()
+
+        if (n.includes('amd')) return 'AMD'
+        if (n.includes('intel')) return 'Intel'
+
+        return 'Desconhecida'
+    }
+
+    function menorPreco(valores: PrecoLoja[]): number {
+        if (!valores.length) return 0
+
+        return Math.min(...valores.map(v => v.preco))
+    }
+
     useEffect(() => {
-        axios.get('http://localhost:3000/api/cpus')
+        axios.get('http://localhost:3000/api/cpu')
             .then(res => {
-                const todos = res.data as Processador[]
+                const cpusApi = res.data as ProcessadorAPI[]
+                const cpus = cpusApi.map((proc, index) => {
+                    const cpu: Processador = {
+                        id: index + 1,
+                        nome: proc.name,
+                        socket: definirSocket(proc.microarchitecture),
+                        tdp: proc.tdp,
+                        velocidade: proc.core_clock,
+                        videoIntegrado: !!proc.graphics,
+                        marca: definirMarca(proc.name),
+                        imagem: '',
+                        valores: [],
+                        preco: menorPreco([]),
+                    }
 
-                const validos = todos.filter(proc =>
-                    proc &&
-                    proc.id &&
-                    proc.modelo &&
-                    proc.preco !== null &&
-                    proc.imagem &&
-                    proc.socket
-                )
+                    return cpu
+                })
 
-                setListaProcessadores(validos)
+                setListaProcessadores(cpus)
             })
             .catch(erro => console.error(erro));
-    }, [pcMontado.placaMae?.socket])
+    }, [])
 
     function selecionarModelo(modeloSelecionado: number) {
         setModeloSelecionado(modeloSelecionado)
@@ -58,12 +92,12 @@ function EscolherProcessador() {
 
     return (
         <div>
-            <Box sx={{display: 'flex', gap: 3, justifyContent: 'center', alignItems: 'center'}}>
-                <Typography sx={{fontWeight: 600, fontSize: 32, color: 'white'}}>Escolha seu Processador</Typography>
+            <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', alignItems: 'center' }}>
+                <Typography sx={{ fontWeight: 600, fontSize: 32, color: 'white' }}>Escolha seu Processador</Typography>
                 <Link to='/criar-novo-pc/placamae'><BotaoEscolhas /></Link>
             </Box>
-            <Typography sx={{color: 'white', textAlign: 'center'}}>Socket atual: {pcMontado.processador?.socket ?? 'N/A'}</Typography>
-            <Typography sx={{color: 'white', textAlign: 'center'}}>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
+            <Typography sx={{ color: 'white', textAlign: 'center' }}>Socket atual: {pcMontado.processador?.socket ?? 'N/A'}</Typography>
+            <Typography sx={{ color: 'white', textAlign: 'center' }}>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Typography>
             <div className={style.containerEscolhas}>
                 {listaProcessadores.map((processador) => (
                     <CardEscolha
@@ -71,7 +105,7 @@ function EscolherProcessador() {
                         key={processador.id}
                         imagem={processador.imagem}
                         marca={processador.marca}
-                        modelo={processador.modelo}
+                        modelo={processador.nome}
                         preco={processador.preco}
                         socket={processador.socket}
                         videoIntegrado={processador.videoIntegrado}

@@ -50,7 +50,7 @@ function CardEscolha({ id,imagem, marca, modelo, preco, socket, selecionado, aoS
     if (componente === 'processador') {
       return (
         <>
-          <p>{marca} {modelo}, {velocidade}</p>
+          <p>{modelo}, {velocidade}GHz</p>
           <p>{videoIntegrado ? 'Tem vídeo integrado' : 'Não tem vídeo integrado'}</p>
         </>
       )

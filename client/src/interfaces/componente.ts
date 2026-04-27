@@ -1,3 +1,9 @@
+export interface PrecoLoja {
+    loja: string,
+    preco: number,
+    url: string
+}
+
 export interface PlacaMae {
     tipo: 'placamae',
     nome: 'Placa Mãe',
@@ -17,20 +23,25 @@ export interface PlacaMae {
 }
 
 export interface Processador {
-    tipo: 'processador',
-    nome: 'Processador',
     id: number,
+    nome: string,
     marca: string,
-    modelo: string,
-    fabricante: string,
     socket: string,
     velocidade: number,
     tdp: number,
     videoIntegrado: boolean,
     imagem: string,
     preco: number,
-    url: string,
-    loja: string
+    valores?: PrecoLoja[],
+}
+
+export interface ProcessadorAPI {
+    name: string,
+    core_count: number,
+    core_clock: number,
+    microarchitecture: string,
+    tdp: number,
+    graphics: string | null
 }
 
 export interface MemoriaRAM {
