@@ -8,15 +8,20 @@
     "puppeteer": "^24.39.1"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.18",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "ts-node-dev": "^2.0.0"
   },
   "scripts": {
-    "testeDB": "npx tsx ./src/database/teste.ts",
-    "testeCPU": "npx tsx ./src/scripts/testeCPU.ts",
-    "scrape": "npx tsx ./src/scrapers/runScrapers.ts",
-    "dev": "npx tsx ./src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+
+    "db:test": "tsx src/database/teste.ts",
+
+    "scrape:cpu": "tsx src/scripts/cpu.ts",
+    "scrape:all": "tsx src/scripts/updateAllPrices.ts",
+
+    "test:cpu": "tsx src/scripts/testeCPU.ts"
   },
   "name": "server",
   "version": "1.0.0",

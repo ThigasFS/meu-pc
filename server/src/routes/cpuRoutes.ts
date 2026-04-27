@@ -1,31 +1,19 @@
-import { Router } from "express";
-import pool from "../database/connection";
+import { Router } from "express"
+import { getCpus } from "../services/hubs/cpu"
 
 const router = Router()
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
     try {
-        const [rows] = await pool.query(`
-            SELECT
-                p.id,
-                p.marca,
-                p.modelo,
-                p.preco,
-                p.imagem,
-                p.url,
-                c.socket,
-                c.velocidade,
-                c.tdp,
-                c.video_integrado
-            FROM produtos p
-            JOIN cpu c ON p.id = c.produtoID
-            LIMIT 50    
-        `)
+        const cpus = await getCpus()
 
-        res.json(rows)
-    }catch(err){
-        console.error(err)
-        res.status(500).json({erro: 'Erro ao buscar CPU'})
+        res.json(cpus)
+    } catch (error) {
+        console.error(error)
+
+        res.status(500).json({
+            erro: "Erro ao buscar CPUs"
+        })
     }
 })
 
