@@ -1,11 +1,11 @@
 import { Router } from "express"
-import { getCpus } from "../services/hubs/cpu"
+import { getProcessadoresCompletos } from "../services/cpu"
 
 const router = Router()
 
 router.get("/", async (req, res) => {
     try {
-        const cpus = await getCpus()
+        const cpus = await getProcessadoresCompletos()
 
         res.json(cpus)
     } catch (error) {

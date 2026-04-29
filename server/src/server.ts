@@ -1,8 +1,8 @@
 import express from "express"
 import cors from "cors"
 import cpuRoutes from "./routes/cpuRoutes"
-import { loadAllData } from "./services/dataLoader"
 import "./database/connection"
+import { loadAllData } from "./services/dataLoader"
 
 const app = express()
 

@@ -5,7 +5,9 @@
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "mysql2": "^3.14.1",
-    "puppeteer": "^24.39.1"
+    "puppeteer": "^24.39.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
@@ -15,12 +17,9 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
-
     "db:test": "tsx src/database/teste.ts",
-
     "scrape:cpu": "tsx src/scripts/cpu.ts",
     "scrape:all": "tsx src/scripts/updateAllPrices.ts",
-
     "test:cpu": "tsx src/scripts/testeCPU.ts"
   },
   "name": "server",

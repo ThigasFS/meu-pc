@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import style from './Escolhas.module.css'
-import { PrecoLoja, Processador, ProcessadorAPI } from "../../interfaces/componente"
+import { Processador } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
 import { Link, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
@@ -18,57 +18,31 @@ function EscolherProcessador() {
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
 
-    function definirSocket(microarquitetura: string): string {
-        const arch = microarquitetura.toLowerCase();
-
-        //AMD
-        if (arch.includes("zen 5")) return "AM5"
-        if (arch.includes("zen 4")) return "AM5"
-        if (arch.includes("zen 3")) return "AM4"
-        if (arch.includes("zen 2")) return "AM4"
-
-        return "Desconhecido"
-    }
-
-    function definirMarca(nome: string): string {
-        const n = nome.toLowerCase()
-
-        if (n.includes('amd')) return 'AMD'
-        if (n.includes('intel')) return 'Intel'
-
-        return 'Desconhecida'
-    }
-
-    function menorPreco(valores: PrecoLoja[]): number {
-        if (!valores.length) return 0
-
-        return Math.min(...valores.map(v => v.preco))
-    }
-
     useEffect(() => {
         axios.get('http://localhost:3000/api/cpu')
             .then(res => {
-                const cpusApi = res.data as ProcessadorAPI[]
-                const cpus = cpusApi.map((proc, index) => {
-                    const cpu: Processador = {
-                        id: index + 1,
-                        nome: proc.name,
-                        socket: definirSocket(proc.microarchitecture),
-                        tdp: proc.tdp,
-                        velocidade: proc.core_clock,
-                        videoIntegrado: !!proc.graphics,
-                        marca: definirMarca(proc.name),
-                        imagem: '',
-                        valores: [],
-                        preco: menorPreco([]),
-                    }
+                const cpusApi = res.data as Processador[]
 
-                    return cpu
-                })
+                const cpusCompletas = cpusApi
+                    .filter((proc) =>
+                        proc.nome &&
+                        proc.socket &&
+                        proc.marca &&
+                        proc.imagem &&
+                        proc.velocidade > 0 &&
+                        proc.tdp > 0 &&
+                        proc.preco > 0 &&
+                        proc.valores &&
+                        proc.valores.length > 0
+                    )
+                    .map((proc, index) => ({
+                        ...proc,
+                        id: index + 1
+                    }))
 
-                setListaProcessadores(cpus)
+                setListaProcessadores(cpusCompletas)
             })
-            .catch(erro => console.error(erro));
+            .catch(erro => console.error(erro))
     }, [])
 
     function selecionarModelo(modeloSelecionado: number) {

@@ -17,7 +17,7 @@ export interface Processador {
     valores?: PrecoLoja[],
 }
 
-export interface ProcessadorAPI {
+export interface ProcessadorJSON {
     name: string,
     core_count: number,
     core_clock: number,
