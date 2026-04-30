@@ -3,7 +3,7 @@ import { getData } from "./dataLoader"
 import connection from "../database/connection"
 import { PrecoLoja, Processador, ProcessadorJSON } from "../interfaces/componente"
 
-export async function getCpus(): Promise<Processador[]> {
+export async function getCpusDB(): Promise<Processador[]> {
     const [rows] = await connection.query(`
         SELECT
             p.id,
@@ -127,9 +127,9 @@ function menorPreco(valores: PrecoLoja[]): number {
     return Math.min(...valores.map(v => v.preco))
 }
 
-export async function getProcessadoresCompletos(): Promise<Processador[]> {
+export async function getCpus(): Promise<Processador[]> {
     const jsonData: ProcessadorJSON[] = getData("cpu")
-    const dbData = await getCpus()
+    const dbData = await getCpusDB()
 
     const bancoMap = new Map(
         dbData.map((cpu) => [cpu.nome, cpu])

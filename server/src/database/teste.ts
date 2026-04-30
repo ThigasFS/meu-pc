@@ -3,10 +3,11 @@ import pool from "./connection";
 
 async function test() {
 
-  const [cpu] = await pool.query("SELECT * from cpu WHERE produtoID = 728");
-  const [produtos] = await pool.query("SELECT * FROM produtos WHERE id = 728");
+  const [produtos] = await pool.query("SELECT * FROM produtos");
+  const [precos_produto] = await pool.query("SELECT * FROM precos_produto");
 
-  console.log(cpu, produtos);
+  console.table(produtos);
+  console.table(precos_produto)
 
 }
 

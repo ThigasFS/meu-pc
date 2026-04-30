@@ -3,6 +3,7 @@ import {
     ConfigComponente,
     ResultadoScraper
 } from "../interfaces/scraper"
+import { aguardarResultadoBusca } from "../utils/aguardarResultadoBusca"
 
 export async function scrapeKabum(
     browser: Browser,
@@ -15,7 +16,7 @@ export async function scrapeKabum(
     await page.setUserAgent(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
     )
-    
+
     try {
         const busca = `https://www.kabum.com.br/busca/${encodeURIComponent(nome)}`
 
@@ -25,8 +26,27 @@ export async function scrapeKabum(
 
         const seletor = `a[href*="/${config.seletorKabum}"]`
 
-        await page.waitForSelector("body")
-        await page.waitForSelector(seletor)
+        const status = await aguardarResultadoBusca(
+            page,
+            seletor,
+            [
+                "nenhum produto encontrado",
+                "0 produto",
+                "lamentamos, nenhum produto encontrado"
+            ]
+        );
+
+        if (status === "vazio") {
+            return {
+                imagem: "",
+                nomeEncontrado: "",
+                valor: {
+                    loja: "Kabum",
+                    preco: 0,
+                    url: ""
+                }
+            };
+        }
 
         const resultado = await page.$eval(
             seletor,

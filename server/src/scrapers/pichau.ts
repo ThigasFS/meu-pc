@@ -3,6 +3,7 @@ import {
     ConfigComponente,
     ResultadoScraper
 } from "../interfaces/scraper"
+import { aguardarResultadoBusca } from "../utils/aguardarResultadoBusca"
 
 export async function scrapePichau(
     browser: Browser,
@@ -22,6 +23,15 @@ export async function scrapePichau(
         await page.goto(busca, {
             waitUntil: "networkidle2"
         })
+
+        const status = await aguardarResultadoBusca(
+            page,
+            ".MuiCard-root",
+            [
+                "nenhum resultado encontrado",
+                "produto não encontrado"
+            ]
+        );
 
         await page.waitForFunction(() => {
             return document.body.innerText.match(/\d{1,3}(?:\.\d{3})*,\d{2}/)

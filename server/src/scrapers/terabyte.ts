@@ -3,6 +3,7 @@ import {
     ConfigComponente,
     ResultadoScraper
 } from "../interfaces/scraper"
+import { aguardarResultadoBusca } from "../utils/aguardarResultadoBusca"
 
 export async function scrapeTerabyte(
     browser: Browser,
@@ -25,7 +26,15 @@ export async function scrapeTerabyte(
 
         const seletor = `a[href*="${config.seletorTerabyte}"]`
 
-        await page.waitForSelector(seletor)
+        const status = await aguardarResultadoBusca(
+            page,
+            ".product-item",
+            [
+                "nenhum produto encontrado",
+                "não encontramos",
+                "sugestões encontradas"
+            ]
+        );
 
         const resultado = await page.$eval(
             seletor,
@@ -44,10 +53,10 @@ export async function scrapeTerabyte(
 
                 const preco = precoTexto
                     ? Number(
-                          precoTexto
-                              .replace(/\./g, "")
-                              .replace(",", ".")
-                      )
+                        precoTexto
+                            .replace(/\./g, "")
+                            .replace(",", ".")
+                    )
                     : 0
 
                 return {

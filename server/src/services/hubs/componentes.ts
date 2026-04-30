@@ -25,24 +25,44 @@ type ScraperFunction = (
 
 function nomesSaoCompativeis(
     nomeBuscado: string,
-    nomeEncontrado: string
+    nomeEncontrado: string,
+    tipo: string
 ): boolean {
     const buscado = nomeBuscado.toLowerCase()
     const encontrado = nomeEncontrado.toLowerCase()
 
+    let regexImportante: RegExp
+
+    switch (tipo) {
+        case "cpu":
+            regexImportante =
+                /ryzen|intel|core|x3d|athlon|\d{4,5}/i
+            break
+
+        case "gpu":
+            regexImportante =
+                /rtx|gtx|rx|\d{3,4}/i
+            break
+
+        case "placamae":
+            regexImportante =
+                /b\d{3}|x\d{3}|z\d{3}|h\d{3}|am4|am5|lga\d+/i
+            break
+
+        default:
+            regexImportante = /\d|[a-z]{3,}/i
+    }
+
     const partesImportantes = buscado
         .split(" ")
-        .filter(
-            p =>
-                /\d/.test(p) ||
-                /ryzen|intel|core|x3d|athlon|rtx|gtx/i.test(p)
-        )
+        .filter((p) => regexImportante.test(p))
 
-    const acertos = partesImportantes.filter(p =>
+    const acertos = partesImportantes.filter((p) =>
         encontrado.includes(p)
     )
 
-    return acertos.length >= Math.ceil(partesImportantes.length * 0.7)
+    return acertos.length >=
+        Math.ceil(partesImportantes.length * 0.7)
 }
 
 function definirMarca(nome: string): string {
@@ -54,8 +74,24 @@ function definirMarca(nome: string): string {
     if (upper.includes("INTEL") || upper.includes("CORE"))
         return "Intel"
 
-    if (upper.includes("RTX") || upper.includes("GTX"))
+    if (
+        upper.includes("NVIDIA") ||
+        upper.includes("RTX") ||
+        upper.includes("GTX")
+    )
         return "NVIDIA"
+
+    if (upper.includes("ASUS"))
+        return "ASUS"
+
+    if (upper.includes("MSI"))
+        return "MSI"
+
+    if (upper.includes("GIGABYTE"))
+        return "Gigabyte"
+
+    if (upper.includes("ASROCK"))
+        return "ASRock"
 
     return "Genérico"
 }
@@ -85,8 +121,10 @@ export async function atualizarComponente(
             scrapeTerabyte
         ]
 
+
         for (let i = 0; i < lista.length; i += batchSize) {
             const lote = lista.slice(i, i + batchSize)
+            console.log(`[${config.tipo}] iniciando lote ${i}`)
 
             await Promise.all(
                 lote.map(async item => {
@@ -120,7 +158,8 @@ export async function atualizarComponente(
                             const nomeValido =
                                 nomesSaoCompativeis(
                                     item.name,
-                                    dados.nomeEncontrado
+                                    dados.nomeEncontrado,
+                                    config.tipo
                                 )
 
                             if (

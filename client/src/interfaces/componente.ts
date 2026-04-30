@@ -5,12 +5,9 @@ export interface PrecoLoja {
 }
 
 export interface PlacaMae {
-    tipo: 'placamae',
-    nome: 'Placa Mãe',
     id: number,
+    nome: string,
     marca: string,
-    modelo: string,
-    fabricante: string,
     socket: string,
     chipset: string,
     formato: 'ATX' | 'MicroATX' | 'MiniATX';
@@ -18,8 +15,7 @@ export interface PlacaMae {
     ddr: number,
     imagem: string,
     preco: number,
-    url: string,
-    loja: string
+    valores: PrecoLoja[]
 }
 
 export interface Processador {
@@ -33,15 +29,6 @@ export interface Processador {
     imagem: string,
     preco: number,
     valores?: PrecoLoja[],
-}
-
-export interface ProcessadorAPI {
-    name: string,
-    core_count: number,
-    core_clock: number,
-    microarchitecture: string,
-    tdp: number,
-    graphics: string | null
 }
 
 export interface MemoriaRAM {
