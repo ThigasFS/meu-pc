@@ -1,12 +1,12 @@
 import { Button } from "@mui/material";
 
 type Props = {
-    prev?: boolean
+    last?: boolean
 }
 
-function BotaoEscolhas({prev = false}: Props){
+function BotaoEscolhas({last = false}: Props){
     return (
-        <Button sx={{background: '#52F2B8', color: 'black'}}>{prev ? 'Anterior' : 'Próximo'}</Button>
+        <Button sx={{background: '#52F2B8', color: 'black'}}>{last ? 'Finalizar' : 'Próximo'}</Button>
     )
 }
 

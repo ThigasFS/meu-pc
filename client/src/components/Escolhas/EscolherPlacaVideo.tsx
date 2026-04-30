@@ -2,11 +2,11 @@ import { useEffect, useState } from "react"
 import style from './Escolhas.module.css'
 import { PlacaVideo} from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
-import { Link, useOutletContext } from "react-router-dom"
+import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
 import axios from "axios"
-import { Typography } from "@mui/material"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
+import HeaderEscolhas from "./HeaderEscolhas"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -17,6 +17,8 @@ function EscolherPlacaVideo() {
     const [listaPlacaVideo, setListaPlacaVideo] = useState<PlacaVideo[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const {pcMontado, setPcMontado} = useOutletContext<ContextType>()
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         axios.get('http://localhost:3000/api/placasvideo')
@@ -50,15 +52,35 @@ function EscolherPlacaVideo() {
         })
     }
 
+    function cancelarPc(){
+        setPcMontado({})
+        navigate('/')
+    }
+
+    function voltarAnterior(){
+        cancelarEscolha()
+        navigate(-1)
+    }
+
     return (
         <div>
-            <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/placamae' onClick={cancelarEscolha}><BotaoEscolhas prev/></Link>
-                <Typography>Escolha sua Placa de Video</Typography>
-                <Link to='/criar-novo-pc/memoriaram'><BotaoEscolhas /></Link>
-            </div>
-            <Typography>{pcMontado.processador?.videoIntegrado ? 'Seu processador já contém vídeo integrado, a Placa de Vídeo é opcional': ''}</Typography>
-            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
+            <HeaderEscolhas
+                titulo="Escolha sua Placa de Vídeo"
+                infosExtras={[
+                    {
+                        label: "Seu processador",
+                        valor: pcMontado.processador?.videoIntegrado ? 'tem vídeo integrado, a GPU é opcional' : 'não tem vídeo integrado, por favor selecionar GPU'
+                    }
+                ]}
+                valorTotal={pcMontado.valorTotal}
+                onAnterior={voltarAnterior}
+                onCancelar={cancelarPc}
+                acaoDireita={
+                    <Link to="/criar-novo-pc/memoriaram">
+                        <BotaoEscolhas />
+                    </Link>
+                }
+            />
             <div className={style.containerEscolhas}>
                 {listaPlacaVideo.map((placaVideo) => (
                     <CardEscolha

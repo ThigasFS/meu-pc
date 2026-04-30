@@ -2,11 +2,11 @@ import { useEffect, useState } from "react"
 import style from './Escolhas.module.css'
 import { MemoriaRAM } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
-import { Link, useOutletContext } from "react-router-dom"
+import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
 import axios from "axios"
-import { Typography } from "@mui/material"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
+import HeaderEscolhas from "./HeaderEscolhas"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -17,6 +17,8 @@ function EscolherMemoriaRAM() {
     const [listaMemorias, setListaMemorias] = useState<MemoriaRAM[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
+
+    const navigate = useNavigate()
 
     function selecionarModelo(modeloSelecionado: number) {
         setModeloSelecionado(modeloSelecionado)
@@ -55,15 +57,35 @@ function EscolherMemoriaRAM() {
         })
     }
 
+    function cancelarPc(){
+        setPcMontado({})
+        navigate('/')
+    }
+
+    function voltarAnterior(){
+        cancelarEscolha()
+        navigate(-1)
+    }
+
     return (
         <div>
-            <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/placavideo' onClick={cancelarEscolha}><BotaoEscolhas prev/></Link>
-                <Typography>Escolha sua Memória RAM</Typography>
-                <Link to='/criar-novo-pc/armazenamento'><BotaoEscolhas /></Link>
-            </div>
-            <Typography>{listaMemorias.length === 0 ? 'Não há nenhuma memória compatível com este DDR' : `Apenas mostrando as memórias com o DDR${pcMontado.placaMae?.ddr}`}</Typography>
-            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Typography>
+            <HeaderEscolhas
+                titulo="Escolha sua Memória RAM"
+                infosExtras={[
+                    {
+                        label: "Sua memória",
+                        valor: listaMemorias.length === 0 ? 'Não há nenhuma memória compatível com este DDR' : `Apenas mostrando as memórias com o DDR${pcMontado.placaMae?.ddr}`
+                    }
+                ]}
+                valorTotal={pcMontado.valorTotal}
+                onAnterior={voltarAnterior}
+                onCancelar={cancelarPc}
+                acaoDireita={
+                    <Link to="/criar-novo-pc/armazenamento">
+                        <BotaoEscolhas />
+                    </Link>
+                }
+            />
             <div className={style.containerEscolhas}>
                 {listaMemorias.map((memoria) => (
                     <CardEscolha

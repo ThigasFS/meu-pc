@@ -2,11 +2,12 @@ import { useEffect, useState } from "react"
 import style from './Escolhas.module.css'
 import { Processador } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
-import { Link, useOutletContext } from "react-router-dom"
+import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
 import axios from "axios"
-import { Box, Typography } from "@mui/material"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
+import HeaderEscolhas from "./HeaderEscolhas"
+import { Box } from "@mui/material"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -17,6 +18,8 @@ function EscolherProcessador() {
     const [listaProcessadores, setListaProcessadores] = useState<Processador[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         axios.get('http://localhost:3000/api/cpu')
@@ -64,14 +67,35 @@ function EscolherProcessador() {
         }
     }
 
+    function cancelarPc(){
+        setPcMontado({})
+        navigate('/')
+    }
+
+    function voltarAnterior(){
+        navigate(-1)
+    }
+
     return (
-        <div>
-            <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', alignItems: 'center' }}>
-                <Typography sx={{ fontWeight: 600, fontSize: 32, color: 'white' }}>Escolha seu Processador</Typography>
-                <Link to='/criar-novo-pc/placamae'><BotaoEscolhas /></Link>
-            </Box>
-            <Typography sx={{ color: 'white', textAlign: 'center' }}>Socket atual: {pcMontado.processador?.socket ?? 'N/A'}</Typography>
-            <Typography sx={{ color: 'white', textAlign: 'center' }}>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Typography>
+        <Box sx={{ minHeight: "100%" }}>
+            <HeaderEscolhas
+                titulo="Escolha seu Processador"
+                infosExtras={[
+                    {
+                        label: "Socket atual",
+                        valor: pcMontado.processador?.socket ?? "N/A"
+                    }
+                ]}
+                valorTotal={pcMontado.valorTotal}
+                primeiraEtapa
+                onAnterior={voltarAnterior}
+                onCancelar={cancelarPc}
+                acaoDireita={
+                    <Link to="/criar-novo-pc/placamae">
+                        <BotaoEscolhas />
+                    </Link>
+                }
+            />
             <div className={style.containerEscolhas}>
                 {listaProcessadores.map((processador) => (
                     <CardEscolha
@@ -89,7 +113,7 @@ function EscolherProcessador() {
                     />
                 ))}
             </div>
-        </div>
+        </Box>
     )
 }
 

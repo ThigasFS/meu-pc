@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import PC from '../../interfaces/pc'
 import { Armazenamento } from '../../interfaces/componente'
-import { Link, useOutletContext } from 'react-router-dom'
+import { Link, useNavigate, useOutletContext } from 'react-router-dom'
 import style from './Escolhas.module.css'
 import CardEscolha from '../CardEscolha/CardEscolha'
 import axios from 'axios'
-import { Typography } from '@mui/material'
 import BotaoEscolhas from '../BotaoEscolhas/BotaoEscolhas'
+import HeaderEscolhas from './HeaderEscolhas'
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -17,6 +17,8 @@ function EscolherArmazenamento() {
     const [listaArmazenamento, setListaArmazenamento] = useState<Armazenamento[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const {pcMontado, setPcMontado} = useOutletContext<ContextType>()
+
+    const navigate = useNavigate()
 
     function selecionarModelo(modeloSelecionado: number) {
         setModeloSelecionado(modeloSelecionado)
@@ -44,6 +46,16 @@ function EscolherArmazenamento() {
         })
     }
 
+    function cancelarPc(){
+        setPcMontado({})
+        navigate('/')
+    }
+
+    function voltarAnterior(){
+        cancelarEscolha()
+        navigate(-1)
+    }
+
     useEffect(() => {
         axios.get('http://localhost:3000/api/armazenamento')
         .then(res => setListaArmazenamento(res.data))
@@ -52,12 +64,17 @@ function EscolherArmazenamento() {
 
     return (
         <div>
-            <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/memoriaram' onClick={cancelarEscolha}><BotaoEscolhas prev/></Link>
-                <Typography>Escolha seu Armazenamento</Typography>
-                <Link to='/criar-novo-pc/fonte'><BotaoEscolhas /></Link>
-            </div>
-            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
+            <HeaderEscolhas
+                titulo="Escolha seu Armazenamento"
+                valorTotal={pcMontado.valorTotal}
+                onAnterior={voltarAnterior}
+                onCancelar={cancelarPc}
+                acaoDireita={
+                    <Link to="/criar-novo-pc/fonte">
+                        <BotaoEscolhas />
+                    </Link>
+                }
+            />
             <div className={style.containerEscolhas}>
                 {listaArmazenamento.map(armazenamento => 
                     (

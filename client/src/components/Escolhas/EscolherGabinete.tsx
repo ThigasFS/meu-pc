@@ -1,12 +1,12 @@
-import { Link, useOutletContext } from 'react-router-dom'
+import { Link, useNavigate, useOutletContext } from 'react-router-dom'
 import style from './Escolhas.module.css'
 import { useEffect, useState } from 'react'
 import { Gabinete } from '../../interfaces/componente'
 import CardEscolha from '../CardEscolha/CardEscolha'
 import PC from '../../interfaces/pc'
 import axios from 'axios'
-import { Typography } from '@mui/material'
 import BotaoEscolhas from '../BotaoEscolhas/BotaoEscolhas'
+import HeaderEscolhas from './HeaderEscolhas'
 
 type ContextType = {
     pcMontado: PC
@@ -17,6 +17,8 @@ function EscolherGabinete() {
     const [listaGabinetes, setListaGabinetes] = useState<Gabinete[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const {pcMontado, setPcMontado} = useOutletContext<ContextType>()
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         axios.get('http://localhost:3000/api/gabinetes')
@@ -50,15 +52,35 @@ function EscolherGabinete() {
         })
     }
 
+    function cancelarPc(){
+        setPcMontado({})
+        navigate('/')
+    }
+
+    function voltarAnterior(){
+        cancelarEscolha()
+        navigate(-1)
+    }
+
     return (
         <div>
-            <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/fonte' onClick={cancelarEscolha}><BotaoEscolhas prev/></Link>
-                <Typography>Escolha seu Gabinete</Typography>
-                <Link to='/criar-novo-pc/finalizacao'><BotaoEscolhas /></Link>
-            </div>
-            <Typography>A escolha do gabinete não é obrigatória, é possível finalizar sem ele</Typography>
-            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
+            <HeaderEscolhas
+                titulo="Escolha seu Gabinete"
+                valorTotal={pcMontado.valorTotal}
+                onAnterior={voltarAnterior}
+                onCancelar={cancelarPc}
+                acaoDireita={
+                    <Link to="/criar-novo-pc/finalizacao">
+                        <BotaoEscolhas last/>
+                    </Link>
+                }
+                infosExtras={[
+                    {
+                        label: 'Para o gabinete',
+                        valor: 'Não é necessário a escolha para finalizar'
+                    }
+                ]}
+            />
             <div className={style.containerEscolhas}>
                 {listaGabinetes.map((gabinete) =>
                     <CardEscolha

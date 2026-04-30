@@ -2,11 +2,11 @@ import { useEffect, useState } from "react"
 import style from './Escolhas.module.css'
 import { PlacaMae } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
-import { Link, useOutletContext } from "react-router-dom"
+import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
 import axios from "axios"
-import { Typography } from "@mui/material"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
+import HeaderEscolhas from "./HeaderEscolhas"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -17,6 +17,8 @@ function EscolherPlacaMae() {
     const [listaPlacasMaes, setListaPlacasMaes] = useState<PlacaMae[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
+
+    const navigate = useNavigate()
 
     function selecionarModelo(modeloSelecionado: number) {
         setModeloSelecionado(modeloSelecionado)
@@ -42,14 +44,43 @@ function EscolherPlacaMae() {
         .catch(erro => console.error(erro))
     }, [])
     
+    function cancelarEscolha() {
+        setPcMontado(prev => {
+            const valorAnterior = prev.placaVideo?.preco ?? 0
+            const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior 
+            return { ...prev, placaVideo: undefined, valorTotal: valorTotalAtualizado }
+        })
+    }
+
+    function cancelarPc(){
+        setPcMontado({})
+        navigate('/')
+    }
+
+    function voltarAnterior(){
+        cancelarEscolha()
+        navigate(-1)
+    }
+
     return (
         <div>
-            <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/processador'><BotaoEscolhas prev/></Link>
-                <Typography>Escolha sua Placa Mãe</Typography>
-                <Link to='/criar-novo-pc/placavideo'><BotaoEscolhas /></Link>
-            </div>
-            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
+            <HeaderEscolhas 
+                titulo="Escolha sua Placa Mãe"
+                infosExtras={[
+                    {
+                        label: "Socket atual",
+                        valor: pcMontado.processador?.socket ?? "N/A"
+                    }
+                ]}
+                valorTotal={pcMontado.valorTotal}
+                onAnterior={voltarAnterior}
+                onCancelar={cancelarPc}
+                acaoDireita={
+                    <Link to="/criar-novo-pc/placavideo">
+                        <BotaoEscolhas />
+                    </Link>
+                }
+            />
             <div className={style.containerEscolhas}>
                 {listaPlacasMaes.map((placa) => (
                     <CardEscolha

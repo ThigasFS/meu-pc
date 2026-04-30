@@ -1,17 +1,23 @@
-import { Box, Stack } from "@mui/material"
+import { Box, Container, Stack } from "@mui/material"
 import Cabecalho from "../../components/Cabecalho/Cabecalho"
 import Salvos from "../../components/Salvos/Salvos"
-import style from './Home.module.css'
 
 function Home() {
     return (
-        <Box className={style.bodyContainer}>
-            <Stack>
-                <Cabecalho />
-            </Stack>
-            <main>
-                <Salvos />
-            </main>
+        <Box
+            sx={{
+                minHeight: "100vh",
+                background:
+                    "linear-gradient(180deg, #111 0%, #1a1a1a 100%)",
+                py: 4
+            }}
+        >
+            <Container maxWidth="lg">
+                <Stack spacing={5}>
+                    <Cabecalho />
+                    <Salvos />
+                </Stack>
+            </Container>
         </Box>
     )
 }

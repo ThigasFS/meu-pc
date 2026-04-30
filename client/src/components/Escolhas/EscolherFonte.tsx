@@ -1,12 +1,12 @@
-import { Link, useOutletContext } from 'react-router-dom'
+import { Link, useNavigate, useOutletContext } from 'react-router-dom'
 import style from './Escolhas.module.css'
 import PC from '../../interfaces/pc'
 import { useEffect, useState } from 'react'
 import { Fonte } from '../../interfaces/componente'
 import CardEscolha from '../CardEscolha/CardEscolha'
 import axios from 'axios'
-import { Typography } from '@mui/material'
 import BotaoEscolhas from '../BotaoEscolhas/BotaoEscolhas'
+import HeaderEscolhas from './HeaderEscolhas'
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -17,6 +17,8 @@ function EscolherFonte() {
     const [listaFontes, setListaFontes] = useState<Fonte[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
+
+    const navigate = useNavigate()
 
     function selecionarModelo(modeloSelecionado: number) {
         setModeloSelecionado(modeloSelecionado)
@@ -75,17 +77,43 @@ function EscolherFonte() {
         })
     }
 
+    function cancelarPc(){
+        setPcMontado({})
+        navigate('/')
+    }
+
+    function voltarAnterior(){
+        cancelarEscolha()
+        navigate(-1)
+    }
+
     return (
         <div>
-            <div className={style.cabecalhoEscolha}>
-                <Link to='/criar-novo-pc/armazenamento' onClick={cancelarEscolha}><BotaoEscolhas prev/></Link>
-                <Typography>Escolha sua Fonte</Typography>
-                <Link to='/criar-novo-pc/gabinete'><BotaoEscolhas /></Link>
-            </div>
-            <Typography>Filtrando pela potencia mínima necessaria: {potenciaNecessaria}W</Typography>
-            <Typography>Potência recomendada: {potenciaNecessaria+200}W</Typography>
-            <Typography>Uso estimado da fonte: {usoFonte}%</Typography>
-            <Typography>Preço do Computador: {pcMontado.valorTotal?.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Typography>
+            <HeaderEscolhas
+                titulo="Escolha sua Fonte"
+                valorTotal={pcMontado.valorTotal}
+                onAnterior={voltarAnterior}
+                onCancelar={cancelarPc}
+                acaoDireita={
+                    <Link to="/criar-novo-pc/gabinete">
+                        <BotaoEscolhas />
+                    </Link>
+                }
+                infosExtras={[
+                    {
+                        label: 'Potência mínima necessaria',
+                        valor: `${potenciaNecessaria}W`
+                    },
+                    {
+                        label: 'Potência recomendada',
+                        valor: `${potenciaNecessaria+200}W`
+                    },
+                    {
+                        label: 'Uso estimado',
+                        valor: `${usoFonte}%`
+                    }
+                ]}
+            />
             <div className={style.containerEscolhas}>
                 {fontesFiltradas.map((fonte) =>
                     <CardEscolha
