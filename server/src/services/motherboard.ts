@@ -6,6 +6,7 @@ import {
     PlacaMaeJson,
     PrecoLoja
 } from "../interfaces/componente"
+import { definirChipset, definirDDR, definirFormato, definirMarca, menorPreco } from "../utils/componenteUtils"
 
 export async function getMotherboardsDB(): Promise<PlacaMae[]> {
     const [rows] = await connection.query(`
@@ -55,50 +56,6 @@ export async function getMotherboardsDB(): Promise<PlacaMae[]> {
     }
 
     return Array.from(mapa.values())
-}
-
-function definirMarca(nome: string): string {
-    const n = nome.toLowerCase()
-
-    if (n.includes("asus")) return "ASUS"
-    if (n.includes("gigabyte")) return "Gigabyte"
-    if (n.includes("msi")) return "MSI"
-    if (n.includes("asrock")) return "ASRock"
-
-    return "Desconhecida"
-}
-
-function definirChipset(nome: string): string {
-    const match = nome.match(
-        /\b(B650|B550|X670|X570|A620|Z790|Z690|B760|B660|H610)\b/i
-    )
-
-    return match?.[0].toUpperCase() ?? "Desconhecido"
-}
-
-function definirDDR(socket: string, chipset: string): number {
-    if (socket === "AM5") return 5
-    if (socket === "AM4") return 4
-
-    if (chipset.startsWith("Z7")) return 5
-    if (chipset.startsWith("B7")) return 5
-
-    return 4
-}
-
-function definirFormato(form: string): PlacaMae["formato"] {
-    const f = form.toLowerCase()
-
-    if (f.includes("micro")) return "MicroATX"
-    if (f.includes("mini")) return "MiniATX"
-
-    return "ATX"
-}
-
-function menorPreco(valores: PrecoLoja[]): number {
-    if (!valores.length) return 0
-
-    return Math.min(...valores.map((v) => v.preco))
 }
 
 export async function getMotherboards(): Promise<PlacaMae[]> {

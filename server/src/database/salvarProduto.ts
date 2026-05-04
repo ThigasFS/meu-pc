@@ -8,7 +8,9 @@ interface PrecoDb {
     loja: string
     preco: number
     imagem: string
-    url: string
+    url: string,
+    tdp?: number | null,
+    gddr?: number | null,
 }
 
 export async function salvarPrecoProduto(dados: PrecoDb) {
@@ -41,14 +43,16 @@ export async function salvarPrecoProduto(dados: PrecoDb) {
         const [insertResult] = await connection.execute(
             `
             INSERT INTO produtos
-            (nome, tipo, marca, imagem)
-            VALUES (?, ?, ?, ?)
+            (nome, tipo, marca, imagem, gddr, tdp)
+            VALUES (?, ?, ?, ?, ?, ?)
             `,
             [
                 dados.nome,
                 dados.tipo,
                 dados.marca,
-                dados.imagem
+                dados.imagem,
+                dados.gddr,
+                dados.tdp
             ]
         )
 

@@ -48,3 +48,25 @@ export interface PlacaMaeJson {
     memory_slots: number,
     color: string
 }
+
+export interface PlacaVideo {
+    id: number,
+    nome: string,
+    marca: string,
+    vram: number,
+    tdp: number,
+    imagem: string,
+    preco: number,
+    gddr: number,
+    valores: PrecoLoja[]
+}
+
+export interface PlacaVideoJson {
+    name: string,
+    chipset: string,
+    memory: number,
+    length: number,
+    core_clock: number,
+    boost_clocl: number,
+    color: string
+}

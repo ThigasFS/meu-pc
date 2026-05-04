@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import style from './Escolhas.module.css'
-import { PlacaVideo} from "../../interfaces/componente"
+import { PlacaVideo } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
 import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
@@ -16,14 +16,34 @@ type ContextType = {
 function EscolherPlacaVideo() {
     const [listaPlacaVideo, setListaPlacaVideo] = useState<PlacaVideo[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
-    const {pcMontado, setPcMontado} = useOutletContext<ContextType>()
+    const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
 
     const navigate = useNavigate()
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/placasvideo')
-        .then(res => setListaPlacaVideo(res.data))
-        .catch(erro => console.error(erro));
+        axios.get('http://localhost:3000/api/gpu')
+            .then(res => {
+                const gpusApi = res.data as PlacaVideo[]
+
+                const gpusCompletas = gpusApi
+                    .filter((gpu) =>
+                        gpu.nome &&
+                        gpu.marca &&
+                        gpu.imagem &&
+                        gpu.gddr &&
+                        gpu.tdp > 0 &&
+                        gpu.preco > 0 &&
+                        gpu.valores &&
+                        gpu.valores.length > 0
+                    )
+                    .map((gpu, index) => ({
+                        ...gpu,
+                        id: index + 1
+                    }))
+
+                setListaPlacaVideo(gpusCompletas)
+            })
+            .catch(erro => console.error(erro));
     }, [])
 
     function selecionarModelo(modeloSelecionado: number) {
@@ -47,17 +67,17 @@ function EscolherPlacaVideo() {
     function cancelarEscolha() {
         setPcMontado(prev => {
             const valorAnterior = prev.placaVideo?.preco ?? 0
-            const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior 
+            const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior
             return { ...prev, placaVideo: undefined, valorTotal: valorTotalAtualizado }
         })
     }
 
-    function cancelarPc(){
+    function cancelarPc() {
         setPcMontado({})
         navigate('/')
     }
 
-    function voltarAnterior(){
+    function voltarAnterior() {
         cancelarEscolha()
         navigate(-1)
     }
@@ -88,7 +108,7 @@ function EscolherPlacaVideo() {
                         key={placaVideo.id}
                         imagem={placaVideo.imagem}
                         marca={placaVideo.marca}
-                        modelo={placaVideo.modelo}
+                        modelo={placaVideo.nome}
                         preco={placaVideo.preco}
                         aoSelecionar={selecionarModelo}
                         selecionado={modeloSelecionado === placaVideo.id}

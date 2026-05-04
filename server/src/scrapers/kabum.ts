@@ -4,6 +4,7 @@ import {
     ResultadoScraper
 } from "../interfaces/scraper"
 import { aguardarResultadoBusca } from "../utils/aguardarResultadoBusca"
+import { extrairGddr, extrairTdp } from "../utils/componenteUtils"
 
 export async function scrapeKabum(
     browser: Browser,
@@ -82,9 +83,39 @@ export async function scrapeKabum(
             }
         )
 
+        let tdp: number | undefined
+        let gddr: number | undefined
+
+        if (config.extrairTdp || config.extrairGddr) {
+            const paginaProduto = await browser.newPage()
+
+            try {
+                await paginaProduto.goto(resultado.url, {
+                    waitUntil: "domcontentloaded"
+                })
+
+                const texto = await paginaProduto.evaluate(() => document.body.innerText)
+
+                if (config.extrairTdp) {
+                    tdp = extrairTdp(texto)
+                }
+
+                if (config.extrairGddr) {
+                    gddr = extrairGddr(texto)
+                }
+
+            } catch (err) {
+                console.error("Erro ao extrair specs:", err)
+            } finally {
+                await paginaProduto.close()
+            }
+        }
+
         return {
             imagem: resultado.imagem,
             nomeEncontrado: resultado.nomeEncontrado,
+            tdp,
+            gddr,
             valor: {
                 loja: "Kabum",
                 preco: resultado.preco,

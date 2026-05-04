@@ -6,6 +6,7 @@ import { scrapeKabum } from "../../scrapers/kabum"
 import { scrapePichau } from "../../scrapers/pichau"
 import { scrapeTerabyte } from "../../scrapers/terabyte"
 import { ConfigComponente } from "../../interfaces/scraper"
+import { definirMarca } from "../../utils/componenteUtils"
 
 puppeteer.use(StealthPlugin())
 
@@ -16,6 +17,8 @@ type ScraperFunction = (
 ) => Promise<{
     imagem: string
     nomeEncontrado: string
+    tdp?: number
+    gddr?: number
     valor: {
         loja: string
         preco: number
@@ -63,37 +66,6 @@ function nomesSaoCompativeis(
 
     return acertos.length >=
         Math.ceil(partesImportantes.length * 0.7)
-}
-
-function definirMarca(nome: string): string {
-    const upper = nome.toUpperCase()
-
-    if (upper.includes("AMD") || upper.includes("RYZEN"))
-        return "AMD"
-
-    if (upper.includes("INTEL") || upper.includes("CORE"))
-        return "Intel"
-
-    if (
-        upper.includes("NVIDIA") ||
-        upper.includes("RTX") ||
-        upper.includes("GTX")
-    )
-        return "NVIDIA"
-
-    if (upper.includes("ASUS"))
-        return "ASUS"
-
-    if (upper.includes("MSI"))
-        return "MSI"
-
-    if (upper.includes("GIGABYTE"))
-        return "Gigabyte"
-
-    if (upper.includes("ASROCK"))
-        return "ASRock"
-
-    return "Genérico"
 }
 
 export async function atualizarComponente(
@@ -180,7 +152,9 @@ export async function atualizarComponente(
                                     dados.valor.preco,
                                 imagem:
                                     dados.imagem,
-                                url: dados.valor.url
+                                url: dados.valor.url,
+                                tdp: dados.tdp ?? null,
+                                gddr: dados.gddr ?? null
                             })
 
                             console.log(

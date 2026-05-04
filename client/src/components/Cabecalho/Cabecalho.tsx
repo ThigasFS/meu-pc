@@ -37,6 +37,7 @@ function Cabecalho() {
             <Link to="/sobre-nos">
                 <Button
                     variant="outlined"
+                    color="primary"
                     sx={{ color: "white" }}
                 >
                     Sobre nós

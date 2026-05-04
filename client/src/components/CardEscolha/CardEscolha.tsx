@@ -59,7 +59,7 @@ function CardEscolha({ id,imagem, marca, modelo, preco, socket, selecionado, aoS
     if (componente === 'placavideo') {
       return (
         <>
-          <p>{marca} {modelo}, {vram}GB, GDDR{gddr}</p>
+          <p>{modelo}, {vram}GB, GDDR{gddr}</p>
         </>
       )
     }

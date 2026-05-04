@@ -68,19 +68,15 @@ export interface Fonte {
 }
 
 export interface PlacaVideo {
-    tipo: 'placavideo',
-    nome: 'Placa de Vídeo',
     id: number,
+    nome: string,
     marca: string,
-    modelo: string,
-    fabricante: string,
     vram: number,
     tdp: number,
     imagem: string,
     preco: number,
     gddr: number,
-    url: string,
-    loja: string
+    valores: PrecoLoja[]
 }
 
 export interface Gabinete {

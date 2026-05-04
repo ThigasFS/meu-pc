@@ -20,6 +20,7 @@
     "db:test": "tsx src/database/teste.ts",
     "scrape:cpu": "tsx src/scripts/cpu.ts",
     "scrape:mb": "tsx src/scripts/motherboard.ts",
+    "scrape:gpu": "tsx src/scripts/gpu.ts",
     "scrape:all": "tsx src/scripts/updateAllPrices.ts",
     "test:cpu": "tsx src/scripts/testeCPU.ts"
   },
