@@ -22,6 +22,9 @@
     "scrape:mb": "tsx src/scripts/motherboard.ts",
     "scrape:gpu": "tsx src/scripts/gpu.ts",
     "scrape:ram": "tsx src/scripts/ram.ts",
+    "scrape:storage": "tsx src/scripts/storage.ts",
+    "scrape:supply": "tsx src/scripts/supply.ts",
+    "scrape:case": "tsx src/scripts/case.ts",
     "scrape:all": "tsx src/scripts/updateAllPrices.ts",
     "test:cpu": "tsx src/scripts/testeCPU.ts"
   },

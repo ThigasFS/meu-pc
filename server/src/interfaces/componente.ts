@@ -94,7 +94,7 @@ export interface MemoriaRamJson {
     cas_latency: number
 }
 
-export interface Armazenamento{
+export interface Armazenamento {
     id: number,
     marca: string,
     nome: string,
@@ -117,4 +117,53 @@ export interface ArmazenamentoJson {
     cache: number,
     form_factor: string,
     interface: string,
+}
+
+export interface Fonte {
+    id: number,
+    marca: string,
+    nome: string,
+    potencia: number,
+    certificacao: string,
+    pcieConectores: number,
+    sataConectores: number,
+    epsConectores: number,
+    modularidade: "Full" | "Semi" | "Não"
+    formato: "ATX" | "SFX"
+    imagem: string,
+    preco: number,
+    valores: PrecoLoja[]
+}
+
+export interface FonteJson {
+    name: string,
+    type: "ATX" | "SFX",
+    efficiency: string,
+    wattage: number,
+    modular: "Full" | "Semi" | "false",
+}
+
+export interface Gabinete {
+    id: number,
+    nome: string,
+    marca: string,
+    qtdFans: number,
+    cor: string,
+    imagem: string,
+    formato: 'Mini Tower' | 'Mid Tower' | 'Full Tower',
+    suportePlacaMae: string,
+    painelLateral: string,
+    baiasHD: number,
+    tamanho: "Compacto" | "Médio" | "Grande"
+    preco: number,
+    valores: PrecoLoja[]
+}
+
+export interface GabineteJson {
+    name: string,
+    type: string,
+    color: string,
+    side_panel: string,
+    external_volume: number,
+    internal_35_bays: number
 }

@@ -4,8 +4,8 @@ import { atualizarComponente } from "./componentes"
 export async function updateRamPrices() {
     await atualizarComponente(ramJson, {
         tipo: "ram",
-        seletorKabum: "produto",
-        seletorPichau: "memoria-ram",
-        seletorTerabyte: "memoria-ram"
+        seletorKabum: "memoria",
+        seletorPichau: "memoria",
+        seletorTerabyte: "memoria"
     })
 }

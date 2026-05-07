@@ -61,20 +61,21 @@ export async function getStorageDB(): Promise<Armazenamento[]> {
 }
 
 export async function getStorages(): Promise<Armazenamento[]> {
-    const jsonData: ArmazenamentoJson[] = getData("memory")
+    const jsonData: ArmazenamentoJson[] = getData("internal-hard-drive")
     const dbData = await getStorageDB()
 
     const bancoMap = new Map(
-        dbData.map((ram) => [ram.nome, ram])
+        dbData.map((storage) => [storage.nome, storage])
     )
 
     return jsonData.map((storageJson, index) => {
         const storageBanco = bancoMap.get(storageJson.name)
         const capacidadeTB = storageJson.capacity >= 1000
         const capacidade = capacidadeTB ? storageJson.capacity/1000 : storageJson.capacity
-        const tipoArmazenamento = storageJson.type === 'SSD' ? 'SSD' : 'HD'
-        const interfaceStorage = storageJson.interface?.includes('M2') ? 'NVME' : 'SATA'
-        const formato = String(storageJson.form_factor)?.includes('2.5') ? '2.5' : String(storageJson.form_factor).includes('3.5') ? '3.5' : 'M2'
+        const tipoArmazenamento: "SSD" | "HD" = storageJson.type === 'SSD' ? 'SSD' : 'HD'
+        const interfaceStorage: "NVME" | "SATA" = storageJson.interface?.includes("M.2") ? 'NVME' : 'SATA'
+        const unidade: "TB" | "GB" = capacidadeTB ? "TB" : "GB"
+        const formato: "2.5" | "3.5" | "M2" = String(storageJson.form_factor)?.includes('2.5') ? '2.5' : String(storageJson.form_factor).includes('3.5') ? '3.5' : 'M2'
 
         return {
             id:  storageBanco?.id ?? index + 1,
@@ -84,7 +85,7 @@ export async function getStorages(): Promise<Armazenamento[]> {
             formato,
             interface: interfaceStorage,
             tipoArmazenamento,
-            unidade: capacidadeTB ? 'TB' : 'GB',
+            unidade,
             velocidadeGravacao: storageBanco?.velocidadeGravacao ?? 0,
             velocidadeLeitura: storageBanco?.velocidadeLeitura ?? 0,
             imagem: storageBanco?.imagem ?? "",

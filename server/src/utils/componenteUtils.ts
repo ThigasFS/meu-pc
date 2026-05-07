@@ -16,7 +16,7 @@ export const SOCKET_MAP: Record<string, string> = {
     "jaguar": "AM1",
 
     "k10": "AM3",
-    
+
     // Intel Desktop Mainstream
     "arrow lake": "LGA1851",
     "raptor lake refresh": "LGA1700",
@@ -82,6 +82,8 @@ export function definirMarca(nome: string): string {
     if (upper.includes("ASROCK")) return "ASRock"
     if (upper.includes("CORSAIR")) return "Corsair"
     if (upper.includes("T-FORCE")) return "T-Force"
+    if (upper.includes("KINGSTON")) return "Kingston"
+    if (upper.includes("SAMSUNG")) return "Samsung"
 
     return "Genérico"
 }
@@ -126,4 +128,34 @@ export function definirFormato(form: string): PlacaMae["formato"] {
     if (f.includes("mini")) return "MiniATX"
 
     return "ATX"
+}
+
+export function definirCor(color: string): string {
+    if (!color) return ''
+    
+    const cores: Record<string, string> = {
+        black: "Preto",
+        white: "Branco",
+        blue: "Azul",
+        green: "Verde",
+        red: "Vermelho",
+        silver: "Prata",
+        gray: "Cinza",
+        grey: "Cinza",
+        pink: "Rosa",
+        purple: "Roxo",
+        yellow: "Amarelo",
+        orange: "Laranja",
+        brown: "Marrom",
+        gold: "Dourado",
+        beige: "Bege"
+    }
+
+    return color
+        .split("/")
+        .map(cor => {
+            const corFormatada = cor.trim().toLowerCase()
+            return cores[corFormatada] ?? cor.trim()
+        })
+        .join(" / ")
 }
