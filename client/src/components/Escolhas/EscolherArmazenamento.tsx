@@ -57,8 +57,24 @@ function EscolherArmazenamento() {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/armazenamento')
-        .then(res => setListaArmazenamento(res.data))
+        axios.get('http://localhost:3000/api/storage')
+        .then(res => {
+            const storageApi = res.data as Armazenamento[]
+            const storageCompletas = storageApi.filter((storage) => 
+                storage.id &&
+                storage.marca &&
+                storage.nome &&
+                storage.capacidade &&
+                storage.formato &&
+                storage.interface &&
+                storage.tipoArmazenamento &&
+                storage.unidade &&
+                storage.preco &&
+                storage.valores.length
+            )
+
+            setListaArmazenamento(storageCompletas)
+        })
         .catch(erro => console.error(erro))
     }, [])
 
@@ -83,7 +99,7 @@ function EscolherArmazenamento() {
                             componente='armazenamento'
                             imagem={armazenamento.imagem}
                             marca={armazenamento.marca}
-                            modelo={armazenamento.modelo}
+                            modelo={armazenamento.nome}
                             preco={armazenamento.preco}
                             aoSelecionar={selecionarModelo}
                             selecionado={modeloSelecionado === armazenamento.id} 

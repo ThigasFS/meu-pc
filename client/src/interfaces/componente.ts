@@ -36,7 +36,7 @@ export interface MemoriaRAM {
     marca: string,
     modelo: string,
     capacidade: number,
-    modulos: number,
+    modulos: number[],
     velocidade: number,
     ddr: number,
     cl: number,
@@ -47,21 +47,19 @@ export interface MemoriaRAM {
 }
 
 export interface Fonte {
-    tipo: 'fonte',
-    nome: 'Fonte',
     id: number,
     marca: string,
     modelo: string,
     potencia: number,
-    fabricante: string,
     certificacao: string,
     pcieConectores: number,
     sataConectores: number,
     epsConectores: number,
+    modularidade: "Full" | "Semi" | "Não"
+    formato: "ATX" | "SFX"
     imagem: string,
     preco: number,
-    url: string,
-    loja: string
+    valores: PrecoLoja[]
 }
 
 export interface PlacaVideo {
@@ -77,21 +75,22 @@ export interface PlacaVideo {
 }
 
 export interface Gabinete {
-    tipo: 'gabinete',
-    nome: 'Gabinete',
     id: number,
+    nome: string,
     marca: string,
-    modelo: string,
-    fabricante: string,
     qtdFans: number,
     cor: string,
     imagem: string,
+    formato: 'Mini Tower' | 'Mid Tower' | 'Full Tower',
+    suportePlacaMae: string,
+    painelLateral: string,
+    baiasHD: number,
+    tamanho: "Compacto" | "Médio" | "Grande"
     preco: number,
-    url: string,
-    loja: string
+    valores: PrecoLoja[]
 }
 
-export interface Armazenamento{
+export interface Armazenamento {
     id: number,
     marca: string,
     nome: string,

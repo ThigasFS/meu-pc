@@ -40,9 +40,9 @@ function EscolherPlacaMae() {
 
     useEffect(() => {
         axios.get('http://localhost:3000/api/motherboard')
-        .then(res => {
-            const mbApi = res.data as PlacaMae[]
-            const mbsCompletas = mbApi
+            .then(res => {
+                const mbApi = res.data as PlacaMae[]
+                const mbsCompletas = mbApi
                     .filter((mb) =>
                         mb.nome &&
                         mb.socket &&
@@ -58,35 +58,35 @@ function EscolherPlacaMae() {
                         ...mb,
                         id: index + 1
                     }))
-            
-            const mbsSocketAtual = mbsCompletas.filter((mb) => mb.socket === pcMontado.processador?.socket)
 
-            setListaPlacasMaes(mbsSocketAtual)
-        })
-        .catch(erro => console.error(erro))
+                const mbsSocketAtual = mbsCompletas.filter((mb) => mb.socket === pcMontado.processador?.socket)
+
+                setListaPlacasMaes(mbsSocketAtual)
+            })
+            .catch(erro => console.error(erro))
     }, [pcMontado?.processador?.socket])
-    
+
     function cancelarEscolha() {
         setPcMontado(prev => {
             const valorAnterior = prev.placaMae?.preco ?? 0
-            const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior 
+            const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior
             return { ...prev, placaMae: undefined, valorTotal: valorTotalAtualizado }
         })
     }
 
-    function cancelarPc(){
+    function cancelarPc() {
         setPcMontado({})
         navigate('/')
     }
 
-    function voltarAnterior(){
+    function voltarAnterior() {
         cancelarEscolha()
         navigate(-1)
     }
 
     return (
         <div>
-            <HeaderEscolhas 
+            <HeaderEscolhas
                 titulo="Escolha sua Placa Mãe"
                 infosExtras={[
                     {

@@ -41,7 +41,27 @@ function EscolherMemoriaRAM() {
     useEffect(() => {
         axios.get('http://localhost:3000/api/ram')
             .then(res => {
-                setListaMemorias(res.data)
+                const ramsApi = res.data as MemoriaRAM[]
+                const ramsCompleta = ramsApi.filter((ram) =>
+                    ram.marca &&
+                    ram.capacidade &&
+                    ram.cl &&
+                    ram.ddr &&
+                    ram.id &&
+                    ram.imagem &&
+                    ram.modulos?.length &&
+                    ram.preco &&
+                    ram.valores?.length &&
+                    ram.velocidade
+                )
+                .map((mb, index) => ({
+                    ...mb,
+                    id: index + 1
+                }))
+
+                const ramDdrAtual = ramsCompleta.filter((ram) => ram.ddr === pcMontado?.placaMae?.ddr)
+                setListaMemorias(ramDdrAtual)
+                console.log(ramsCompleta)
             })
             .catch(erro => console.error(erro))
     }, [pcMontado.placaMae?.ddr])
@@ -54,12 +74,12 @@ function EscolherMemoriaRAM() {
         })
     }
 
-    function cancelarPc(){
+    function cancelarPc() {
         setPcMontado({})
         navigate('/')
     }
 
-    function voltarAnterior(){
+    function voltarAnterior() {
         cancelarEscolha()
         navigate(-1)
     }

@@ -14,7 +14,7 @@ interface Props {
   vram?: number,
   gddr?: number,
   ddr?: number,
-  modulos?: number,
+  modulos?: number[],
   velocidade?: number,
   capacidadeRam?: number,
   tipoArmazenamento?: string,
@@ -65,9 +65,11 @@ function CardEscolha({ id,imagem, marca, modelo, preco, socket, selecionado, aoS
     }
 
     if (componente === 'memoriaram') {
+      const qto = modulos?.slice(0,1)
+      const cap = modulos?.slice(1,2)
       return (
         <>
-          <p>{marca} {modelo}, {capacidadeRam}GB {modulos}, {velocidade}MHz, DDR{ddr} </p>
+          <p>{marca} {modelo} {capacidadeRam}GB {qto}x{cap}, {velocidade}MHz, DDR{ddr} </p>
         </>
       )
     }
