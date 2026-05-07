@@ -80,6 +80,8 @@ export function definirMarca(nome: string): string {
     if (upper.includes("MSI")) return "MSI"
     if (upper.includes("GIGABYTE")) return "Gigabyte"
     if (upper.includes("ASROCK")) return "ASRock"
+    if (upper.includes("CORSAIR")) return "Corsair"
+    if (upper.includes("T-FORCE")) return "T-Force"
 
     return "Genérico"
 }

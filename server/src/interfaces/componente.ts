@@ -70,3 +70,51 @@ export interface PlacaVideoJson {
     boost_clocl: number,
     color: string
 }
+
+export interface MemoriaRam {
+    id: number,
+    marca: string,
+    nome: string,
+    capacidade: number,
+    modulos: number[],
+    velocidade: number,
+    ddr: number,
+    cl: number,
+    imagem: string,
+    preco: number,
+    valores: PrecoLoja[]
+}
+
+export interface MemoriaRamJson {
+    name: string,
+    speed: number[],
+    modules: number[],
+    color: string,
+    first_word_latency: number,
+    cas_latency: number
+}
+
+export interface Armazenamento{
+    id: number,
+    marca: string,
+    nome: string,
+    capacidade: number,
+    unidade: 'GB' | 'TB',
+    tipoArmazenamento: 'HD' | 'SSD',
+    interface: 'SATA' | 'NVME',
+    formato: '2.5' | '3.5' | 'M2',
+    velocidadeLeitura: number,
+    velocidadeGravacao: number,
+    imagem: string,
+    preco: number,
+    valores: PrecoLoja[]
+}
+
+export interface ArmazenamentoJson {
+    name: string,
+    capacity: number,
+    type: string,
+    cache: number,
+    form_factor: string,
+    interface: string,
+}

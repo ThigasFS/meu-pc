@@ -39,12 +39,9 @@ function EscolherMemoriaRAM() {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/memoriasram')
+        axios.get('http://localhost:3000/api/ram')
             .then(res => {
-                const lista: MemoriaRAM[] = res.data
-                const ddrAtual = pcMontado.placaMae?.ddr
-                const listaFiltrada: MemoriaRAM[] = ddrAtual ? lista.filter(memoria => memoria.ddr === ddrAtual) : lista
-                setListaMemorias(listaFiltrada)
+                setListaMemorias(res.data)
             })
             .catch(erro => console.error(erro))
     }, [pcMontado.placaMae?.ddr])

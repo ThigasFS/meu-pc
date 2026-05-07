@@ -32,12 +32,9 @@ export interface Processador {
 }
 
 export interface MemoriaRAM {
-    tipo: 'memoriaram',
-    nome: 'Memória RAM',
     id: number,
     marca: string,
     modelo: string,
-    fabricante: string,
     capacidade: number,
     modulos: number,
     velocidade: number,
@@ -46,7 +43,7 @@ export interface MemoriaRAM {
     imagem: string,
     preco: number,
     url: string,
-    loja: string
+    valores: PrecoLoja[]
 }
 
 export interface Fonte {
@@ -95,12 +92,9 @@ export interface Gabinete {
 }
 
 export interface Armazenamento{
-    tipo: 'armazenamento',
-    nome: 'Armazenamento',
     id: number,
     marca: string,
-    modelo: string,
-    fabricante: string,
+    nome: string,
     capacidade: number,
     unidade: 'GB' | 'TB',
     tipoArmazenamento: 'HD' | 'SSD',
@@ -110,8 +104,7 @@ export interface Armazenamento{
     velocidadeGravacao: number,
     imagem: string,
     preco: number,
-    url: string,
-    loja: string
+    valores: PrecoLoja[]
 }
 
 export type Componente = Armazenamento | PlacaMae | PlacaVideo | Processador | Gabinete | Fonte | MemoriaRAM
