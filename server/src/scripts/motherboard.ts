@@ -1,4 +1,4 @@
-import { updateMotherboardPrices } from "../services/hubs/motherboard"
+import { updateMotherboardPrices } from "../services/hubs/motherboardHub"
 
 async function main() {
     await updateMotherboardPrices()

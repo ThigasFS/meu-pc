@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { getRams } from "../services/ram"
+import { getRams } from "../services/ramService"
 
 const router = Router()
 

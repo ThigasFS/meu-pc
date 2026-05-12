@@ -1,4 +1,4 @@
-import { updateCasePrices } from "../services/hubs/case"
+import { updateCasePrices } from "../services/hubs/caseHub"
 
 async function main() {
     await updateCasePrices()

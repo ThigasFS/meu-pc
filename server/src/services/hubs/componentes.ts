@@ -7,6 +7,7 @@ import { scrapePichau } from "../../scrapers/pichau"
 import { scrapeTerabyte } from "../../scrapers/terabyte"
 import { ConfigComponente } from "../../interfaces/scraper"
 import { definirMarca } from "../../utils/componenteUtils"
+import { validarMatching } from "../../matching"
 
 puppeteer.use(StealthPlugin())
 
@@ -17,8 +18,19 @@ type ScraperFunction = (
 ) => Promise<{
     imagem: string
     nomeEncontrado: string
+
     tdp?: number
     gddr?: number
+
+    velocidadeLeitura?: number
+    velocidadeGravacao?: number
+
+    qtdFans?: number
+
+    pcieConectores?: number
+    sataConectores?: number
+    epsConectores?: number
+
     valor: {
         loja: string
         preco: number
@@ -26,54 +38,12 @@ type ScraperFunction = (
     } | null
 }>
 
-function nomesSaoCompativeis(
-    nomeBuscado: string,
-    nomeEncontrado: string,
-    tipo: string
-): boolean {
-    const buscado = nomeBuscado.toLowerCase()
-    const encontrado = nomeEncontrado.toLowerCase()
-
-    let regexImportante: RegExp
-
-    switch (tipo) {
-        case "cpu":
-            regexImportante =
-                /ryzen|intel|core|x3d|athlon|\d{4,5}/i
-            break
-
-        case "gpu":
-            regexImportante =
-                /rtx|gtx|rx|\d{3,4}/i
-            break
-
-        case "placamae":
-            regexImportante =
-                /b\d{3}|x\d{3}|z\d{3}|h\d{3}|am4|am5|lga\d+/i
-            break
-
-        default:
-            regexImportante = /\d|[a-z]{3,}/i
-    }
-
-    const partesImportantes = buscado
-        .split(" ")
-        .filter((p) => regexImportante.test(p))
-
-    const acertos = partesImportantes.filter((p) =>
-        encontrado.includes(p)
-    )
-
-    return acertos.length >=
-        Math.ceil(partesImportantes.length * 0.7)
-}
-
 export async function atualizarComponente(
     lista: any[],
     config: ConfigComponente
 ) {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         defaultViewport: null,
         args: [
             "--no-sandbox",
@@ -84,7 +54,7 @@ export async function atualizarComponente(
     })
 
     try {
-        const batchSize = 3
+        const batchSize = 1
         const itensTeste = lista.slice(0, 10) // Usado para demonstração
 
         const scrapers: ScraperFunction[] = [
@@ -128,11 +98,17 @@ export async function atualizarComponente(
                                 resultado.value
 
                             const nomeValido =
-                                nomesSaoCompativeis(
+                                validarMatching(
+                                    config.tipo,
                                     item.name,
-                                    dados.nomeEncontrado,
-                                    config.tipo
+                                    dados.nomeEncontrado
                                 )
+
+                            console.log({
+                                buscado: item.name,
+                                encontrado: dados.nomeEncontrado,
+                                valido: nomeValido
+                            })
 
                             if (
                                 !nomeValido ||
@@ -148,13 +124,30 @@ export async function atualizarComponente(
                                     item.name
                                 ),
                                 loja: dados.valor.loja,
-                                preco:
-                                    dados.valor.preco,
-                                imagem:
-                                    dados.imagem,
+                                preco: dados.valor.preco,
+                                imagem: dados.imagem,
                                 url: dados.valor.url,
+
                                 tdp: dados.tdp ?? null,
-                                gddr: dados.gddr ?? null
+                                gddr: dados.gddr ?? null,
+
+                                velocidadeLeitura:
+                                    dados.velocidadeLeitura ?? null,
+
+                                velocidadeGravacao:
+                                    dados.velocidadeGravacao ?? null,
+
+                                qtdFans:
+                                    dados.qtdFans ?? null,
+
+                                pcieConectores:
+                                    dados.pcieConectores ?? null,
+
+                                sataConectores:
+                                    dados.sataConectores ?? null,
+
+                                epsConectores:
+                                    dados.epsConectores ?? null
                             })
 
                             console.log(

@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { getStorages } from "../services/storage"
+import { getStorages } from "../services/storageService"
 
 const router = Router()
 

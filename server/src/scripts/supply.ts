@@ -1,4 +1,4 @@
-import { updateSupplyPrices } from "../services/hubs/supply"
+import { updateSupplyPrices } from "../services/hubs/supplyHub"
 
 async function main() {
     await updateSupplyPrices()

@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { getGpus } from "../services/gpu"
+import { getGpus } from "../services/gpuService"
 
 const router = Router()
 

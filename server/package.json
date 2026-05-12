@@ -25,7 +25,7 @@
     "scrape:storage": "tsx src/scripts/storage.ts",
     "scrape:supply": "tsx src/scripts/supply.ts",
     "scrape:case": "tsx src/scripts/case.ts",
-    "scrape:all": "tsx src/scripts/updateAllPrices.ts",
+    "scrape:all": "tsx src/scripts/all.ts",
     "test:cpu": "tsx src/scripts/testeCPU.ts"
   },
   "name": "server",

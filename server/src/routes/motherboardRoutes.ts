@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { getMotherboards } from "../services/motherboard"
+import { getMotherboards } from "../services/motherboardService"
 
 const router = Router()
 

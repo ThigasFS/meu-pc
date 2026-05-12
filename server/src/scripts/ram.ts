@@ -1,4 +1,4 @@
-import { updateRamPrices } from "../services/hubs/ram"
+import { updateRamPrices } from "../services/hubs/ramHub"
 
 async function main() {
     await updateRamPrices()

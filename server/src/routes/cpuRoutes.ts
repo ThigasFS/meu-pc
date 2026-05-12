@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { getCpus } from "../services/cpu"
+import { getCpus } from "../services/cpuService"
 
 const router = Router()
 
