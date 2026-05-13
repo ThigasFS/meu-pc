@@ -76,7 +76,11 @@ export async function getCpus(): Promise<Processador[]> {
             preco: menorPreco(cpuBanco?.valores ?? []),
             valores: cpuBanco?.valores ?? []
         }
-    })
+    }).filter((data) => 
+        data.imagem.length > 0 &&
+        data.preco > 0 &&
+        data.valores.length > 0
+    )
 
     return processadores
 }

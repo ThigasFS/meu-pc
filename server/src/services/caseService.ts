@@ -70,10 +70,10 @@ export async function getCases(): Promise<Gabinete[]> {
 
     return jsonData.map((gabJson, index) => {
         const gabBanco = bancoMap.get(gabJson.name)
-        const suportePlacaMae = gabJson.type.includes('MicroATX') ? 'MicroATX' : gabJson.type.includes('Mini ITX') ? 'MiniITX' : 'ATX' 
-        const formato = gabJson.type.includes('Mini Tower') ? 'Mini Tower' : gabJson.type.includes('Mid Tower') ? 'Mid Tower' : 'Full Tower'
+        const suportePlacaMae: Gabinete['suportePlacaMae']= gabJson.type.includes('MicroATX') ? 'MicroATX' : gabJson.type.includes('Mini ITX') ? 'MiniITX' : 'ATX' 
+        const formato: Gabinete['formato']= gabJson.type.includes('Mini Tower') ? 'Mini Tower' : gabJson.type.includes('Mid Tower') ? 'Mid Tower' : 'Full Tower'
         const volume = gabJson.external_volume ?? 0
-        const tamanho = volume >= 40 ? 'Grande' : volume >= 25 ? 'Médio' : 'Compacto'
+        const tamanho: Gabinete['tamanho']= volume >= 40 ? 'Grande' : volume >= 25 ? 'Médio' : 'Compacto'
 
         return {
             id: gabBanco?.id ?? index + 1,
@@ -90,5 +90,9 @@ export async function getCases(): Promise<Gabinete[]> {
             preco: menorPreco(gabBanco?.valores ?? []),
             valores: gabBanco?.valores ?? []
         }
-    })
+    }).filter(data =>
+        data.imagem.length > 0 &&
+        data.valores.length > 0 &&
+        data.preco > 0
+    )
 }

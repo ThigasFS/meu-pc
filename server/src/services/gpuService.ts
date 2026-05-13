@@ -85,7 +85,11 @@ export async function getGpus(): Promise<PlacaVideo[]> {
             preco: menorPreco(gpuBanco?.valores ?? []),
             valores: gpuBanco?.valores ?? []
         }
-    })
+    }).filter(data => 
+        data.imagem.length > 0 &&
+        data.preco > 0 &&
+        data.valores.length > 0
+    )
 
     return gpus
 }

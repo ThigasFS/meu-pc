@@ -21,7 +21,7 @@ function EscolherGabinete() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/gabinetes')
+        axios.get('http://localhost:3000/api/case')
         .then(res => setListaGabinetes(res.data))
         .catch(erro => console.error(erro))
     }, [])
@@ -87,7 +87,7 @@ function EscolherGabinete() {
                         componente='gabinete'
                         key={gabinete.id}
                         marca={gabinete.marca}
-                        modelo={gabinete.modelo}
+                        modelo={gabinete.nome}
                         imagem={gabinete.imagem}
                         preco={gabinete.preco}
                         aoSelecionar={selecionarModelo}

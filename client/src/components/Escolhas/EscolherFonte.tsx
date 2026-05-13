@@ -39,7 +39,7 @@ function EscolherFonte() {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/fontes')
+        axios.get('http://localhost:3000/api/supply')
         .then(res => {
             setListaFontes(res.data)
         })
@@ -49,7 +49,7 @@ function EscolherFonte() {
     function calcularPotenciaTotal(pc: Partial<PC>): number {
         const tdpCPU = pc.processador?.tdp ?? 0
         const tdpGPU = pc.placaVideo?.tdp ?? 0
-        const ram = (pc.memoriaRam?.modulos ?? 1) * 5
+        const ram = (pc.memoriaRam?.modulos[1] ?? 1) * 5
         const placamae = 50
         const armazenamento = 5
 
@@ -120,7 +120,7 @@ function EscolherFonte() {
                         componente='fonte'
                         key={fonte.id}
                         marca={fonte.marca}
-                        modelo={fonte.modelo}
+                        modelo={fonte.nome}
                         imagem={fonte.imagem}
                         preco={fonte.preco}
                         aoSelecionar={selecionarModelo}

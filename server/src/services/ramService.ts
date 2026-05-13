@@ -6,7 +6,7 @@ import {
     MemoriaRamJson,
     PrecoLoja
 } from "../interfaces/componente"
-import { definirMarca, menorPreco } from "../utils/componenteUtils"
+import { definirMarca, menorPreco, normalizarTexto } from "../utils/componenteUtils"
 
 export async function getRamDB(): Promise<MemoriaRam[]> {
     const [rows] = await connection.query(`
@@ -62,12 +62,24 @@ export async function getRams(): Promise<MemoriaRam[]> {
     const jsonData: MemoriaRamJson[] = getData("memory")
     const dbData = await getRamDB()
 
+    console.log(dbData.splice(0,10))
+    console.log(jsonData.splice(0,10))
+
     const bancoMap = new Map(
-        dbData.map((ram) => [ram.nome, ram])
+        dbData.map((ram) => [normalizarTexto(ram.nome), ram])
     )
 
     return jsonData.map((ramJson, index) => {
-        const ramBanco = bancoMap.get(ramJson.name)
+        const nomeJson = normalizarTexto(ramJson.name)
+
+        const ramBanco = dbData.find(ram => {
+            const nomeBanco = normalizarTexto(ram.nome)
+
+            return (
+                nomeBanco.includes(nomeJson) ||
+                nomeJson.includes(nomeBanco)
+            )
+        })
         const modulos = ramJson.modules
         const capacidade = modulos[0] * modulos[1]
         const ddr = ramJson.speed[0]
@@ -86,5 +98,9 @@ export async function getRams(): Promise<MemoriaRam[]> {
             preco: menorPreco(ramBanco?.valores ?? []),
             valores: ramBanco?.valores ?? []
         }
-    })
+    }).filter(data =>
+        data.imagem.length > 0 &&
+        data.valores.length > 0 &&
+        data.preco > 0
+    )
 }

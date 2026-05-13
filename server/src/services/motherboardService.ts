@@ -83,5 +83,9 @@ export async function getMotherboards(): Promise<PlacaMae[]> {
             preco: menorPreco(mbBanco?.valores ?? []),
             valores: mbBanco?.valores ?? []
         }
-    })
+    }).filter((data) => 
+        data.imagem.length > 0 &&
+        data.preco > 0 &&
+        data.valores.length > 0
+    )
 }

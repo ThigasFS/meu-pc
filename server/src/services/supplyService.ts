@@ -70,7 +70,7 @@ export async function getSupply(): Promise<Fonte[]> {
 
     return jsonData.map((supplyJson, index) => {
         const supplyBanco = bancoMap.get(supplyJson.name)
-        const modularidade = supplyJson.modular === 'Full' ? 'Full' : supplyJson.modular === 'Semi' ? 'Semi' : 'Não'
+        const modularidade: Fonte['modularidade'] = supplyJson.modular === "Full" ? "Full" : supplyJson.modular === "Semi" ? "Semi" : "Não"
 
         return {
             id: supplyBanco?.id ?? index + 1,
@@ -87,5 +87,9 @@ export async function getSupply(): Promise<Fonte[]> {
             preco: menorPreco(supplyBanco?.valores ?? []),
             valores: supplyBanco?.valores ?? []
         }
-    })
+    }).filter((data) => 
+        data.imagem.length > 0 &&
+        data.preco > 0 &&
+        data.valores.length > 0
+    )
 }

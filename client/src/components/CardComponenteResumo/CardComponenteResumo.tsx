@@ -1,106 +1,210 @@
-import styled from 'styled-components'
+import {
+    Box,
+    Paper,
+    Stack,
+    Typography
+} from '@mui/material'
+
 import { Componente } from '../../interfaces/componente'
-import style from './CardComponenteResumo.module.css'
-import { Typography } from '@mui/material'
 
 interface Props {
     componente: Componente
 }
 
-function CardComponenteResumo({ componente }: Props) {
+function CardComponenteResumo({
+    componente
+}: Props) {
 
-    const Paragrafo = styled.p`
-        font-size: 1.15em;
-        margin-top: 0px;
-        margin-bottom: 15px;
-    `
+    function renderizarSpecs() {
 
-    function renderizarSpecsEspeciais(componente: Componente) {
-        if (componente.tipo === 'placamae') {
-            return (
-                <>
-                    <Paragrafo>Socket: {componente.socket}</Paragrafo>
-                    <Paragrafo>DDR: DDR{componente.ddr}</Paragrafo>
-                </>
-            )
-        }
+        switch (componente.tipo) {
 
-        if (componente.tipo === 'processador') {
-            return (
-                <>
-                    <Paragrafo>Socket: {componente.socket}</Paragrafo>
-                    <Paragrafo>Velocidade Clock: {componente.velocidade}MHz</Paragrafo>
-                    <Paragrafo>TDP: {componente.tdp}W</Paragrafo>
-                </>
-            )
-        }
+            case 'placamae':
+                return (
+                    <>
+                        <Typography>
+                            Socket: {componente.socket}
+                        </Typography>
 
-        if (componente.tipo === 'placavideo') {
-            return (
-                <>
-                    <Paragrafo>VRAM: {componente.vram}GB</Paragrafo>
-                    <Paragrafo>GDDR: {componente.gddr}MHz</Paragrafo>
-                    <Paragrafo>TDP: {componente.tdp}W</Paragrafo>
-                </>
-            )
-        }
+                        <Typography>
+                            DDR{componente.ddr}
+                        </Typography>
+                    </>
+                )
 
-        if (componente.tipo === 'memoriaram') {
-            return (
-                <>
-                    <Paragrafo>Tamanho: {componente.capacidade}GB {componente.modulos}</Paragrafo>
-                    <Paragrafo>DDR: DDR{componente.ddr}</Paragrafo>
-                    <Paragrafo>Velocidade: {componente.velocidade}MHZ</Paragrafo>
-                </>
-            )
-        }
+            case 'cpu':
+                return (
+                    <>
+                        <Typography>
+                            Socket: {componente.socket}
+                        </Typography>
 
-        if (componente.tipo === 'armazenamento') {
-            return (
-                <>
-                    <Paragrafo>Tipo: {componente.tipoArmazenamento} {componente.interface}</Paragrafo>
-                    <Paragrafo>Tamanho: {componente.capacidade}{componente.unidade}</Paragrafo>
-                    <Paragrafo>Leitura: {componente.velocidadeLeitura}MB/s</Paragrafo>
-                    <Paragrafo>Gravação: {componente.velocidadeGravacao}MB/s</Paragrafo>
-                </>
-            )
-        }
+                        <Typography>
+                            Clock: {componente.velocidade} MHz
+                        </Typography>
 
-        if (componente.tipo === 'fonte') {
-            return (
-                <>
-                    <Typography>Certificação: {componente.certificacao}</Typography>
-                    <Typography>Conectores EPS: {componente.epsConectores}</Typography>
-                    <Typography>Conectores PCIe: {componente.pcieConectores}</Typography>
-                    <Typography>Conectores SATA: {componente.sataConectores}</Typography>
-                </>
-            )
-        }
+                        <Typography>
+                            TDP: {componente.tdp}W
+                        </Typography>
+                    </>
+                )
 
-        if (componente.tipo === 'gabinete') {
-            return (
-                <>
-                    <Paragrafo>Cor: {componente.cor}</Paragrafo>
-                    <Paragrafo>Suporte para {componente.qtdFans} fans</Paragrafo>
-                </>
-            )
+            case 'gpu':
+                return (
+                    <>
+                        <Typography>
+                            VRAM: {componente.vram}GB
+                        </Typography>
+
+                        <Typography>
+                            GDDR{componente.gddr}
+                        </Typography>
+
+                        <Typography>
+                            TDP: {componente.tdp}W
+                        </Typography>
+                    </>
+                )
+
+            case 'memoriaram':
+                return (
+                    <>
+                        <Typography>
+                            {componente.capacidade}GB
+                            ({componente.modulos.join('x')})
+                        </Typography>
+
+                        <Typography>
+                            DDR{componente.ddr}
+                        </Typography>
+
+                        <Typography>
+                            {componente.velocidade} MHz
+                        </Typography>
+                    </>
+                )
+
+            case 'armazenamento':
+                return (
+                    <>
+                        <Typography>
+                            {componente.tipoArmazenamento}
+                        </Typography>
+
+                        <Typography>
+                            {componente.capacidade}
+                            {componente.unidade}
+                        </Typography>
+
+                        <Typography>
+                            Leitura:
+                            {componente.velocidadeLeitura} MB/s
+                        </Typography>
+
+                        <Typography>
+                            Gravação:
+                            {componente.velocidadeGravacao} MB/s
+                        </Typography>
+                    </>
+                )
+
+            case 'fonte':
+                return (
+                    <>
+                        <Typography>
+                            {componente.certificacao}
+                        </Typography>
+
+                        <Typography>
+                            {componente.potencia}W
+                        </Typography>
+
+                        <Typography>
+                            Modular:
+                            {componente.modularidade}
+                        </Typography>
+                    </>
+                )
+
+            case 'gabinete':
+                return (
+                    <>
+                        <Typography>
+                            Cor: {componente.cor}
+                        </Typography>
+
+                        <Typography>
+                            {componente.qtdFans} fans
+                        </Typography>
+                    </>
+                )
         }
     }
 
     return (
-        <div className={style.containerCardResumo}>
-            <Typography>{componente.nome}</Typography>
-            <div className={style.containerDetalhes}>
-                <img src={componente.imagem} className={style.imagem} />
-                <div className={style.containerSpecs}>
-                    <Paragrafo>Marca: {componente.marca}</Paragrafo>
-                    <Paragrafo>Modelo: {componente.modelo}</Paragrafo>
-                    <Paragrafo>Fabricante: {componente.fabricante}</Paragrafo>
-                    {renderizarSpecsEspeciais(componente)}
-                    <Paragrafo>{componente.preco.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</Paragrafo>
-                </div>
-            </div>
-        </div>
+        <Paper
+            elevation={2}
+            sx={{
+                p: 2,
+                borderRadius: 3
+            }}
+        >
+            <Stack
+                direction={{
+                    xs: 'column',
+                    md: 'row'
+                }}
+                spacing={3}
+                sx={{alignItems: 'center'}}
+            >
+
+                <Box
+                    component='img'
+                    src={componente.imagem}
+                    alt={componente.nome}
+                    sx={{
+                        width: 180,
+                        height: 180,
+                        objectFit: 'contain'
+                    }}
+                />
+
+                <Box sx={{flex: 1}}>
+
+                    <Typography
+                        variant='h6'
+                        sx={{fontWeight: 700, mb: 1}}
+                    >
+                        {componente.nome}
+                    </Typography>
+
+                    <Stack spacing={0.5}>
+
+                        <Typography>
+                            Marca: {componente.marca}
+                        </Typography>
+
+                        {renderizarSpecs()}
+
+                        <Typography
+                            variant='h6'
+                            sx={{fontWeight: 700, mt: 2}}
+                        >
+                            {componente.preco.toLocaleString(
+                                'pt-BR',
+                                {
+                                    style: 'currency',
+                                    currency: 'BRL'
+                                }
+                            )}
+                        </Typography>
+
+                    </Stack>
+
+                </Box>
+
+            </Stack>
+        </Paper>
     )
 }
 

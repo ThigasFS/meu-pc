@@ -92,5 +92,9 @@ export async function getStorages(): Promise<Armazenamento[]> {
             preco: menorPreco(storageBanco?.valores ?? []),
             valores: storageBanco?.valores ?? []
         }
-    })
+    }).filter((data) => 
+        data.imagem.length > 0 &&
+        data.preco > 0 &&
+        data.valores.length > 0
+    )
 }

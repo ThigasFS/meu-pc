@@ -6,6 +6,7 @@ export interface PrecoLoja {
 
 export interface PlacaMae {
     id: number,
+    tipo: 'placamae',
     nome: string,
     marca: string,
     socket: string,
@@ -20,6 +21,7 @@ export interface PlacaMae {
 
 export interface Processador {
     id: number,
+    tipo: 'cpu',
     nome: string,
     marca: string,
     socket: string,
@@ -33,8 +35,9 @@ export interface Processador {
 
 export interface MemoriaRAM {
     id: number,
+    tipo: 'memoriaram',
     marca: string,
-    modelo: string,
+    nome: string,
     capacidade: number,
     modulos: number[],
     velocidade: number,
@@ -48,8 +51,9 @@ export interface MemoriaRAM {
 
 export interface Fonte {
     id: number,
+    tipo: 'fonte',
     marca: string,
-    modelo: string,
+    nome: string,
     potencia: number,
     certificacao: string,
     pcieConectores: number,
@@ -64,6 +68,7 @@ export interface Fonte {
 
 export interface PlacaVideo {
     id: number,
+    tipo: 'gpu',
     nome: string,
     marca: string,
     vram: number,
@@ -76,6 +81,7 @@ export interface PlacaVideo {
 
 export interface Gabinete {
     id: number,
+    tipo: 'gabinete',
     nome: string,
     marca: string,
     qtdFans: number,
@@ -92,6 +98,7 @@ export interface Gabinete {
 
 export interface Armazenamento {
     id: number,
+    tipo: 'armazenamento',
     marca: string,
     nome: string,
     capacidade: number,
