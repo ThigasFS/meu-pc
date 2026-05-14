@@ -1,86 +1,221 @@
-import '../config/env'
-import { getData } from "./dataLoader"
-import connection from "../database/connection"
-import { PrecoLoja, Processador, ProcessadorJSON } from "../interfaces/componente"
-import { definirMarca, definirSocket, menorPreco } from '../utils/componenteUtils'
+import "../config/env"
 
-export async function getCpusDB(): Promise<Processador[]> {
+import connection from "../database/connection"
+
+import {
+    Processador,
+    ProcessadorJSON
+} from "../interfaces/componente"
+
+import {
+    definirMarca,
+    definirSocket,
+    menorPreco
+} from "../utils/componenteUtils"
+
+import {
+    gerarFingerprintProduto
+} from "../utils/fingerprint"
+
+import {
+    getData
+} from "./dataLoader"
+
+interface CpuBancoRow {
+    id: number
+
+    nome: string
+    fingerprint: string
+
+    marca: string
+    imagem: string
+
+    specs: string | null
+
+    loja: string | null
+    preco: number | null
+    url: string | null
+}
+
+interface CpuBanco {
+    id: number
+
+    nome: string
+    fingerprint: string
+
+    marca: string
+    imagem: string
+
+    specs: Record<string, any>
+
+    valores: {
+        loja: string
+        preco: number
+        url: string
+    }[]
+}
+
+export async function getCpusDB(): Promise<CpuBanco[]> {
+
     const [rows] = await connection.query(`
         SELECT
             p.id,
             p.nome,
+            p.fingerprint,
             p.marca,
             p.imagem,
+            p.specs,
+
             pp.loja,
             pp.preco,
             pp.url
+
         FROM produtos p
+
         LEFT JOIN precos_produto pp
             ON p.id = pp.produto_id
+
         WHERE p.tipo = 'cpu'
+
         ORDER BY p.id
     `)
 
-    const mapa = new Map<number, Processador>()
+    const mapa =
+        new Map<number, CpuBanco>()
 
-    for (const row of rows as any[]) {
+    for (const row of rows as CpuBancoRow[]) {
+
         if (!mapa.has(row.id)) {
+
             mapa.set(row.id, {
+
                 id: row.id,
+
                 nome: row.nome,
+                fingerprint: row.fingerprint,
+
                 marca: row.marca,
-                socket: "",
-                velocidade: 0,
-                tdp: 0,
-                videoIntegrado: false,
                 imagem: row.imagem,
-                preco: Number(row.preco) || 0,
+
+                specs:
+                    typeof row.specs === "string"
+                        ? JSON.parse(row.specs)
+                        : row.specs ?? {},
+
                 valores: []
             })
         }
 
-        const processador = mapa.get(row.id)!
+        const produto =
+            mapa.get(row.id)!
 
-        if (row.loja) {
-            processador.valores!.push({
+        if (
+            row.loja &&
+            row.preco &&
+            row.url
+        ) {
+
+            produto.valores.push({
+
                 loja: row.loja,
-                preco: Number(row.preco),
+
+                preco:
+                    Number(row.preco),
+
                 url: row.url
             })
         }
     }
 
-    return Array.from(mapa.values())
+    return Array.from(
+        mapa.values()
+    )
 }
 
 export async function getCpus(): Promise<Processador[]> {
-    const jsonData: ProcessadorJSON[] = getData("cpu")
-    const dbData = await getCpusDB()
 
-    const bancoMap = new Map(
-        dbData.map((cpu) => [cpu.nome, cpu])
+    const jsonData =
+        getData("cpu") as ProcessadorJSON[]
+
+    const dbData =
+        await getCpusDB()
+
+    const bancoMap =
+        new Map(
+            dbData.map(cpu => [
+                cpu.fingerprint,
+                cpu
+            ])
+        )
+
+    const processadores =
+        jsonData.map((cpuJson, index) => {
+
+            const fingerprint =
+                gerarFingerprintProduto(
+                    "cpu",
+                    cpuJson.name
+                )
+
+            const cpuBanco =
+                bancoMap.get(fingerprint)
+
+            const specs =
+                cpuBanco?.specs ?? {}
+
+            return {
+
+                id:
+                    cpuBanco?.id ??
+                    index + 1,
+
+                fingerprint,
+
+                nome:
+                    cpuBanco?.nome ??
+                    cpuJson.name,
+
+                marca:
+                    cpuBanco?.marca ??
+                    definirMarca(
+                        cpuJson.name
+                    ),
+
+                socket:
+                    specs.socket ??
+                    definirSocket(
+                        cpuJson.microarchitecture
+                    ),
+
+                velocidade:
+                    specs.clock ??
+                    cpuJson.core_clock,
+
+                tdp:
+                    specs.tdp ??
+                    cpuJson.tdp,
+
+                videoIntegrado:
+                    specs.videoIntegrado ??
+                    !!cpuJson.graphics,
+
+                imagem:
+                    cpuBanco?.imagem ??
+                    "",
+
+                preco:
+                    menorPreco(
+                        cpuBanco?.valores ?? []
+                    ),
+
+                valores:
+                    cpuBanco?.valores ?? []
+            }
+        })
+
+    return processadores.filter(cpu =>
+        cpu.imagem.length > 0 &&
+        cpu.preco > 0 &&
+        (cpu.valores?.length ?? 0) > 0
     )
-
-    const processadores: Processador[] = jsonData.map((cpuJson, index) => {
-        const cpuBanco = bancoMap.get(cpuJson.name)
-
-        return {
-            id: cpuBanco?.id ?? index + 1,
-            nome: cpuJson.name,
-            marca: definirMarca(cpuJson.name),
-            socket: definirSocket(cpuJson.microarchitecture),
-            velocidade: cpuJson.core_clock,
-            tdp: cpuJson.tdp,
-            videoIntegrado: !!cpuJson.graphics,
-            imagem: cpuBanco?.imagem ?? "",
-            preco: menorPreco(cpuBanco?.valores ?? []),
-            valores: cpuBanco?.valores ?? []
-        }
-    }).filter((data) => 
-        data.imagem.length > 0 &&
-        data.preco > 0 &&
-        data.valores.length > 0
-    )
-
-    return processadores
 }

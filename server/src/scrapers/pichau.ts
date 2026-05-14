@@ -1,121 +1,64 @@
-import puppeteer, { Browser } from "puppeteer"
-import {
-    ConfigComponente,
-    ResultadoScraper
-} from "../interfaces/scraper"
-import { aguardarResultadoBusca } from "../utils/aguardarResultadoBusca"
-import { extrairGddr, extrairTdp } from "../utils/componenteUtils"
+import { Browser } from "puppeteer"
+import { ResultadoScraper } from "../interfaces/scraper"
 
 export async function scrapePichau(
     browser: Browser,
-    nome: string,
-    config: ConfigComponente
-): Promise<ResultadoScraper> {
+    url: string,
+    seletorProduto: string
+): Promise<ResultadoScraper[]> {
 
     const page = await browser.newPage()
 
-    await page.setUserAgent(
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-    )
-
     try {
-        const busca = `https://www.pichau.com.br/search?q=${encodeURIComponent(nome)}`
 
-        await page.goto(busca, {
-            waitUntil: "networkidle2"
+        await page.goto(url, {
+            waitUntil: "domcontentloaded"
         })
 
-        const status = await aguardarResultadoBusca(
-            page,
-            ".MuiCard-root",
-            [
-                "nenhum resultado encontrado",
-                "produto não encontrado"
-            ]
-        );
+        await page.waitForSelector(seletorProduto)
 
-        await page.waitForFunction(() => {
-            return document.body.innerText.match(/\d{1,3}(?:\.\d{3})*,\d{2}/)
-        }, { timeout: 10000 })
+        const produtos =
+            await page.$$eval(
+                seletorProduto,
+                elementos => {
 
-        const seletor = `a[href*="${config.seletorPichau}"]`
+                    return elementos
+                        .map(el => {
 
-        await page.waitForSelector(seletor)
+                            const nomeEncontrado =
+                                el.textContent
+                                    ?.trim() ?? ""
 
-        const resultado = await page.$eval(
-            seletor,
-            el => {
-                const nomeEncontrado =
-                    el.textContent?.trim() ?? ""
+                            const imagem =
+                                el.querySelector("img")
+                                    ?.getAttribute("src") ?? ""
 
-                const href =
-                    el.getAttribute("href") ?? ""
+                            const href =
+                                el.getAttribute("href") ?? ""
 
-                const imagem =
-                    el.querySelector("img")?.getAttribute("src") ?? ""
+                            return {
+                                nomeEncontrado,
+                                imagem,
 
-                const precoTexto =
-                    el.textContent?.match(/\d{1,3}(?:\.\d{3})*,\d{2}/)?.[0]
+                                specs: {},
 
-                const preco = precoTexto
-                    ? Number(
-                        precoTexto
-                            .replace(/\./g, "")
-                            .replace(",", ".")
-                    )
-                    : 0
-
-                return {
-                    nomeEncontrado,
-                    preco,
-                    imagem,
-                    url: href.startsWith("http")
-                        ? href
-                        : `https://www.pichau.com.br${href}`
+                                valor: {
+                                    loja: "Pichau",
+                                    preco: 0,
+                                    url: href
+                                }
+                            }
+                        })
+                        .filter(p =>
+                            p.nomeEncontrado
+                        )
                 }
-            }
-        )
+            )
 
-        let tdp: number | undefined
-        let gddr: number | undefined
+        return produtos
 
-        if (config.extrairTdp || config.extrairGddr) {
-            const paginaProduto = await browser.newPage()
-
-            try {
-                await paginaProduto.goto(resultado.url, {
-                    waitUntil: "domcontentloaded"
-                })
-
-                const texto = await paginaProduto.evaluate(() => document.body.innerText)
-
-                if (config.extrairTdp) {
-                    tdp = extrairTdp(texto)
-                }
-
-                if (config.extrairGddr) {
-                    gddr = extrairGddr(texto)
-                }
-
-            } catch (err) {
-                console.error("Erro ao extrair specs:", err)
-            } finally {
-                await paginaProduto.close()
-            }
-        }
-
-        return {
-            imagem: resultado.imagem,
-            nomeEncontrado: resultado.nomeEncontrado,
-            tdp,
-            gddr,
-            valor: {
-                loja: "Pichau",
-                preco: resultado.preco,
-                url: resultado.url
-            }
-        }
     } finally {
+
         await page.close()
     }
 }

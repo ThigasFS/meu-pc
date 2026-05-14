@@ -8,6 +8,7 @@ import {
     extrairModeloGPU,
     extrairModulosRAM
 } from "../utils/componenteUtils"
+import { matchStorage } from "./storageMatching"
 
 function normalizar(texto: string): string {
     return texto
@@ -118,6 +119,12 @@ export function validarMatching(
 
         case "placamae":
             return matchPlacaMae(
+                buscado,
+                encontrado
+            )
+
+        case "armazenamento":
+            return matchStorage(
                 buscado,
                 encontrado
             )

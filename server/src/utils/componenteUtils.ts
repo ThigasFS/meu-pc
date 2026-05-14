@@ -1,7 +1,7 @@
 import { PlacaMae, PrecoLoja } from "../interfaces/componente"
 
 export const SOCKET_MAP: Record<string, string> = {
-    // AMD
+
     "zen 5": "AM5",
     "zen 4": "AM5",
     "zen 3": "AM4",
@@ -9,15 +9,6 @@ export const SOCKET_MAP: Record<string, string> = {
     "zen+": "AM4",
     "zen": "AM4",
 
-    "bulldozer": "AM3+",
-    "piledriver": "AM3+",
-    "steamroller": "FM2+",
-    "excavator": "FM2+",
-    "jaguar": "AM1",
-
-    "k10": "AM3",
-
-    // Intel Desktop Mainstream
     "arrow lake": "LGA1851",
     "raptor lake refresh": "LGA1700",
     "raptor lake": "LGA1700",
@@ -28,46 +19,132 @@ export const SOCKET_MAP: Record<string, string> = {
     "coffee lake refresh": "LGA1151",
     "coffee lake": "LGA1151",
     "kaby lake": "LGA1151",
-    "skylake": "LGA1151",
-
-    "broadwell": "LGA1150",
-    "haswell refresh": "LGA1150",
-    "haswell": "LGA1150",
-
-    "ivy bridge": "LGA1155",
-    "sandy bridge": "LGA1155",
-
-    "westmere": "LGA1156",
-    "nehalem": "LGA1156",
-
-    "wolfdale": "LGA775",
-    "yorkfield": "LGA775",
-    "core": "LGA775",
-
-    // Intel HEDT / Enthusiast
-    "cascade lake": "LGA2066"
+    "skylake": "LGA1151"
 }
 
-// Normalização
-export function normalizarTexto(texto: string): string {
+export function normalizarTexto(
+    texto: string
+): string {
+
     return texto
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^\w\s]/gi, "")
         .toLowerCase()
         .trim()
 }
 
-export function removerCaracteresEspeciais(texto: string): string {
-    return texto.replace(/[^\w\s]/gi, "")
+export function produtoEhKitUpgrade(
+    nome: string
+): boolean {
+
+    const texto =
+        normalizarTexto(nome)
+
+    return [
+        "kit upgrade",
+        "upgrade kit",
+        "combo",
+        "pc gamer",
+        "setup",
+        "montado",
+        "com memoria",
+        "com placa mae",
+        "com water cooler"
+    ].some(item =>
+        texto.includes(item)
+    )
 }
 
-// Definir
+export function precoSuspeito(
+    tipo: string,
+    preco: number
+): boolean {
 
-export function definirSocket(microarquitetura: string): string {
-    const arch = microarquitetura.toLowerCase().trim()
+    const limites: Record<
+        string,
+        {
+            min: number
+            max: number
+        }
+    > = {
+
+        cpu: {
+            min: 250,
+            max: 12000
+        },
+
+        gpu: {
+            min: 500,
+            max: 25000
+        },
+
+        ram: {
+            min: 80,
+            max: 6000
+        },
+
+        armazenamento: {
+            min: 70,
+            max: 5000
+        },
+
+        fonte: {
+            min: 150,
+            max: 4000
+        },
+
+        gabinete: {
+            min: 150,
+            max: 4000
+        },
+
+        placamae: {
+            min: 400,
+            max: 8000
+        }
+    }
+
+    const limite =
+        limites[tipo]
+
+    if (!limite) {
+        return false
+    }
+
+    return (
+        preco < limite.min ||
+        preco > limite.max
+    )
+}
+
+export function menorPreco(
+    valores: PrecoLoja[]
+): number {
+
+    if (!valores?.length) {
+        return 0
+    }
+
+    return Math.min(
+        ...valores.map(
+            valor => valor.preco
+        )
+    )
+}
+
+export function definirSocket(
+    microarquitetura: string
+): string {
+
+    const texto =
+        normalizarTexto(
+            microarquitetura
+        )
 
     for (const key in SOCKET_MAP) {
-        if (arch.includes(key)) {
+
+        if (texto.includes(key)) {
             return SOCKET_MAP[key]
         }
     }
@@ -75,67 +152,128 @@ export function definirSocket(microarquitetura: string): string {
     return "Desconhecido"
 }
 
-export function definirMarca(nome: string): string {
-    const upper = nome.toUpperCase()
+export function definirMarca(
+    nome: string
+): string {
 
-    if (upper.includes("AMD") || upper.includes("RYZEN"))
-        return "AMD"
+    const texto =
+        nome.toUpperCase()
 
-    if (upper.includes("INTEL") || upper.includes("CORE"))
-        return "Intel"
+    const marcas = [
+
+        "AMD",
+        "INTEL",
+        "NVIDIA",
+        "ASUS",
+        "MSI",
+        "GIGABYTE",
+        "ASROCK",
+        "CORSAIR",
+        "KINGSTON",
+        "SAMSUNG",
+        "PNY"
+    ]
+
+    for (const marca of marcas) {
+
+        if (texto.includes(marca)) {
+            return marca
+        }
+    }
 
     if (
-        upper.includes("NVIDIA") ||
-        upper.includes("RTX") ||
-        upper.includes("GTX")
-    )
-        return "NVIDIA"
+        texto.includes("RYZEN")
+    ) {
+        return "AMD"
+    }
 
-    if (upper.includes("ASUS")) return "ASUS"
-    if (upper.includes("MSI")) return "MSI"
-    if (upper.includes("GIGABYTE")) return "Gigabyte"
-    if (upper.includes("ASROCK")) return "ASRock"
-    if (upper.includes("CORSAIR")) return "Corsair"
-    if (upper.includes("T-FORCE")) return "T-Force"
-    if (upper.includes("KINGSTON")) return "Kingston"
-    if (upper.includes("SAMSUNG")) return "Samsung"
-    if (upper.includes("G.SKILL")) return "G.Skill"
-    if (upper.includes("PNY")) return "PNY"
+    if (
+        texto.includes("CORE")
+    ) {
+        return "Intel"
+    }
+
+    if (
+        texto.includes("RTX") ||
+        texto.includes("GTX")
+    ) {
+        return "NVIDIA"
+    }
 
     return "Genérico"
 }
 
-export function definirChipset(nome: string): string {
-    const match = nome.match(
-        /\b(B650|B550|X670|X570|A620|Z790|Z690|B760|B660|H610)\b/i
-    )
+export function definirChipset(
+    nome: string
+): string {
 
-    return match?.[0].toUpperCase() ?? "Desconhecido"
+    const match =
+        nome.match(
+            /\b(B650|B550|X670|X570|A620|A520|Z790|Z690|B760|B660|H610|H510|X870|B850)\b/i
+        )
+
+    return match?.[0]
+        ?.toUpperCase() ?? ""
 }
 
-export function definirDDR(socket: string, chipset: string): number {
-    if (socket === "AM5") return 5
-    if (socket === "AM4") return 4
+export function definirDDR(
+    socket: string,
+    chipset: string
+): number {
 
-    if (chipset.startsWith("Z7")) return 5
-    if (chipset.startsWith("B7")) return 5
+    if (socket === "AM5") {
+        return 5
+    }
+
+    if (socket === "AM4") {
+        return 4
+    }
+
+    if (
+        chipset.startsWith("Z7") ||
+        chipset.startsWith("B7")
+    ) {
+        return 5
+    }
 
     return 4
 }
 
-export function definirFormato(form: string): PlacaMae["formato"] {
-    const f = form.toLowerCase()
+export function definirFormato(
+    formato: string
+): PlacaMae["formato"] {
 
-    if (f.includes("micro")) return "MicroATX"
-    if (f.includes("mini")) return "MiniATX"
+    const texto =
+        formato.toLowerCase()
+
+    if (
+        texto.includes("micro")
+    ) {
+        return "MicroATX"
+    }
+
+    if (
+        texto.includes("mini")
+    ) {
+        return "MiniATX"
+    }
 
     return "ATX"
 }
 
-export function definirCor(color: string): string {
-    if (!color) return ''
+export function definirCor(
+    cor: string
+): string {
 
-    const cores: Record<string, string> = {
+    if (!cor) {
+        return ""
+    }
+
+    const cores: Record<
+        string,
+        string
+    > = {
+
         black: "Preto",
         white: "Branco",
         blue: "Azul",
@@ -153,313 +291,211 @@ export function definirCor(color: string): string {
         beige: "Bege"
     }
 
-    return color
+    return cor
         .split("/")
-        .map(cor => {
-            const corFormatada = cor.trim().toLowerCase()
-            return cores[corFormatada] ?? cor.trim()
+        .map(item => {
+
+            const chave =
+                item
+                    .trim()
+                    .toLowerCase()
+
+            return (
+                cores[chave] ??
+                item.trim()
+            )
         })
         .join(" / ")
 }
 
-export function menorPreco(valores: PrecoLoja[]): number {
-    if (!valores?.length) return 0
-    return Math.min(...valores.map(v => v.preco))
-}
-
-// Extrair
-
-export function extrairGddr(nome: string): number {
-    const match = nome.toUpperCase().match(/GDDR(\d)/)
-    return match ? Number(match[1]) : 0
-}
-
-export function extrairTdp(texto: string): number | undefined {
-    const match = texto.match(/(\d{2,4})\s?W/i)
-    return match ? Number(match[1]) : undefined
-}
-
-export function extrairVRAM(texto: string): number {
-    const match = texto.match(/(\d+)\s?GB/i)
-    return match ? Number(match[1]) : 0
-}
-
-export function extrairModeloGPU(texto: string): string {
-    const match = texto.match(
-        /(RTX|GTX|RX)\s?\d{3,4}(\s?TI)?/i
-    )
-
-    return match?.[0]?.toUpperCase() ?? ""
-}
-
-export function extrairModeloCPU(texto: string): string {
-    const match = texto.match(
-        /(i[3579]-\d{4,5}[A-Z]*|RYZEN\s?[3579]\s?\d{4,5}[A-Z0-9]*)/i
-    )
-
-    return match?.[0]?.toUpperCase() ?? ""
-}
-
-export function extrairGeracaoIntel(texto: string): number {
-    const match = texto.match(/i[3579]-(\d{4,5})/i)
-
-    if (!match) return 0
-
-    const numero = match[1]
-
-    return numero.length === 5
-        ? Number(numero[0] + numero[1])
-        : Number(numero[0])
-}
-
-export function extrairSerieRyzen(texto: string): number {
-    const match = texto.match(/RYZEN\s?[3579]\s(\d{4})/i)
-
-    return match ? Number(match[1][0]) : 0
-}
-
-export function extrairDDRRAM(
-    valor: string | number[] | undefined | null
+export function extrairNumero(
+    texto: string,
+    regex: RegExp
 ): number {
-
-    if (!valor) return 0
-
-    if (Array.isArray(valor)) {
-        return valor?.[0] ?? 0
-    }
-
-    if (typeof valor !== "string") {
-        return 0
-    }
-
-    const match = valor.match(/DDR(\d)/i)
-
-    return match ? Number(match[1]) : 0
-}
-
-export function extrairClockRAM(
-    valor: string | number[] | undefined | null
-): number {
-
-    if (!valor) return 0
-
-    if (Array.isArray(valor)) {
-        return valor?.[1] ?? 0
-    }
-
-    if (typeof valor !== "string") {
-        return 0
-    }
 
     const match =
-        valor.match(/(\d{4,5})\s?(MHz|MT\/s)?/i)
+        texto.match(regex)
 
-    return match ? Number(match[1]) : 0
+    return match
+        ? Number(
+            match[1]
+                .replace(",", ".")
+        )
+        : 0
 }
 
-export function extrairModulosRAM(
-    valor: string | number[] | undefined | null
-): number[] {
-
-    if (!valor) return []
-
-    if (Array.isArray(valor)) {
-        return valor
-    }
-
-    if (typeof valor !== "string") {
-        return []
-    }
+export function extrairTexto(
+    texto: string,
+    regex: RegExp
+): string {
 
     const match =
-        valor.match(/(\d+)x(\d+)/i)
+        texto.match(regex)
 
-    if (!match) return []
-
-    return [
-        Number(match[1]),
-        Number(match[2])
-    ]
+    return match?.[1] ?? ""
 }
 
-export function extrairCapacidadeRAM(
-    valor: string | number[] | undefined | null
-): number {
-
-    if (!valor) return 0
-
-    if (Array.isArray(valor)) {
-        const quantidade = valor?.[0] ?? 0
-        const capacidade = valor?.[1] ?? 0
-
-        return quantidade * capacidade
-    }
-
-    if (typeof valor !== "string") {
-        return 0
-    }
-
-    const match =
-        valor.match(/(\d+)\s?GB/i)
-
-    return match ? Number(match[1]) : 0
-}
-
-export function extrairChipset(nome: string): string {
-    const match = nome.match(
-        /\b(B650|B550|X670|X570|A620|A520|Z790|Z690|B760|B660|H610|H510|X870|B850)\b/i
-    )
-
-    return match?.[0].toUpperCase() ?? ""
-}
-
-export function extrairVelocidadeRAM(texto: string): number {
-    const match = texto.match(/(\d{4,5})\s?MHZ/i)
-
-    return match ? Number(match[1]) : 0
-}
-
-export function extrairDDRMB(texto: string): number {
-    const match = texto.match(/DDR(\d)/i)
-
-    return match ? Number(match[1]) : 0
-}
-
-export function extrairCL(texto: string): number {
-    const match = texto.match(/CL(\d+)/i)
-
-    return match ? Number(match[1]) : 0
-}
-
-export function extrairCapacidadeStorage(
-    texto: string
-): number {
-
-    const matchTB = texto.match(/(\d+)\s?TB/i)
-
-    if (matchTB) {
-        return Number(matchTB[1]) * 1000
-    }
-
-    const matchGB = texto.match(/(\d+)\s?GB/i)
-
-    return matchGB ? Number(matchGB[1]) : 0
-}
-
-export function extrairInterfaceStorage(
+export function extrairSocketCPU(
     texto: string
 ): string {
+
+    const match =
+        texto.match(
+            /(AM4|AM5|LGA\s?1700|LGA\s?1851|LGA\s?1200)/i
+        )
+
+    return match
+        ? match[0]
+            .replace(/\s/g, "")
+            .toUpperCase()
+        : ""
+}
+
+export function extrairCoresCPU(
+    texto: string
+): number {
+
+    return extrairNumero(
+        texto,
+        /(\d+)\s*n[uú]cleos?/i
+    )
+}
+
+export function extrairThreadsCPU(
+    texto: string
+): number {
+
+    return extrairNumero(
+        texto,
+        /(\d+)\s*threads?/i
+    )
+}
+
+export function extrairClockCPU(
+    texto: string
+): number {
+
+    return extrairNumero(
+        texto,
+        /(\d+[,.]?\d*)\s*ghz/i
+    )
+}
+
+export function extrairClockBoostCPU(
+    texto: string
+): number {
+
+    return extrairNumero(
+        texto,
+        /\(?(\d+[,.]?\d*)\s*ghz\)?\s*(max turbo|boost|max boost)/i
+    )
+}
+
+export function extrairCacheCPU(
+    texto: string
+): number {
+
+    return extrairNumero(
+        texto,
+        /cache\s*(\d+)\s*mb/i
+    )
+}
+
+export function extrairTDPCPU(
+    texto: string
+): number {
+
+    return extrairNumero(
+        texto,
+        /(\d+)\s*w/i
+    )
+}
+
+export function extrairVideoIntegradoCPU(
+    texto: string
+): boolean {
 
     const normalizado =
         normalizarTexto(texto)
 
     if (
-        normalizado.includes("nvme") ||
-        normalizado.includes("m.2")
+        normalizado.includes(
+            "sem video"
+        )
     ) {
-        return "NVME"
+        return false
     }
 
-    return "SATA"
+    return (
+        normalizado.includes(
+            "video integrado"
+        )
+    )
 }
 
-export function extrairFormatoStorage(
-    texto: string
-): string {
-
-    if (texto.includes("2.5")) {
-        return "2.5"
-    }
-
-    if (texto.includes("3.5")) {
-        return "3.5"
-    }
-
-    return "M2"
-}
-
-export function extrairTipoStorage(
-    texto: string
-): string {
-
-    const normalizado =
-        normalizarTexto(texto)
-
-    if (
-        normalizado.includes("ssd") ||
-        normalizado.includes("nvme")
-    ) {
-        return "SSD"
-    }
-
-    return "HD"
-}
-
-export function extrairPotenciaFonte(
+export function extrairGddr(
     texto: string
 ): number {
 
-    const match =
-        texto.match(/(\d{3,4})\s?W/i)
-
-    return match ? Number(match[1]) : 0
-}
-
-export function extrairCertificacaoFonte(
-    texto: string
-): string {
-
-    const match = texto.match(
-        /(bronze|gold|silver|platinum|titanium)/i
+    return extrairNumero(
+        texto.toUpperCase(),
+        /GDDR(\d)/i
     )
-
-    return match?.[0]?.toUpperCase() ?? ""
 }
 
-export function extrairModularidadeFonte(
+export function extrairVRAM(
+    texto: string
+): number {
+
+    return extrairNumero(
+        texto,
+        /(\d+)\s?GB/i
+    )
+}
+
+export function extrairModeloGPU(
     texto: string
 ): string {
 
-    const normalizado =
-        normalizarTexto(texto)
+    const match =
+        texto.match(
+            /(RTX|GTX|RX)\s?\d{3,4}(\s?TI)?/i
+        )
 
-    if (normalizado.includes("full")) {
-        return "Full Modular"
-    }
-
-    if (normalizado.includes("semi")) {
-        return "Semi Modular"
-    }
-
-    return "Não Modular"
+    return match?.[0]
+        ?.toUpperCase() ?? ""
 }
 
-export function extrairFormatoGabinete(
+export function extrairTDPGPU(
     texto: string
-): string {
+): number {
 
-    if (texto.includes("Mini")) {
-        return "Mini Tower"
+    const modelos: Record<
+        string,
+        number
+    > = {
+
+        "RTX 4090": 450,
+        "RTX 4080": 320,
+        "RTX 4070": 200,
+        "RTX 4060": 115,
+
+        "RX 7900 XTX": 355,
+        "RX 7800 XT": 263,
+        "RX 7700 XT": 245
     }
 
-    if (texto.includes("Mid")) {
-        return "Mid Tower"
+    const upper =
+        texto.toUpperCase()
+
+    for (const modelo in modelos) {
+
+        if (
+            upper.includes(modelo)
+        ) {
+            return modelos[modelo]
+        }
     }
 
-    return "Full Tower"
-}
-
-export function extrairTamanhoGabinete(
-    volume: number
-): string {
-
-    if (volume >= 40) {
-        return "Grande"
-    }
-
-    if (volume >= 25) {
-        return "Médio"
-    }
-
-    return "Compacto"
+    return 0
 }

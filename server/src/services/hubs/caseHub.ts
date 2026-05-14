@@ -13,6 +13,7 @@ export async function updateCasePrices() {
         tipo: "gabinete",
         seletorKabum: "gabinete",
         seletorPichau: "gabinete",
-        seletorTerabyte: "gabinete"
+        seletorTerabyte: "gabinete",
+        extracoes: ["fans"]
     })
 }

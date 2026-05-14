@@ -20,7 +20,6 @@ export async function updateGpuPrices() {
         seletorKabum: "produto",
         seletorPichau: "placa-de-video",
         seletorTerabyte: "placa-de-video",
-        extrairGddr: true,
-        extrairTdp: true
+        extracoes: ["tdp", "gddr"]
     })
 }

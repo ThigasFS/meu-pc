@@ -1,20 +1,25 @@
-export interface ConfigComponente {
-    tipo: string
-    seletorKabum: string
-    seletorPichau: string
-    seletorTerabyte: string
-    extrairTdp?: boolean
-    extrairGddr?: boolean
-}
-
 export interface ResultadoScraper {
+
+    nomeEncontrado: string
+
     imagem: string
-    nomeEncontrado: string,
-    tdp?: number,
-    gddr? : number,
+
+    specs: Record<string, any>
+
     valor: {
         loja: string
         preco: number
         url: string
     } | null
+}
+
+export interface ConfigComponente {
+
+    tipo: string
+
+    urls: {
+        Kabum: string
+        Pichau: string
+        Terabyte: string
+    }
 }

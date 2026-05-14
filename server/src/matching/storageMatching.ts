@@ -1,87 +1,30 @@
-import {
-    extrairCapacidadeStorage,
-    extrairInterfaceStorage,
-    extrairTipoStorage,
-    normalizarTexto
-} from "../utils/componenteUtils"
+import { extrairCapacidadeStorage, extrairFormatoStorage, extrairInterfaceStorage, extrairTipoStorage } from "../utils/componenteUtils"
 
-export function storageCompativel(
-    nomeBuscado: string,
-    nomeEncontrado: string
+export function matchStorage(
+    buscado: string,
+    encontrado: string
 ): boolean {
 
-    const capacidadeBuscada =
-        extrairCapacidadeStorage(
-            nomeBuscado
-        )
+    const capacidadeMatch =
+        extrairCapacidadeStorage(buscado) ===
+        extrairCapacidadeStorage(encontrado)
 
-    const capacidadeEncontrada =
-        extrairCapacidadeStorage(
-            nomeEncontrado
-        )
+    const interfaceMatch =
+        extrairInterfaceStorage(buscado) ===
+        extrairInterfaceStorage(encontrado)
 
-    if (
-        capacidadeBuscada &&
-        capacidadeEncontrada &&
-        capacidadeBuscada !==
-        capacidadeEncontrada
-    ) {
-        return false
-    }
+    const formatoMatch =
+        extrairFormatoStorage(buscado) ===
+        extrairFormatoStorage(encontrado)
 
-    const interfaceBuscada =
-        extrairInterfaceStorage(
-            nomeBuscado
-        )
-
-    const interfaceEncontrada =
-        extrairInterfaceStorage(
-            nomeEncontrado
-        )
-
-    if (
-        interfaceBuscada !==
-        interfaceEncontrada
-    ) {
-        return false
-    }
-
-    const tipoBuscado =
-        extrairTipoStorage(
-            nomeBuscado
-        )
-
-    const tipoEncontrado =
-        extrairTipoStorage(
-            nomeEncontrado
-        )
-
-    if (
-        tipoBuscado !== tipoEncontrado
-    ) {
-        return false
-    }
-
-    const buscado =
-        normalizarTexto(nomeBuscado)
-
-    const encontrado =
-        normalizarTexto(nomeEncontrado)
-
-    const palavrasImportantes =
-        buscado
-            .split(" ")
-            .filter(p => p.length >= 4)
-
-    const acertos =
-        palavrasImportantes.filter(p =>
-            encontrado.includes(p)
-        )
+    const tipoMatch =
+        extrairTipoStorage(buscado) ===
+        extrairTipoStorage(encontrado)
 
     return (
-        acertos.length >=
-        Math.ceil(
-            palavrasImportantes.length * 0.7
-        )
+        capacidadeMatch &&
+        interfaceMatch &&
+        formatoMatch &&
+        tipoMatch
     )
 }

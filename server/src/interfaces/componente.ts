@@ -6,6 +6,7 @@ export interface PrecoLoja {
 
 export interface Processador {
     id: number,
+    fingerprint: string,
     nome: string,
     marca: string,
     socket: string,

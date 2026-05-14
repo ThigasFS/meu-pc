@@ -5,77 +5,61 @@ interface PrecoDb {
     nome: string
     tipo: string
     marca: string
+
     loja: string
     preco: number
-    imagem: string
     url: string
 
-    tdp?: number | null
-    gddr?: number | null
+    imagem: string
+    fingerprint: string
 
-    velocidadeLeitura?: number | null
-    velocidadeGravacao?: number | null
-
-    qtdFans?: number | null
-
-    pcieConectores?: number | null
-    sataConectores?: number | null
-    epsConectores?: number | null
+    specs?: Record<string, any>
 }
 
 export async function salvarPrecoProduto(
     dados: PrecoDb
 ) {
-    const [produtoRows] = await connection.execute(
-        `
-        SELECT id
-        FROM produtos
-        WHERE nome = ?
-        LIMIT 1
-        `,
-        [dados.nome]
-    )
 
-    const produtos = produtoRows as any[]
+    const [produtoRows] =
+        await connection.execute(
+            `
+            SELECT id
+            FROM produtos
+            WHERE fingerprint = ?
+            LIMIT 1
+            `,
+            [dados.fingerprint]
+        )
+
+    const produtos =
+        produtoRows as any[]
 
     let produtoId: number
 
     if (produtos.length > 0) {
-        produtoId = produtos[0].id
+
+        produtoId =
+            produtos[0].id
 
         await connection.execute(
             `
             UPDATE produtos
             SET
                 imagem = ?,
-                gddr = ?,
-                tdp = ?,
-                velocidade_leitura = ?,
-                velocidade_gravacao = ?,
-                qtd_fans = ?,
-                pcie_conectores = ?,
-                sata_conectores = ?,
-                eps_conectores = ?
+                specs = ?
             WHERE id = ?
             `,
             [
                 dados.imagem,
-                dados.gddr ?? null,
-                dados.tdp ?? null,
-
-                dados.velocidadeLeitura ?? null,
-                dados.velocidadeGravacao ?? null,
-
-                dados.qtdFans ?? null,
-
-                dados.pcieConectores ?? null,
-                dados.sataConectores ?? null,
-                dados.epsConectores ?? null,
-
+                JSON.stringify(
+                    dados.specs ?? {}
+                ),
                 produtoId
             ]
         )
+
     } else {
+
         const [insertResult] =
             await connection.execute(
                 `
@@ -85,47 +69,27 @@ export async function salvarPrecoProduto(
                     tipo,
                     marca,
                     imagem,
-
-                    gddr,
-                    tdp,
-
-                    velocidade_leitura,
-                    velocidade_gravacao,
-
-                    qtd_fans,
-
-                    pcie_conectores,
-                    sata_conectores,
-                    eps_conectores
+                    fingerprint,
+                    specs
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?)
                 `,
                 [
                     dados.nome,
                     dados.tipo,
                     dados.marca,
                     dados.imagem,
+                    dados.fingerprint,
 
-                    dados.gddr ?? null,
-                    dados.tdp ?? null,
-
-                    dados.velocidadeLeitura ??
-                    null,
-                    dados.velocidadeGravacao ??
-                    null,
-
-                    dados.qtdFans ?? null,
-
-                    dados.pcieConectores ??
-                    null,
-                    dados.sataConectores ??
-                    null,
-                    dados.epsConectores ??
-                    null
+                    JSON.stringify(
+                        dados.specs ?? {}
+                    )
                 ]
             )
 
-        produtoId = (insertResult as any).insertId
+        produtoId =
+            (insertResult as any)
+                .insertId
     }
 
     await connection.execute(
@@ -139,6 +103,7 @@ export async function salvarPrecoProduto(
             atualizado_em
         )
         VALUES (?, ?, ?, ?, NOW())
+
         ON DUPLICATE KEY UPDATE
             preco = VALUES(preco),
             url = VALUES(url),

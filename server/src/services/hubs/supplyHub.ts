@@ -14,6 +14,7 @@ export async function updateSupplyPrices() {
         tipo: "fonte",
         seletorKabum: "fonte",
         seletorPichau: "fonte",
-        seletorTerabyte: "fonte"
+        seletorTerabyte: "fonte",
+        extracoes: ["conectores"]
     })
 }

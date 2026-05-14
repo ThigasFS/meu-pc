@@ -37,7 +37,8 @@ export async function updateStoragePrices() {
         tipo: "armazenamento",
         seletorKabum: "ssd",
         seletorPichau: "ssd",
-        seletorTerabyte: "ssd"
+        seletorTerabyte: "ssd",
+        extracoes: ["velocidadeStorage"]
     })
 
     await atualizarComponente(hds, {

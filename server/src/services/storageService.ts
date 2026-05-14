@@ -15,6 +15,8 @@ export async function getStorageDB(): Promise<Armazenamento[]> {
             p.nome,
             p.marca,
             p.imagem,
+            p.velocidade_leitura,
+            p.velocidade_gravacao,
             pp.loja,
             pp.preco,
             pp.url
@@ -38,8 +40,8 @@ export async function getStorageDB(): Promise<Armazenamento[]> {
                 interface: "NVME",
                 tipoArmazenamento: "HD",
                 unidade: "GB",
-                velocidadeGravacao: 0,
-                velocidadeLeitura: 0,
+                velocidadeGravacao: row.velocidade_gravacao ?? 0,
+                velocidadeLeitura: row.velocidade_leitura ?? 0,
                 imagem: row.imagem,
                 preco: Number(row.preco) || 0,
                 valores: []
@@ -69,16 +71,34 @@ export async function getStorages(): Promise<Armazenamento[]> {
     )
 
     return jsonData.map((storageJson, index) => {
-        const storageBanco = bancoMap.get(storageJson.name)
         const capacidadeTB = storageJson.capacity >= 1000
-        const capacidade = capacidadeTB ? storageJson.capacity/1000 : storageJson.capacity
+        const capacidade = capacidadeTB ? storageJson.capacity / 1000 : storageJson.capacity
         const tipoArmazenamento: "SSD" | "HD" = storageJson.type === 'SSD' ? 'SSD' : 'HD'
         const interfaceStorage: "NVME" | "SATA" = storageJson.interface?.includes("M.2") ? 'NVME' : 'SATA'
         const unidade: "TB" | "GB" = capacidadeTB ? "TB" : "GB"
         const formato: "2.5" | "3.5" | "M2" = String(storageJson.form_factor)?.includes('2.5') ? '2.5' : String(storageJson.form_factor).includes('3.5') ? '3.5' : 'M2'
+        const storageBanco =
+            dbData.find(storage => {
+
+                const nomeBanco =
+                    storage.nome.toLowerCase()
+
+                const nomeJson =
+                    storageJson.name.toLowerCase()
+
+                const capacidadeMatch =
+                    nomeBanco.includes(
+                        `${capacidade}${unidade.toLowerCase()}`
+                    )
+
+                return (
+                    nomeBanco.includes(nomeJson) &&
+                    capacidadeMatch
+                )
+        })
 
         return {
-            id:  storageBanco?.id ?? index + 1,
+            id: index + 1,
             nome: storageJson.name,
             marca: definirMarca(storageJson.name),
             capacidade,
@@ -92,7 +112,7 @@ export async function getStorages(): Promise<Armazenamento[]> {
             preco: menorPreco(storageBanco?.valores ?? []),
             valores: storageBanco?.valores ?? []
         }
-    }).filter((data) => 
+    }).filter((data) =>
         data.imagem.length > 0 &&
         data.preco > 0 &&
         data.valores.length > 0
