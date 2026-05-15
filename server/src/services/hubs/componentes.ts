@@ -21,6 +21,7 @@ import {
     ConfigComponente
 } from "../../interfaces/scraper"
 import { getSeletor } from "../../utils/seletores"
+import { extrairSpecs } from "../../utils/extrairSpecs"
 
 
 puppeteer.use(
@@ -34,7 +35,7 @@ export async function atualizarComponente(
     const browser =
         await puppeteer.launch({
 
-            headless: true,
+            headless: false, // ON
 
             args: [
                 "--no-sandbox",
@@ -103,6 +104,8 @@ export async function atualizarComponente(
                         produto.nomeEncontrado
                     )
 
+                const specs = extrairSpecs(produto.nomeEncontrado, config.tipo)
+
                 await salvarPrecoProduto({
 
                     nome:
@@ -130,8 +133,7 @@ export async function atualizarComponente(
 
                     fingerprint,
 
-                    specs:
-                        produto.specs
+                    specs
                 })
 
                 console.log(

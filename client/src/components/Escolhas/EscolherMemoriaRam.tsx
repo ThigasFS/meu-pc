@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import style from './Escolhas.module.css'
 import { MemoriaRAM } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
 import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
 import axios from "axios"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
-import HeaderEscolhas from "./HeaderEscolhas"
+import LayoutEscolhas from "./LayoutEscolhas/Layout"
+import { Grid } from "@mui/material"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -54,10 +54,10 @@ function EscolherMemoriaRAM() {
                     ram.valores?.length &&
                     ram.velocidade
                 )
-                .map((mb, index) => ({
-                    ...mb,
-                    id: index + 1
-                }))
+                    .map((mb, index) => ({
+                        ...mb,
+                        id: index + 1
+                    }))
 
                 const ramDdrAtual = ramsCompleta.filter((ram) => ram.ddr === pcMontado?.placaMae?.ddr)
                 setListaMemorias(ramDdrAtual)
@@ -85,32 +85,43 @@ function EscolherMemoriaRAM() {
     }
 
     return (
-        <div>
-            <HeaderEscolhas
-                titulo="Escolha sua Memória RAM"
-                infosExtras={[
-                    {
-                        label: "Sua memória",
-                        valor: listaMemorias.length === 0 ? 'Não há nenhuma memória compatível com este DDR' : `Apenas mostrando as memórias com o DDR${pcMontado.placaMae?.ddr}`
-                    }
-                ]}
-                valorTotal={pcMontado.valorTotal}
-                onAnterior={voltarAnterior}
-                onCancelar={cancelarPc}
-                acaoDireita={
-                    <Link to="/criar-novo-pc/armazenamento">
-                        <BotaoEscolhas />
-                    </Link>
+        <LayoutEscolhas
+            titulo="Escolha sua Memória RAM"
+            valorTotal={pcMontado.valorTotal}
+            onAnterior={voltarAnterior}
+            onCancelar={cancelarPc}
+            acaoDireita={
+                <Link to="/criar-novo-pc/armazenamento">
+                    <BotaoEscolhas />
+                </Link>
+            }
+            infosExtras={[
+                {
+                    label: "Sua memória",
+                    valor: listaMemorias.length === 0 ? 'Não há nenhuma memória compatível com este DDR' : `Apenas mostrando as memórias com o DDR${pcMontado.placaMae?.ddr}`
                 }
-            />
-            <div className={style.containerEscolhas}>
-                {listaMemorias.map((memoria) => (
+            ]}
+        >
+            {listaMemorias.map(memoria =>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 4,
+                        lg: 3,
+                        xl: 2.4
+                    }}
+                    key={memoria.id}
+                    sx={{
+                        display: 'flex'
+                    }}
+                >
                     <CardEscolha
                         componente="memoriaram"
                         key={memoria.id}
                         imagem={memoria.imagem}
                         marca={memoria.marca}
-                        modelo={memoria.modelo}
+                        modelo={memoria.nome}
                         preco={memoria.preco}
                         aoSelecionar={selecionarModelo}
                         selecionado={modeloSelecionado === memoria.id}
@@ -120,9 +131,9 @@ function EscolherMemoriaRAM() {
                         capacidadeRam={memoria.capacidade}
                         id={memoria.id}
                     />
-                ))}
-            </div>
-        </div>
+                </Grid>
+            )}
+        </LayoutEscolhas >
     )
 }
 

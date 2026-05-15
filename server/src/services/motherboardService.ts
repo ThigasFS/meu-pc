@@ -1,91 +1,90 @@
-import "../config/env"
-import { getData } from "./dataLoader"
-import connection from "../database/connection"
 import {
-    PlacaMae,
-    PlacaMaeJson,
-    PrecoLoja
+    PlacaMae
 } from "../interfaces/componente"
-import { definirChipset, definirDDR, definirFormato, definirMarca, menorPreco } from "../utils/componenteUtils"
 
-export async function getMotherboardsDB(): Promise<PlacaMae[]> {
-    const [rows] = await connection.query(`
-        SELECT
-            p.id,
-            p.nome,
-            p.marca,
-            p.imagem,
-            pp.loja,
-            pp.preco,
-            pp.url
-        FROM produtos p
-        LEFT JOIN precos_produto pp
-            ON p.id = pp.produto_id
-        WHERE p.tipo = 'placamae'
-        ORDER BY p.id
-    `)
+import {
+    definirDDR,
+    definirMarca,
+    menorPreco,
 
-    const mapa = new Map<number, PlacaMae>()
+    extrairSocketMB,
+    extrairChipsetMB,
+    extrairFormatoMB
 
-    for (const row of rows as any[]) {
-        if (!mapa.has(row.id)) {
-            mapa.set(row.id, {
-                id: row.id,
-                nome: row.nome,
-                marca: row.marca,
-                socket: "",
-                chipset: "",
-                formato: "ATX",
-                maxRam: 0,
-                ddr: 0,
-                imagem: row.imagem,
-                preco: Number(row.preco) || 0,
-                valores: []
-            })
-        }
+} from "../utils/componenteUtils"
 
-        const placa = mapa.get(row.id)!
-
-        if (row.loja) {
-            placa.valores.push({
-                loja: row.loja,
-                preco: Number(row.preco),
-                url: row.url
-            })
-        }
-    }
-
-    return Array.from(mapa.values())
-}
+import {
+    BaseProdutoService
+} from "./BaseProdutoService"
 
 export async function getMotherboards(): Promise<PlacaMae[]> {
-    const jsonData: PlacaMaeJson[] = getData("motherboard")
-    const dbData = await getMotherboardsDB()
 
-    const bancoMap = new Map(
-        dbData.map((mb) => [mb.nome, mb])
-    )
+    return BaseProdutoService<never, PlacaMae>({
+        tabelaTipo: "placamae",
 
-    return jsonData.map((mbJson, index) => {
-        const mbBanco = bancoMap.get(mbJson.name)
-        const chipset = definirChipset(mbJson.name)
+        mapear: ({ banco, index }) => {
 
-        return {
-            id: mbBanco?.id ?? index + 1,
-            nome: mbJson.name,
-            marca: definirMarca(mbJson.name),
-            socket: mbJson.socket,
-            chipset,
-            formato: definirFormato(mbJson.form_factor),
-            maxRam: mbJson.max_memory,
-            ddr: definirDDR(mbJson.socket, chipset),
-            imagem: mbBanco?.imagem ?? "",
-            preco: menorPreco(mbBanco?.valores ?? []),
-            valores: mbBanco?.valores ?? []
-        }
-    }).filter((data) => 
-        data.imagem.length > 0 &&
-        data.preco > 0 &&
-        data.valores.length > 0
-    )
+            const specs =
+                banco?.specs ?? {}
+
+            const nome =
+                banco?.nome ?? ""
+
+            const chipset =
+                specs.chipset ??
+                extrairChipsetMB(nome)
+
+            const socket =
+                specs.socket ??
+                extrairSocketMB(nome)
+
+            return {
+
+                id:
+                    banco?.id ??
+                    index + 1,
+
+                nome,
+
+                marca:
+                    banco?.marca ??
+                    definirMarca(nome),
+
+                socket,
+
+                chipset,
+
+                formato:
+                    specs.formato ??
+                    extrairFormatoMB(nome),
+
+                maxRam:
+                    specs.maxRam ??
+                    128,
+
+                ddr:
+                    specs.ddr ??
+                    definirDDR(
+                        socket,
+                        chipset
+                    ),
+
+                imagem:
+                    banco?.imagem ?? "",
+
+                preco:
+                    menorPreco(
+                        banco?.valores ?? []
+                    ),
+
+                valores:
+                    banco?.valores ?? []
+            }
+        },
+
+        filtro: (mb) =>
+            mb.imagem.length > 0 &&
+            mb.preco > 0 &&
+            mb.valores.length > 0
+    })
 }

@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 
 type Props = {
     last?: boolean
+    selecionado?: boolean
 }
 
 function BotaoEscolhas({last = false}: Props){

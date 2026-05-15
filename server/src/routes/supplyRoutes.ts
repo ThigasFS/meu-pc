@@ -1,11 +1,11 @@
 import { Router } from "express"
-import { getSupply } from "../services/supplyService"
+import { getPsus } from "../services/supplyService"
 
 const router = Router()
 
 router.get("/", async (req, res) => {
     try {
-        const supply = await getSupply()
+        const supply = await getPsus()
 
         res.json(supply)
     } catch (error) {

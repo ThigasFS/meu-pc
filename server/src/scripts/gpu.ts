@@ -1,4 +1,4 @@
-import { updateGpuPrices } from "../services/hubs/gpu"
+import { updateGpuPrices } from "../services/hubs/gpuHub"
 
 async function main() {
     await updateGpuPrices()

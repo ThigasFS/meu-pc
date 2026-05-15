@@ -11,51 +11,78 @@ export async function scrapeTerabyte(
 
     try {
 
-        await page.goto(url, {
-            waitUntil: "domcontentloaded"
+        await page.setViewport({
+            width: 1920,
+            height: 1080
         })
+
+        await page.goto(url, {
+            waitUntil: "networkidle2"
+        })
+
+        await new Promise(resolve =>
+            setTimeout(resolve, 3000)
+        )
 
         await page.waitForSelector(seletorProduto)
 
-        const produtos =
-            await page.$$eval(
-                seletorProduto,
-                elementos => {
+        const produtos = await page.$$eval(
+            seletorProduto,
+            (elementos) => {
 
-                    return elementos
-                        .map(el => {
+                return elementos.map((el) => {
 
-                            const nomeEncontrado =
-                                el.textContent
-                                    ?.trim() ?? ""
+                    const nomeEncontrado =
+                        el.getAttribute("title")
+                            ?.trim() ?? ""
 
-                            const imagem =
-                                el.querySelector("img")
-                                    ?.getAttribute("src") ?? ""
+                    const imagem =
+                        el.querySelector("img")
+                            ?.getAttribute("src") ?? ""
 
-                            const href =
-                                el.getAttribute("href") ?? ""
+                    const href =
+                        el.getAttribute("href") ?? ""
 
-                            return {
-                                nomeEncontrado,
-                                imagem,
+                    const container =
+                        el.closest(".pbox")
 
-                                specs: {},
+                    const precoTexto =
+                        container
+                            ?.querySelector(
+                                ".prod-new-price span"
+                            )
+                            ?.textContent
+                            ?.trim() ?? ""
 
-                                valor: {
-                                    loja: "Terabyte",
-                                    preco: 0,
-                                    url: href
-                                }
-                            }
-                        })
-                        .filter(p =>
-                            p.nomeEncontrado
-                        )
-                }
-            )
+                    const preco = Number(
+                        precoTexto
+                            .replace(/[^\d,]/g, "")
+                            .replace(/\./g, "")
+                            .replace(",", ".")
+                    )
 
-        return produtos
+                    return {
+
+                        nomeEncontrado,
+                        imagem,
+
+                        specs: {},
+
+                        valor: {
+                            loja: "Terabyte",
+                            preco,
+                            url: href
+                        }
+                    }
+                })
+            }
+        )
+
+        return produtos.filter(
+            p =>
+                p.nomeEncontrado &&
+                p.valor.preco > 0
+        )
 
     } finally {
 

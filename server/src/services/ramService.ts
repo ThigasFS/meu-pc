@@ -1,106 +1,102 @@
-import "../config/env"
-import { getData } from "./dataLoader"
-import connection from "../database/connection"
 import {
     MemoriaRam,
-    MemoriaRamJson,
-    PrecoLoja
+    MemoriaRamJson
 } from "../interfaces/componente"
-import { definirMarca, menorPreco, normalizarTexto } from "../utils/componenteUtils"
 
-export async function getRamDB(): Promise<MemoriaRam[]> {
-    const [rows] = await connection.query(`
-        SELECT
-            p.id,
-            p.nome,
-            p.marca,
-            p.imagem,
-            pp.loja,
-            pp.preco,
-            pp.url
-        FROM produtos p
-        LEFT JOIN precos_produto pp
-            ON p.id = pp.produto_id
-        WHERE p.tipo = 'ram'
-        ORDER BY p.id
-    `)
+import {
+    definirDDR,
+    definirMarca,
+    extrairCapacidadeRAM,
+    extrairCL,
+    extrairClockRAM,
+    extrairModulosRAM,
+    menorPreco
+} from "../utils/componenteUtils"
 
-    const mapa = new Map<number, MemoriaRam>()
+import {
+    gerarFingerprintProduto
+} from "../utils/fingerprint"
 
-    for (const row of rows as any[]) {
-        if (!mapa.has(row.id)) {
-            mapa.set(row.id, {
-                id: row.id,
-                nome: row.nome,
-                marca: row.marca,
-                capacidade: 0,
-                cl: 0,
-                modulos: [],
-                ddr: 0,
-                velocidade: 0,
-                imagem: row.imagem,
-                preco: Number(row.preco) || 0,
-                valores: []
-            })
-        }
-
-        const placa = mapa.get(row.id)!
-
-        if (row.loja) {
-            placa.valores.push({
-                loja: row.loja,
-                preco: Number(row.preco),
-                url: row.url
-            })
-        }
-    }
-
-    return Array.from(mapa.values())
-}
+import {
+    BaseProdutoService
+} from "./BaseProdutoService"
 
 export async function getRams(): Promise<MemoriaRam[]> {
-    const jsonData: MemoriaRamJson[] = getData("memory")
-    const dbData = await getRamDB()
 
-    console.log(dbData.splice(0,10))
-    console.log(jsonData.splice(0,10))
+    return BaseProdutoService<
+        MemoriaRamJson,
+        MemoriaRam
+    >({
+        tabelaTipo: "ram",
 
-    const bancoMap = new Map(
-        dbData.map((ram) => [normalizarTexto(ram.nome), ram])
-    )
+        gerarFingerprint: (ram) =>
+            gerarFingerprintProduto(
+                "ram",
+                ram.name
+            ),
 
-    return jsonData.map((ramJson, index) => {
-        const nomeJson = normalizarTexto(ramJson.name)
+        mapear: ({
+            json,
+            banco,
+            index
+        }) => {
 
-        const ramBanco = dbData.find(ram => {
-            const nomeBanco = normalizarTexto(ram.nome)
+            const specs =
+                banco?.specs ?? {}
 
-            return (
-                nomeBanco.includes(nomeJson) ||
-                nomeJson.includes(nomeBanco)
-            )
-        })
-        const modulos = ramJson.modules
-        const capacidade = modulos[0] * modulos[1]
-        const ddr = ramJson.speed[0]
-        const velocidade = ramJson.speed[1]
+            const nome =
+                banco?.nome ??
+                json?.name ??
+                ""
 
-        return {
-            id:  ramBanco?.id ?? index + 1,
-            nome: ramJson.name,
-            marca: definirMarca(ramJson.name),
-            capacidade,
-            modulos,
-            cl: ramJson.cas_latency,
-            ddr,
-            velocidade,
-            imagem: ramBanco?.imagem ?? "",
-            preco: menorPreco(ramBanco?.valores ?? []),
-            valores: ramBanco?.valores ?? []
-        }
-    }).filter(data =>
-        data.imagem.length > 0 &&
-        data.valores.length > 0 &&
-        data.preco > 0
-    )
+            return {
+
+                id:
+                    banco?.id ??
+                    index + 1,
+
+                nome,
+
+                marca:
+                    banco?.marca ??
+                    definirMarca(nome),
+
+                capacidade:
+                    specs.capacidade ??
+                    extrairCapacidadeRAM(nome),
+
+                modulos:
+                    specs.modulos ??
+                    extrairModulosRAM(nome),
+
+                velocidade:
+                    specs.velocidade ??
+                    extrairClockRAM(nome),
+
+                ddr:
+                    specs.ddr ??
+                    definirDDR("", nome),
+
+                cl:
+                    specs.cl ??
+                    extrairCL(nome),
+
+                imagem:
+                    banco?.imagem ?? "",
+
+                preco:
+                    menorPreco(
+                        banco?.valores ?? []
+                    ),
+
+                valores:
+                    banco?.valores ?? []
+            }
+        },
+
+        filtro: (ram) =>
+            ram.imagem.length > 0 &&
+            ram.preco > 0 &&
+            ram.valores.length > 0
+    })
 }

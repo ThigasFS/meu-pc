@@ -83,7 +83,7 @@ function Finalizacao() {
                     <Box>
                         <Typography
                             variant='h4'
-                            fontWeight={700}
+                            sx={{fontWeight: 700}}
                         >
                             Finalização do PC
                         </Typography>
@@ -91,7 +91,7 @@ function Finalizacao() {
                         <Typography
                             variant='body1'
                             color='text.secondary'
-                            mt={1}
+                            sx={{ mt: 1}}
                         >
                             Revise os componentes antes de finalizar sua build.
                         </Typography>
@@ -142,7 +142,7 @@ function Finalizacao() {
 
                         <Typography
                             variant='h4'
-                            fontWeight={700}
+                            sx={{fontWeight: 700}}
                         >
                             {pcMontado.valorTotal.toLocaleString(
                                 'pt-BR',

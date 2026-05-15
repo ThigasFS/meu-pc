@@ -1,5 +1,6 @@
 import { Browser } from "puppeteer"
 import { ResultadoScraper } from "../interfaces/scraper"
+import { extrairSpecs } from "../utils/extrairSpecs"
 
 export async function scrapeKabum(
     browser: Browser,
@@ -10,6 +11,15 @@ export async function scrapeKabum(
     const page = await browser.newPage()
 
     try {
+
+        await page.setViewport({
+            width: 1920,
+            height: 1080
+        })
+
+        await page.evaluate(() => {
+            window.scrollTo(0, document.body.scrollHeight)
+        })
 
         await page.goto(url, {
             waitUntil: "domcontentloaded"

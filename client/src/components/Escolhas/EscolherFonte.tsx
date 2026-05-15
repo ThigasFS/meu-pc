@@ -1,12 +1,12 @@
 import { Link, useNavigate, useOutletContext } from 'react-router-dom'
-import style from './Escolhas.module.css'
 import PC from '../../interfaces/pc'
 import { useEffect, useState } from 'react'
 import { Fonte } from '../../interfaces/componente'
 import CardEscolha from '../CardEscolha/CardEscolha'
 import axios from 'axios'
 import BotaoEscolhas from '../BotaoEscolhas/BotaoEscolhas'
-import HeaderEscolhas from './HeaderEscolhas'
+import { Grid } from '@mui/material'
+import LayoutEscolhas from './LayoutEscolhas/Layout'
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -35,15 +35,17 @@ function EscolherFonte() {
                     valorTotal: valorTotalAtualizado
                 }
             })
-        }   
+        }
     }
+
+    console.log(pcMontado)
 
     useEffect(() => {
         axios.get('http://localhost:3000/api/supply')
-        .then(res => {
-            setListaFontes(res.data)
-        })
-        .catch(erro => console.error(erro))        
+            .then(res => {
+                setListaFontes(res.data)
+            })
+            .catch(erro => console.error(erro))
     }, [])
 
     function calcularPotenciaTotal(pc: Partial<PC>): number {
@@ -72,50 +74,61 @@ function EscolherFonte() {
     function cancelarEscolha() {
         setPcMontado(prev => {
             const valorAnterior = prev.fonte?.preco ?? 0
-            const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior 
+            const valorTotalAtualizado = (prev.valorTotal ?? 0) - valorAnterior
             return { ...prev, fonte: undefined, valorTotal: valorTotalAtualizado }
         })
     }
 
-    function cancelarPc(){
+    function cancelarPc() {
         setPcMontado({})
         navigate('/')
     }
 
-    function voltarAnterior(){
+    function voltarAnterior() {
         cancelarEscolha()
         navigate(-1)
     }
 
     return (
-        <div>
-            <HeaderEscolhas
-                titulo="Escolha sua Fonte"
-                valorTotal={pcMontado.valorTotal}
-                onAnterior={voltarAnterior}
-                onCancelar={cancelarPc}
-                acaoDireita={
-                    <Link to="/criar-novo-pc/gabinete">
-                        <BotaoEscolhas />
-                    </Link>
+        <LayoutEscolhas
+            titulo="Escolha sua Fonte"
+            valorTotal={pcMontado.valorTotal}
+            onAnterior={voltarAnterior}
+            onCancelar={cancelarPc}
+            acaoDireita={
+                <Link to="/criar-novo-pc/gabinete">
+                    <BotaoEscolhas />
+                </Link>
+            }
+            infosExtras={[
+                {
+                    label: 'Potência mínima necessaria',
+                    valor: `${potenciaNecessaria}W`
+                },
+                {
+                    label: 'Potência recomendada',
+                    valor: `${potenciaNecessaria + 200}W`
+                },
+                {
+                    label: 'Uso estimado',
+                    valor: `${usoFonte}%`
                 }
-                infosExtras={[
-                    {
-                        label: 'Potência mínima necessaria',
-                        valor: `${potenciaNecessaria}W`
-                    },
-                    {
-                        label: 'Potência recomendada',
-                        valor: `${potenciaNecessaria+200}W`
-                    },
-                    {
-                        label: 'Uso estimado',
-                        valor: `${usoFonte}%`
-                    }
-                ]}
-            />
-            <div className={style.containerEscolhas}>
-                {fontesFiltradas.map((fonte) =>
+            ]}
+        >
+            {fontesFiltradas.map(fonte =>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 4,
+                        lg: 3,
+                        xl: 2.4
+                    }}
+                    key={fonte.id}
+                    sx={{
+                        display: 'flex'
+                    }}
+                >
                     <CardEscolha
                         componente='fonte'
                         key={fonte.id}
@@ -129,9 +142,9 @@ function EscolherFonte() {
                         certificacao={fonte.certificacao}
                         id={fonte.id}
                     />
-                )}
-            </div>
-        </div>
+                </Grid>
+            )}
+        </LayoutEscolhas >
     )
 }
 

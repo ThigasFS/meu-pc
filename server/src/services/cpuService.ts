@@ -1,7 +1,3 @@
-import "../config/env"
-
-import connection from "../database/connection"
-
 import {
     Processador,
     ProcessadorJSON
@@ -13,209 +9,81 @@ import {
     menorPreco
 } from "../utils/componenteUtils"
 
-import {
-    gerarFingerprintProduto
-} from "../utils/fingerprint"
+import { gerarFingerprintProduto } from "../utils/fingerprint"
 
-import {
-    getData
-} from "./dataLoader"
-
-interface CpuBancoRow {
-    id: number
-
-    nome: string
-    fingerprint: string
-
-    marca: string
-    imagem: string
-
-    specs: string | null
-
-    loja: string | null
-    preco: number | null
-    url: string | null
-}
-
-interface CpuBanco {
-    id: number
-
-    nome: string
-    fingerprint: string
-
-    marca: string
-    imagem: string
-
-    specs: Record<string, any>
-
-    valores: {
-        loja: string
-        preco: number
-        url: string
-    }[]
-}
-
-export async function getCpusDB(): Promise<CpuBanco[]> {
-
-    const [rows] = await connection.query(`
-        SELECT
-            p.id,
-            p.nome,
-            p.fingerprint,
-            p.marca,
-            p.imagem,
-            p.specs,
-
-            pp.loja,
-            pp.preco,
-            pp.url
-
-        FROM produtos p
-
-        LEFT JOIN precos_produto pp
-            ON p.id = pp.produto_id
-
-        WHERE p.tipo = 'cpu'
-
-        ORDER BY p.id
-    `)
-
-    const mapa =
-        new Map<number, CpuBanco>()
-
-    for (const row of rows as CpuBancoRow[]) {
-
-        if (!mapa.has(row.id)) {
-
-            mapa.set(row.id, {
-
-                id: row.id,
-
-                nome: row.nome,
-                fingerprint: row.fingerprint,
-
-                marca: row.marca,
-                imagem: row.imagem,
-
-                specs:
-                    typeof row.specs === "string"
-                        ? JSON.parse(row.specs)
-                        : row.specs ?? {},
-
-                valores: []
-            })
-        }
-
-        const produto =
-            mapa.get(row.id)!
-
-        if (
-            row.loja &&
-            row.preco &&
-            row.url
-        ) {
-
-            produto.valores.push({
-
-                loja: row.loja,
-
-                preco:
-                    Number(row.preco),
-
-                url: row.url
-            })
-        }
-    }
-
-    return Array.from(
-        mapa.values()
-    )
-}
+import { BaseProdutoService } from "./BaseProdutoService"
 
 export async function getCpus(): Promise<Processador[]> {
 
-    const jsonData =
-        getData("cpu") as ProcessadorJSON[]
+    return BaseProdutoService<ProcessadorJSON, Processador>({
+        tipo: "cpu",
+        tabelaTipo: "cpu",
 
-    const dbData =
-        await getCpusDB()
+        gerarFingerprint: (cpu) =>
+            gerarFingerprintProduto(
+                "cpu",
+                cpu.name
+            ),
 
-    const bancoMap =
-        new Map(
-            dbData.map(cpu => [
-                cpu.fingerprint,
-                cpu
-            ])
-        )
-
-    const processadores =
-        jsonData.map((cpuJson, index) => {
-
-            const fingerprint =
-                gerarFingerprintProduto(
-                    "cpu",
-                    cpuJson.name
-                )
-
-            const cpuBanco =
-                bancoMap.get(fingerprint)
+        mapear: ({ json, banco, index }) => {
 
             const specs =
-                cpuBanco?.specs ?? {}
+                banco?.specs ?? {}
 
             return {
-
                 id:
-                    cpuBanco?.id ??
+                    banco?.id ??
                     index + 1,
 
-                fingerprint,
+                fingerprint:
+                    banco?.fingerprint ??
+                    gerarFingerprintProduto(
+                        "cpu",
+                        json.name
+                    ),
 
                 nome:
-                    cpuBanco?.nome ??
-                    cpuJson.name,
+                    banco?.nome ??
+                    json.name,
 
                 marca:
-                    cpuBanco?.marca ??
-                    definirMarca(
-                        cpuJson.name
-                    ),
+                    banco?.marca ??
+                    definirMarca(json.name),
 
                 socket:
                     specs.socket ??
                     definirSocket(
-                        cpuJson.microarchitecture
+                        json.microarchitecture
                     ),
 
                 velocidade:
                     specs.clock ??
-                    cpuJson.core_clock,
+                    json.core_clock,
 
                 tdp:
                     specs.tdp ??
-                    cpuJson.tdp,
+                    json.tdp,
 
                 videoIntegrado:
                     specs.videoIntegrado ??
-                    !!cpuJson.graphics,
+                    !!json.graphics,
 
                 imagem:
-                    cpuBanco?.imagem ??
-                    "",
+                    banco?.imagem ?? "",
 
                 preco:
                     menorPreco(
-                        cpuBanco?.valores ?? []
+                        banco?.valores ?? []
                     ),
 
                 valores:
-                    cpuBanco?.valores ?? []
+                    banco?.valores ?? []
             }
-        })
+        },
 
-    return processadores.filter(cpu =>
-        cpu.imagem.length > 0 &&
-        cpu.preco > 0 &&
-        (cpu.valores?.length ?? 0) > 0
-    )
+        filtro: (cpu) =>
+            cpu.imagem.length > 0 &&
+            cpu.preco > 0 &&
+            (cpu.valores?.length ?? 0) > 0
+    })
 }

@@ -56,6 +56,7 @@ function ListaSalvos({ pcs, onRemove }: Props) {
           key={pc.id}
           id={pc.id}
           processador={pc.processador}
+          preco={pc.valorTotal}
           nome={pc.nome}
           onRemove={onRemove}
         />

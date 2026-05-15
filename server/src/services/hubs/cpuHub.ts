@@ -11,7 +11,7 @@ export async function updateCpuPrices() {
                 "https://www.kabum.com.br/hardware/processadores",
 
             Pichau:
-                "https://www.pichau.com.br/processadores",
+                "https://www.pichau.com.br/hardware/processadores",
 
             Terabyte:
                 "https://www.terabyteshop.com.br/hardware/processadores"

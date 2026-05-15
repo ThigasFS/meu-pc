@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import style from './Escolhas.module.css'
 import { PlacaMae } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
 import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
 import axios from "axios"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
-import HeaderEscolhas from "./HeaderEscolhas"
+import { Grid } from "@mui/material"
+import LayoutEscolhas from "./LayoutEscolhas/Layout"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -85,42 +85,53 @@ function EscolherPlacaMae() {
     }
 
     return (
-        <div>
-            <HeaderEscolhas
-                titulo="Escolha sua Placa Mãe"
-                infosExtras={[
-                    {
-                        label: "Socket atual",
-                        valor: pcMontado.processador?.socket ?? "N/A"
-                    }
-                ]}
-                valorTotal={pcMontado.valorTotal}
-                onAnterior={voltarAnterior}
-                onCancelar={cancelarPc}
-                acaoDireita={
-                    <Link to="/criar-novo-pc/placavideo">
-                        <BotaoEscolhas />
-                    </Link>
+        <LayoutEscolhas
+            titulo="Escolha sua Placa Mãe"
+            valorTotal={pcMontado.valorTotal}
+            onAnterior={voltarAnterior}
+            onCancelar={cancelarPc}
+            acaoDireita={
+                <Link to="/criar-novo-pc/placavideo">
+                    <BotaoEscolhas />
+                </Link>
+            }
+            infosExtras={[
+                {
+                    label: "Socket atual",
+                    valor: pcMontado.processador?.socket ?? "N/A"
                 }
-            />
-            <div className={style.containerEscolhas}>
-                {listaPlacasMaes.map((placa) => (
+            ]}
+        >
+            {listaPlacasMaes.map(mb =>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 4,
+                        lg: 3,
+                        xl: 2.4
+                    }}
+                    key={mb.id}
+                    sx={{
+                        display: 'flex'
+                    }}
+                >
                     <CardEscolha
                         componente="placamae"
-                        key={placa.id}
-                        imagem={placa.imagem}
-                        marca={placa.marca}
-                        modelo={placa.nome}
-                        preco={placa.preco}
-                        socket={placa.socket}
-                        ddr={placa.ddr}
+                        key={mb.id}
+                        imagem={mb.imagem}
+                        marca={mb.marca}
+                        modelo={mb.nome}
+                        preco={mb.preco}
+                        socket={mb.socket}
+                        ddr={mb.ddr}
                         aoSelecionar={selecionarModelo}
-                        selecionado={modeloSelecionado === placa.id}
-                        id={placa.id}
+                        selecionado={modeloSelecionado === mb.id}
+                        id={mb.id}
                     />
-                ))}
-            </div>
-        </div>
+                </Grid>
+            )}
+        </LayoutEscolhas >
     )
 }
 

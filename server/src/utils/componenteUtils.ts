@@ -1,7 +1,12 @@
 import { PlacaMae, PrecoLoja } from "../interfaces/componente"
 
+// ======================================================
+// MAPS
+// ======================================================
+
 export const SOCKET_MAP: Record<string, string> = {
 
+    // AMD
     "zen 5": "AM5",
     "zen 4": "AM5",
     "zen 3": "AM4",
@@ -9,18 +14,24 @@ export const SOCKET_MAP: Record<string, string> = {
     "zen+": "AM4",
     "zen": "AM4",
 
+    "bulldozer": "AM3+",
+    "piledriver": "AM3+",
+
+    // Intel
     "arrow lake": "LGA1851",
-    "raptor lake refresh": "LGA1700",
     "raptor lake": "LGA1700",
     "alder lake": "LGA1700",
     "rocket lake": "LGA1200",
     "comet lake": "LGA1200",
 
-    "coffee lake refresh": "LGA1151",
     "coffee lake": "LGA1151",
     "kaby lake": "LGA1151",
     "skylake": "LGA1151"
 }
+
+// ======================================================
+// TEXTO
+// ======================================================
 
 export function normalizarTexto(
     texto: string
@@ -29,10 +40,20 @@ export function normalizarTexto(
     return texto
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^\w\s]/gi, "")
         .toLowerCase()
         .trim()
 }
+
+export function removerCaracteresEspeciais(
+    texto: string
+): string {
+
+    return texto.replace(/[^\w\s]/gi, "")
+}
+
+// ======================================================
+// VALIDAÇÕES
+// ======================================================
 
 export function produtoEhKitUpgrade(
     nome: string
@@ -51,8 +72,8 @@ export function produtoEhKitUpgrade(
         "com memoria",
         "com placa mae",
         "com water cooler"
-    ].some(item =>
-        texto.includes(item)
+    ].some(p =>
+        texto.includes(p)
     )
 }
 
@@ -63,10 +84,7 @@ export function precoSuspeito(
 
     const limites: Record<
         string,
-        {
-            min: number
-            max: number
-        }
+        { min: number, max: number }
     > = {
 
         cpu: {
@@ -118,33 +136,22 @@ export function precoSuspeito(
     )
 }
 
-export function menorPreco(
-    valores: PrecoLoja[]
-): number {
-
-    if (!valores?.length) {
-        return 0
-    }
-
-    return Math.min(
-        ...valores.map(
-            valor => valor.preco
-        )
-    )
-}
+// ======================================================
+// DEFINIR
+// ======================================================
 
 export function definirSocket(
     microarquitetura: string
 ): string {
 
-    const texto =
-        normalizarTexto(
-            microarquitetura
-        )
+    const arch =
+        microarquitetura
+            .toLowerCase()
+            .trim()
 
     for (const key in SOCKET_MAP) {
 
-        if (texto.includes(key)) {
+        if (arch.includes(key)) {
             return SOCKET_MAP[key]
         }
     }
@@ -156,49 +163,42 @@ export function definirMarca(
     nome: string
 ): string {
 
-    const texto =
+    const upper =
         nome.toUpperCase()
 
-    const marcas = [
-
-        "AMD",
-        "INTEL",
-        "NVIDIA",
-        "ASUS",
-        "MSI",
-        "GIGABYTE",
-        "ASROCK",
-        "CORSAIR",
-        "KINGSTON",
-        "SAMSUNG",
-        "PNY"
-    ]
-
-    for (const marca of marcas) {
-
-        if (texto.includes(marca)) {
-            return marca
-        }
-    }
-
     if (
-        texto.includes("RYZEN")
+        upper.includes("AMD") ||
+        upper.includes("RYZEN")
     ) {
         return "AMD"
     }
 
     if (
-        texto.includes("CORE")
+        upper.includes("INTEL") ||
+        upper.includes("CORE")
     ) {
         return "Intel"
     }
 
     if (
-        texto.includes("RTX") ||
-        texto.includes("GTX")
+        upper.includes("RTX") ||
+        upper.includes("GTX") ||
+        upper.includes("NVIDIA")
     ) {
         return "NVIDIA"
     }
+
+    if (upper.includes("RADEON")) {
+        return "AMD"
+    }
+
+    if (upper.includes("ASUS")) return "ASUS"
+    if (upper.includes("MSI")) return "MSI"
+    if (upper.includes("GIGABYTE")) return "Gigabyte"
+    if (upper.includes("ASROCK")) return "ASRock"
+    if (upper.includes("CORSAIR")) return "Corsair"
+    if (upper.includes("KINGSTON")) return "Kingston"
+    if (upper.includes("SAMSUNG")) return "Samsung"
 
     return "Genérico"
 }
@@ -209,11 +209,11 @@ export function definirChipset(
 
     const match =
         nome.match(
-            /\b(B650|B550|X670|X570|A620|A520|Z790|Z690|B760|B660|H610|H510|X870|B850)\b/i
+            /\b(B650|B550|X670|X570|A620|Z790|Z690|B760|B660|H610)\b/i
         )
 
-    return match?.[0]
-        ?.toUpperCase() ?? ""
+    return match?.[0]?.toUpperCase()
+        ?? "Desconhecido"
 }
 
 export function definirDDR(
@@ -229,10 +229,11 @@ export function definirDDR(
         return 4
     }
 
-    if (
-        chipset.startsWith("Z7") ||
-        chipset.startsWith("B7")
-    ) {
+    if (chipset.startsWith("Z7")) {
+        return 5
+    }
+
+    if (chipset.startsWith("B7")) {
         return 5
     }
 
@@ -240,21 +241,17 @@ export function definirDDR(
 }
 
 export function definirFormato(
-    formato: string
+    form: string
 ): PlacaMae["formato"] {
 
-    const texto =
-        formato.toLowerCase()
+    const f =
+        form.toLowerCase()
 
-    if (
-        texto.includes("micro")
-    ) {
+    if (f.includes("micro")) {
         return "MicroATX"
     }
 
-    if (
-        texto.includes("mini")
-    ) {
+    if (f.includes("mini")) {
         return "MiniATX"
     }
 
@@ -262,10 +259,10 @@ export function definirFormato(
 }
 
 export function definirCor(
-    cor: string
+    color: string
 ): string {
 
-    if (!cor) {
+    if (!color) {
         return ""
     }
 
@@ -291,48 +288,49 @@ export function definirCor(
         beige: "Bege"
     }
 
-    return cor
+    return color
         .split("/")
-        .map(item => {
+        .map(cor => {
 
-            const chave =
-                item
-                    .trim()
-                    .toLowerCase()
+            const formatada =
+                cor.trim().toLowerCase()
 
             return (
-                cores[chave] ??
-                item.trim()
+                cores[formatada]
+                ?? cor.trim()
             )
         })
         .join(" / ")
 }
 
-export function extrairNumero(
-    texto: string,
-    regex: RegExp
+export function menorPreco(
+    valores: PrecoLoja[]
 ): number {
 
-    const match =
-        texto.match(regex)
+    if (!valores?.length) {
+        return 0
+    }
 
-    return match
-        ? Number(
-            match[1]
-                .replace(",", ".")
-        )
-        : 0
+    return Math.min(
+        ...valores.map(v => v.preco)
+    )
 }
 
-export function extrairTexto(
-    texto: string,
-    regex: RegExp
+// ======================================================
+// CPU
+// ======================================================
+
+export function extrairModeloCPU(
+    texto: string
 ): string {
 
     const match =
-        texto.match(regex)
+        texto.match(
+            /(i[3579]-\d{4,5}[A-Z]*|RYZEN\s?[3579]\s?\d{4,5}[A-Z0-9]*)/i
+        )
 
-    return match?.[1] ?? ""
+    return match?.[0]?.toUpperCase()
+        ?? ""
 }
 
 export function extrairSocketCPU(
@@ -341,117 +339,65 @@ export function extrairSocketCPU(
 
     const match =
         texto.match(
-            /(AM4|AM5|LGA\s?1700|LGA\s?1851|LGA\s?1200)/i
+            /(AM5|AM4|LGA1700|LGA1851|LGA1200|LGA1151)/i
         )
 
-    return match
-        ? match[0]
-            .replace(/\s/g, "")
-            .toUpperCase()
-        : ""
-}
-
-export function extrairCoresCPU(
-    texto: string
-): number {
-
-    return extrairNumero(
-        texto,
-        /(\d+)\s*n[uú]cleos?/i
-    )
-}
-
-export function extrairThreadsCPU(
-    texto: string
-): number {
-
-    return extrairNumero(
-        texto,
-        /(\d+)\s*threads?/i
-    )
-}
-
-export function extrairClockCPU(
-    texto: string
-): number {
-
-    return extrairNumero(
-        texto,
-        /(\d+[,.]?\d*)\s*ghz/i
-    )
-}
-
-export function extrairClockBoostCPU(
-    texto: string
-): number {
-
-    return extrairNumero(
-        texto,
-        /\(?(\d+[,.]?\d*)\s*ghz\)?\s*(max turbo|boost|max boost)/i
-    )
-}
-
-export function extrairCacheCPU(
-    texto: string
-): number {
-
-    return extrairNumero(
-        texto,
-        /cache\s*(\d+)\s*mb/i
-    )
+    return match?.[0]?.toUpperCase()
+        ?? ""
 }
 
 export function extrairTDPCPU(
     texto: string
 ): number {
 
-    return extrairNumero(
-        texto,
-        /(\d+)\s*w/i
-    )
+    const match =
+        texto.match(
+            /(\d{2,3})\s?W/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
 }
 
-export function extrairVideoIntegradoCPU(
+export function extrairGeracaoIntel(
     texto: string
-): boolean {
+): number {
 
-    const normalizado =
-        normalizarTexto(texto)
-
-    if (
-        normalizado.includes(
-            "sem video"
+    const match =
+        texto.match(
+            /i[3579]-(\d{4,5})/i
         )
-    ) {
-        return false
+
+    if (!match) {
+        return 0
     }
 
-    return (
-        normalizado.includes(
-            "video integrado"
+    const numero =
+        match[1]
+
+    return numero.length === 5
+        ? Number(numero.slice(0, 2))
+        : Number(numero[0])
+}
+
+export function extrairSerieRyzen(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /RYZEN\s?[3579]\s(\d{4})/i
         )
-    )
+
+    return match
+        ? Number(match[1][0])
+        : 0
 }
 
-export function extrairGddr(
-    texto: string
-): number {
-
-    return extrairNumero(
-        texto.toUpperCase(),
-        /GDDR(\d)/i
-    )
-}
-
-export function extrairVRAM(
-    texto: string
-): number {
-
-    return extrairNumero(
-        texto,
-        /(\d+)\s?GB/i
-    )
-}
+// ======================================================
+// GPU
+// ======================================================
 
 export function extrairModeloGPU(
     texto: string
@@ -462,40 +408,604 @@ export function extrairModeloGPU(
             /(RTX|GTX|RX)\s?\d{3,4}(\s?TI)?/i
         )
 
-    return match?.[0]
-        ?.toUpperCase() ?? ""
+    return match?.[0]?.toUpperCase()
+        ?? ""
+}
+
+export function extrairGddr(
+    texto: string
+): number {
+
+    const match =
+        texto.toUpperCase()
+            .match(/GDDR(\d)/)
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+export function extrairVRAM(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /(\d+)\s?GB/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
 }
 
 export function extrairTDPGPU(
     texto: string
 ): number {
 
-    const modelos: Record<
-        string,
-        number
-    > = {
-
-        "RTX 4090": 450,
-        "RTX 4080": 320,
-        "RTX 4070": 200,
-        "RTX 4060": 115,
-
-        "RX 7900 XTX": 355,
-        "RX 7800 XT": 263,
-        "RX 7700 XT": 245
-    }
-
-    const upper =
+    const nome =
         texto.toUpperCase()
 
-    for (const modelo in modelos) {
+    // =========================
+    // NVIDIA RTX 50
+    // =========================
 
-        if (
-            upper.includes(modelo)
-        ) {
-            return modelos[modelo]
-        }
+    if (nome.includes("RTX 5090")) return 575
+    if (nome.includes("RTX 5080")) return 360
+    if (nome.includes("RTX 5070 TI")) return 300
+    if (nome.includes("RTX 5070")) return 250
+    if (nome.includes("RTX 5060 TI")) return 180
+    if (nome.includes("RTX 5060")) return 150
+
+    // =========================
+    // NVIDIA RTX 40
+    // =========================
+
+    if (nome.includes("RTX 4090")) return 450
+    if (nome.includes("RTX 4080 SUPER")) return 320
+    if (nome.includes("RTX 4080")) return 320
+    if (nome.includes("RTX 4070 TI SUPER")) return 285
+    if (nome.includes("RTX 4070 TI")) return 285
+    if (nome.includes("RTX 4070 SUPER")) return 220
+    if (nome.includes("RTX 4070")) return 200
+    if (nome.includes("RTX 4060 TI")) return 160
+    if (nome.includes("RTX 4060")) return 115
+
+    // =========================
+    // NVIDIA RTX 30
+    // =========================
+
+    if (nome.includes("RTX 3090 TI")) return 450
+    if (nome.includes("RTX 3090")) return 350
+    if (nome.includes("RTX 3080 TI")) return 350
+    if (nome.includes("RTX 3080")) return 320
+    if (nome.includes("RTX 3070 TI")) return 290
+    if (nome.includes("RTX 3070")) return 220
+    if (nome.includes("RTX 3060 TI")) return 200
+    if (nome.includes("RTX 3060")) return 170
+
+    // =========================
+    // AMD RX 7000
+    // =========================
+
+    if (nome.includes("RX 7900 XTX")) return 355
+    if (nome.includes("RX 7900 XT")) return 315
+    if (nome.includes("RX 7800 XT")) return 263
+    if (nome.includes("RX 7700 XT")) return 245
+    if (nome.includes("RX 7600 XT")) return 190
+    if (nome.includes("RX 7600")) return 165
+
+    // =========================
+    // AMD RX 6000
+    // =========================
+
+    if (nome.includes("RX 6950 XT")) return 335
+    if (nome.includes("RX 6900 XT")) return 300
+    if (nome.includes("RX 6800 XT")) return 300
+    if (nome.includes("RX 6800")) return 250
+    if (nome.includes("RX 6750 XT")) return 250
+    if (nome.includes("RX 6700 XT")) return 230
+    if (nome.includes("RX 6650 XT")) return 180
+    if (nome.includes("RX 6600 XT")) return 160
+    if (nome.includes("RX 6600")) return 132
+
+    // =========================
+    // Fallback inteligente
+    // =========================
+
+    // RTX xx90
+    if (/RTX\s?\d{2}90/.test(nome)) {
+        return 350
+    }
+
+    // RTX xx80
+    if (/RTX\s?\d{2}80/.test(nome)) {
+        return 320
+    }
+
+    // RTX xx70
+    if (/RTX\s?\d{2}70/.test(nome)) {
+        return 220
+    }
+
+    // RTX xx60
+    if (/RTX\s?\d{2}60/.test(nome)) {
+        return 160
+    }
+
+    // RX x900
+    if (/RX\s?\d{4}\s?XTX/.test(nome)) {
+        return 355
+    }
+
+    if (/RX\s?\d{4}\s?XT/.test(nome)) {
+        return 250
     }
 
     return 0
+}
+
+// ======================================================
+// RAM
+// ======================================================
+
+export function extrairDDRRAM(
+    texto: string
+): number {
+
+    const match =
+        texto.match(/DDR(\d)/i)
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+export function extrairClockRAM(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /(\d{4,5})\s?(MHz|MT\/s)?/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+export function extrairVelocidadeRAM(
+    texto: string
+): number {
+
+    return extrairClockRAM(texto)
+}
+
+export function extrairModulosRAM(
+    texto: string
+): number[] {
+
+    const match =
+        texto.match(
+            /(\d+)x(\d+)/i
+        )
+
+    if (!match) {
+        return []
+    }
+
+    return [
+        Number(match[1]),
+        Number(match[2])
+    ]
+}
+
+export function extrairCapacidadeRAM(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /(\d+)\s?GB/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+export function extrairCL(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /CL(\d+)/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+// ======================================================
+// PLACA MÃE
+// ======================================================
+
+export function extrairSocketMB(
+    nome: string
+): string {
+
+    const texto =
+        nome.toUpperCase()
+
+    // AMD
+    if (texto.includes("AM5")) {
+        return "AM5"
+    }
+
+    if (texto.includes("AM4")) {
+        return "AM4"
+    }
+
+    // Intel
+    if (
+        texto.includes("LGA1700") ||
+        texto.includes("LGA 1700")
+    ) {
+        return "LGA1700"
+    }
+
+    if (
+        texto.includes("LGA1851") ||
+        texto.includes("LGA 1851")
+    ) {
+        return "LGA1851"
+    }
+
+    if (
+        texto.includes("LGA1200") ||
+        texto.includes("LGA 1200")
+    ) {
+        return "LGA1200"
+    }
+
+    if (
+        texto.includes("LGA1151") ||
+        texto.includes("LGA 1151")
+    ) {
+        return "LGA1151"
+    }
+
+    return ""
+}
+
+export function extrairChipsetMB(
+    nome: string
+): string {
+
+    const texto =
+        nome.toUpperCase()
+
+    // AMD
+    const amdChipset =
+        texto.match(
+            /\b(A|B|X)\d{3}[A-Z0-9\-]*\b/
+        )
+
+    if (amdChipset) {
+        return amdChipset[0]
+    }
+
+    // Intel
+    const intelChipset =
+        texto.match(
+            /\b(H|B|Z|X|Q|W)\d{3}[A-Z0-9\-]*\b/
+        )
+
+    if (intelChipset) {
+        return intelChipset[0]
+    }
+
+    return ""
+}
+
+export function extrairFormatoMB(
+    nome: string
+): "ATX" | "MicroATX" | "MiniATX" {
+
+    const texto =
+        nome.toUpperCase()
+
+    if (
+        texto.includes("MICRO ATX") ||
+        texto.includes("M-ATX") ||
+        texto.includes("MATX")
+    ) {
+        return "MicroATX"
+    }
+
+    if (
+        texto.includes("MINI ITX") ||
+        texto.includes("MINI-ITX") ||
+        texto.includes("ITX")
+    ) {
+        return "MiniATX"
+    }
+
+    return "ATX"
+}
+
+export function extrairDDRMB(
+    texto: string
+): number {
+
+    const match =
+        texto.match(/DDR(\d)/i)
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+// ======================================================
+// STORAGE
+// ======================================================
+
+export function extrairCapacidadeStorage(
+    texto: string
+): number {
+
+    const matchTB =
+        texto.match(
+            /(\d+)\s?TB/i
+        )
+
+    if (matchTB) {
+        return Number(matchTB[1]) * 1000
+    }
+
+    const matchGB =
+        texto.match(
+            /(\d+)\s?GB/i
+        )
+
+    return matchGB
+        ? Number(matchGB[1])
+        : 0
+}
+
+export function extrairTipoStorage(
+    texto: string
+): string {
+
+    const normalizado =
+        normalizarTexto(texto)
+
+    if (
+        normalizado.includes("ssd") ||
+        normalizado.includes("nvme")
+    ) {
+        return "SSD"
+    }
+
+    return "HD"
+}
+
+export function extrairInterfaceStorage(
+    texto: string
+): string {
+
+    const normalizado =
+        normalizarTexto(texto)
+
+    if (
+        normalizado.includes("nvme") ||
+        normalizado.includes("m.2")
+    ) {
+        return "NVME"
+    }
+
+    return "SATA"
+}
+
+export function extrairFormatoStorage(
+    texto: string
+): string {
+
+    if (texto.includes("2.5")) {
+        return "2.5"
+    }
+
+    if (texto.includes("3.5")) {
+        return "3.5"
+    }
+
+    return "M2"
+}
+
+export function extrairVelocidadeLeitura(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /leitura[^0-9]*(\d{3,5})\s*mb\/s/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+export function extrairVelocidadeGravacao(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /grava[cç][aã]o[^0-9]*(\d{3,5})\s*mb\/s/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+// ======================================================
+// FONTE
+// ======================================================
+
+export function extrairPotenciaFonte(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /(\d{3,4})\s?W/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+export function extrairCertificacaoFonte(
+    texto: string
+): string {
+
+    const match =
+        texto.match(
+            /(bronze|gold|silver|platinum|titanium)/i
+        )
+
+    return match?.[0]?.toUpperCase()
+        ?? ""
+}
+
+export function extrairModularidadeFonte(
+    texto: string
+): string {
+
+    const normalizado =
+        normalizarTexto(texto)
+
+    if (normalizado.includes("full")) {
+        return "Full Modular"
+    }
+
+    if (normalizado.includes("semi")) {
+        return "Semi Modular"
+    }
+
+    return "Não Modular"
+}
+
+export function extrairPCIeConectores(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /(\d+)\s*x?\s*pcie/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+export function extrairSATAConectores(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /(\d+)\s*x?\s*sata/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+export function extrairEPSConectores(
+    texto: string
+): number {
+
+    const match =
+        texto.match(
+            /(\d+)\s*x?\s*eps/i
+        )
+
+    return match
+        ? Number(match[1])
+        : 0
+}
+
+// ======================================================
+// GABINETE
+// ======================================================
+
+export function extrairQtdFans(
+    texto: string
+): number {
+
+    const suporte =
+        texto.match(
+            /suporte.*?(\d+)\s*fans?/i
+        )
+
+    if (suporte) {
+        return Number(suporte[1])
+    }
+
+    const frontal =
+        texto.match(
+            /(\d+)x120mm/i
+        )
+
+    if (frontal) {
+        return Number(frontal[1])
+    }
+
+    return 0
+}
+
+export function extrairFormatoGabinete(
+    texto: string
+): string {
+
+    const normalizado =
+        normalizarTexto(texto)
+
+    if (
+        normalizado.includes("mini")
+    ) {
+        return "Mini Tower"
+    }
+
+    if (
+        normalizado.includes("mid")
+    ) {
+        return "Mid Tower"
+    }
+
+    return "Full Tower"
+}
+
+export function extrairTamanhoGabinete(
+    volume: number
+): string {
+
+    if (volume >= 40) {
+        return "Grande"
+    }
+
+    if (volume >= 25) {
+        return "Médio"
+    }
+
+    return "Compacto"
 }

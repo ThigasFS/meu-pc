@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import style from './Escolhas.module.css'
 import { PlacaVideo } from "../../interfaces/componente"
 import CardEscolha from "../CardEscolha/CardEscolha"
 import { Link, useNavigate, useOutletContext } from "react-router-dom"
 import PC from "../../interfaces/pc"
 import axios from "axios"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
-import HeaderEscolhas from "./HeaderEscolhas"
+import { Grid } from "@mui/material"
+import LayoutEscolhas from "./LayoutEscolhas/Layout"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -83,42 +83,53 @@ function EscolherPlacaVideo() {
     }
 
     return (
-        <div>
-            <HeaderEscolhas
-                titulo="Escolha sua Placa de Vídeo"
-                infosExtras={[
-                    {
-                        label: "Seu processador",
-                        valor: pcMontado.processador?.videoIntegrado ? 'tem vídeo integrado, a GPU é opcional' : 'não tem vídeo integrado, por favor selecionar GPU'
-                    }
-                ]}
-                valorTotal={pcMontado.valorTotal}
-                onAnterior={voltarAnterior}
-                onCancelar={cancelarPc}
-                acaoDireita={
-                    <Link to="/criar-novo-pc/memoriaram">
-                        <BotaoEscolhas />
-                    </Link>
+        <LayoutEscolhas
+            titulo="Escolha sua Placa de Vídeo"
+            valorTotal={pcMontado.valorTotal}
+            onAnterior={voltarAnterior}
+            onCancelar={cancelarPc}
+            acaoDireita={
+                <Link to="/criar-novo-pc/memoriaram">
+                    <BotaoEscolhas />
+                </Link>
+            }
+            infosExtras={[
+                {
+                    label: "Seu processador",
+                    valor: pcMontado.processador?.videoIntegrado ? 'tem vídeo integrado, a GPU é opcional' : 'não tem vídeo integrado, por favor selecionar GPU'
                 }
-            />
-            <div className={style.containerEscolhas}>
-                {listaPlacaVideo.map((placaVideo) => (
+            ]}
+        >
+            {listaPlacaVideo.map(gpu =>
+                <Grid
+                    size={{
+                        xs: 12,
+                        sm: 6,
+                        md: 4,
+                        lg: 3,
+                        xl: 2.4
+                    }}
+                    key={gpu.id}
+                    sx={{
+                        display: 'flex'
+                    }}
+                >
                     <CardEscolha
                         componente="placavideo"
-                        key={placaVideo.id}
-                        imagem={placaVideo.imagem}
-                        marca={placaVideo.marca}
-                        modelo={placaVideo.nome}
-                        preco={placaVideo.preco}
+                        key={gpu.id}
+                        imagem={gpu.imagem}
+                        marca={gpu.marca}
+                        modelo={gpu.nome}
+                        preco={gpu.preco}
                         aoSelecionar={selecionarModelo}
-                        selecionado={modeloSelecionado === placaVideo.id}
-                        gddr={placaVideo.gddr}
-                        vram={placaVideo.vram}
-                        id={placaVideo.id}
+                        selecionado={modeloSelecionado === gpu.id}
+                        gddr={gpu.gddr}
+                        vram={gpu.vram}
+                        id={gpu.id}
                     />
-                ))}
-            </div>
-        </div>
+                </Grid>
+            )}
+        </LayoutEscolhas >
     )
 }
 
