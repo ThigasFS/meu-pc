@@ -48,7 +48,7 @@ function Salvos() {
           onRemove={removerPc}
         />
 
-        <Link to="/criar-novo-pc/processador">
+        <Link to="/criacao">
           <Button
             sx={{
               background: "#52F2B8",

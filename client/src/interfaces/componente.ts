@@ -113,4 +113,6 @@ export interface Armazenamento {
     valores: PrecoLoja[]
 }
 
+export type CategoriaPc = "Educação" | "Jogar" | "Profissional" | "Casual"
+
 export type Componente = Armazenamento | PlacaMae | PlacaVideo | Processador | Gabinete | Fonte | MemoriaRAM

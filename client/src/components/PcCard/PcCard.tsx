@@ -24,6 +24,7 @@ interface Props {
     nome: string
     onRemove: (id: number) => void
     preco: number
+    categoria?: "Educação" | "Jogar" | "Profissional" | "Casual"
 }
 
 function PcCard({
@@ -31,7 +32,8 @@ function PcCard({
     processador,
     nome,
     onRemove,
-    preco
+    preco,
+    categoria
 }: Props) {
 
     function removerPc(
@@ -197,6 +199,27 @@ function PcCard({
                             >
                                 {processador.nome}
                             </Typography>
+
+                            {categoria && 
+                            
+                            <Chip
+                                label={categoria}
+                                size="small"
+                                sx={{
+                                    mt: 1,
+                                    color: "white",
+                                    fontWeight: 600,
+                                    background:
+                                        categoria === "Jogar"
+                                            ? "#7b1fa2"
+                                            : categoria === "Profissional"
+                                            ? "#1565c0"
+                                            : categoria === "Educação"
+                                            ? "#2e7d32"
+                                            : "#616161"
+                                }}
+                            />
+                            }
                         </Box>
 
                         <Stack

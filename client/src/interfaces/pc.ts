@@ -1,4 +1,4 @@
-import { Armazenamento, Fonte, Gabinete, PlacaMae, PlacaVideo, Processador,MemoriaRAM } from "./componente"
+import { Armazenamento, Fonte, Gabinete, PlacaMae, PlacaVideo, Processador,MemoriaRAM, CategoriaPc } from "./componente"
 
 interface PCComVideo {
     id: number,
@@ -11,7 +11,8 @@ interface PCComVideo {
     gabinete?: Gabinete,
     fonte: Fonte,
     memoriaRam: MemoriaRAM,
-    valorTotal: number
+    valorTotal: number,
+    categoria?: CategoriaPc
 }
 
 interface PCSemVideo{
@@ -25,7 +26,8 @@ interface PCSemVideo{
     gabinete?: Gabinete,
     fonte: Fonte,
     memoriaRam: MemoriaRAM,
-    valorTotal: number
+    valorTotal: number,
+    categoria?: CategoriaPc
 }
 
 type PC = PCComVideo | PCSemVideo

@@ -11,12 +11,22 @@ import EscolherFonte from './components/Escolhas/EscolherFonte'
 import EscolherGabinete from './components/Escolhas/EscolherGabinete'
 import Finalizacao from './components/Finalizacao/Finalizacao'
 import SobreNos from './pages/About'
+import SelecaoCriacao from './pages/Criacao/Criacao'
+import { useEffect } from 'react'
+import { initializePreBuilds } from './services/PreBuildStorage'
+import PreBuildPage from './pages/PreMontagem/PreMontagem'
 
 function App() {
+
+  useEffect(() => {
+    initializePreBuilds();
+  }, [])
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/criacao' element={<SelecaoCriacao />} />
         <Route path='/criar-novo-pc' element={<CriarPC />}>
           <Route path='processador' element={<EscolherProcessador />} />
           <Route path='placamae' element={<EscolherPlacaMae />} />
@@ -28,6 +38,7 @@ function App() {
           <Route path='finalizacao' element={<Finalizacao />} />
         </Route>
         <Route path='/sobre-nos' element={<SobreNos />}/>
+        <Route path='/pre-montagem' element={<PreBuildPage />}/>
       </Routes>
     </BrowserRouter>
   )

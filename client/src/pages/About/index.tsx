@@ -36,8 +36,6 @@ function SobreNos() {
 
             <Container maxWidth="lg">
 
-                {/* Header */}
-
                 <Stack
                     direction="row"
                     sx={{alignItems: "center", justifyContent: "space-between", mb:4}}
@@ -77,8 +75,6 @@ function SobreNos() {
 
                     <Box sx={{width: 80}}/>
                 </Stack>
-
-                {/* Hero */}
 
                 <Paper
                     elevation={0}
