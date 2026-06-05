@@ -6,6 +6,7 @@ import {
 } from '@mui/material'
 
 import { Componente } from '../../interfaces/componente'
+import ComparacaoTabela from '../ComparacaoTabela/ComparacaoTabela'
 
 interface Props {
     componente: Componente
@@ -186,11 +187,12 @@ function CardComponenteResumo({
 
                         {renderizarSpecs()}
 
-                        <Typography
+                        <Stack sx={{display: 'flex' ,flexDirection: "row"}}>
+                            <Typography
                             variant='h6'
                             sx={{fontWeight: 700, mt: 2}}
                         >
-                            {componente.preco.toLocaleString(
+                            Menor preço: {componente.preco.toLocaleString(
                                 'pt-BR',
                                 {
                                     style: 'currency',
@@ -198,6 +200,10 @@ function CardComponenteResumo({
                                 }
                             )}
                         </Typography>
+
+                            <ComparacaoTabela componente={componente} />
+
+                        </Stack>
 
                     </Stack>
 

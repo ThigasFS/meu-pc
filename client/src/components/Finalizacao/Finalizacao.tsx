@@ -23,8 +23,7 @@ type ContextType = {
 function Finalizacao() {
     const [nomePc, setNomePc] = useState('')
 
-    const { pcMontado, setPcMontado } =
-        useOutletContext<ContextType>()
+    const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
 
     function finalizarPC() {
         const pcFinalizado: PC = {
@@ -137,7 +136,7 @@ function Finalizacao() {
                             variant='body1'
                             color='text.secondary'
                         >
-                            Valor total
+                            Valor mínimo total
                         </Typography>
 
                         <Typography
