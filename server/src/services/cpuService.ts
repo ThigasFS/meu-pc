@@ -1,3 +1,4 @@
+import { validarTDP } from "../enrichers/tdp"
 import {
     Processador,
     ProcessadorJSON
@@ -30,6 +31,8 @@ export async function getCpus(): Promise<Processador[]> {
             const specs =
                 banco?.specs ?? {}
 
+            const tdp = validarTDP('cpu', specs.tdp)
+
             return {
                 id:
                     banco?.id ??
@@ -61,8 +64,10 @@ export async function getCpus(): Promise<Processador[]> {
                     json.core_clock,
 
                 tdp:
-                    specs.tdp ??
-                    json.tdp,
+                    tdp.valor,
+
+                tdpEstimado:
+                    tdp.estimado,
 
                 videoIntegrado:
                     specs.videoIntegrado ??

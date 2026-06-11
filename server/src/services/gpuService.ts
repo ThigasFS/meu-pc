@@ -1,5 +1,4 @@
-// services/gpuService.ts
-
+import { validarTDP } from "../enrichers/tdp"
 import {
     PlacaVideo,
     PlacaVideoJson
@@ -49,6 +48,9 @@ export async function getGpus(): Promise<PlacaVideo[]> {
                 banco?.nome ??
                 json.name
 
+            const tdp =
+                validarTDP('gpu', specs.tdp)
+
             return {
 
                 id:
@@ -56,6 +58,8 @@ export async function getGpus(): Promise<PlacaVideo[]> {
                     index + 1,
 
                 nome,
+
+                fingerprint: banco?.fingerprint,
 
                 marca:
                     banco?.marca ??
@@ -66,10 +70,10 @@ export async function getGpus(): Promise<PlacaVideo[]> {
                     json.memory,
 
                 tdp:
-                    specs.tdp ??
-                    extrairTDPGPU(
-                        json.name
-                    ),
+                    tdp.valor,
+
+                tdpEstimado:
+                    tdp.estimado,
 
                 gddr:
                     specs.gddr ??

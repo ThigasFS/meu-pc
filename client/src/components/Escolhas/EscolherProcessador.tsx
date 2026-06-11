@@ -7,6 +7,8 @@ import axios from "axios"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
 import { Grid } from "@mui/material"
 import LayoutEscolhas from "./LayoutEscolhas/Layout"
+import ProductFilters from "../FiltroProduto/FiltroProduto"
+import { cpuFilters } from "../../config/cpuFilters"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -17,8 +19,22 @@ function EscolherProcessador() {
     const [listaProcessadores, setListaProcessadores] = useState<Processador[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
+    
+    const [pesquisa, setPesquisa] = useState("")
+    const [ordenacao, setOrdenacao] = useState("preco")
+    const [filtros, setFiltros] = useState<Record<string, string>>({})
 
     const navigate = useNavigate()
+
+    function alterarFiltro(
+        filtroId: string,
+        valor: string
+    ) {
+        setFiltros(prev => ({
+            ...prev,
+            [filtroId]: valor
+        }))
+    }
 
     useEffect(() => {
         axios.get('http://localhost:3000/api/cpu')
@@ -75,6 +91,58 @@ function EscolherProcessador() {
         navigate(-1)
     }
 
+    const processadoresFiltrados =
+    [...listaProcessadores]
+        .filter(cpu => {
+
+            if (
+                pesquisa &&
+                !cpu.nome
+                    .toLowerCase()
+                    .includes(
+                        pesquisa.toLowerCase()
+                    )
+            ) {
+                return false
+            }
+
+            if (
+                filtros.marca &&
+                cpu.marca !== filtros.marca
+            ) {
+                return false
+            }
+
+            if (
+                filtros.socket &&
+                cpu.socket !== filtros.socket
+            ) {
+                return false
+            }
+
+            return true
+        })
+        .sort((a, b) => {
+
+            switch (ordenacao) {
+
+                case "nome":
+                    return a.nome.localeCompare(
+                        b.nome
+                    )
+
+                case "clock":
+                    return b.velocidade - a.velocidade
+
+                case "preco":
+                default:
+                    return a.preco - b.preco
+            }
+        })
+
+        console.log(filtros)
+console.log(processadoresFiltrados.length)
+
     return (
         <LayoutEscolhas
             titulo="Escolha seu Processador"
@@ -94,7 +162,28 @@ function EscolherProcessador() {
                 }
             ]}
         >
-            {listaProcessadores.map(cpu =>
+            <ProductFilters
+                pesquisa={pesquisa}
+                onPesquisaChange={setPesquisa}
+                filtros={cpuFilters}
+                valores={filtros}
+                onFiltroChange={alterarFiltro}
+                ordenacao={ordenacao}
+                onOrdenacaoChange={setOrdenacao}
+            />
+
+            <Grid size={12}>
+                <p
+                    style={{
+                        color: "#AAA",
+                        marginBottom: 20
+                    }}
+                >
+                    {processadoresFiltrados.length} processadores encontrados
+                </p>
+            </Grid>
+
+            {processadoresFiltrados.map(cpu =>
                 <Grid
                     size={{
                         xs: 12,

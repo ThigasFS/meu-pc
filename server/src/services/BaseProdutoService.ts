@@ -73,6 +73,32 @@ export interface BaseProdutoOptions<
     ) => boolean
 }
 
+function removerDuplicadosPorFingerprint<T>(
+    itens: T[],
+    gerarFingerprint: (item: T) => string
+): T[] {
+
+    const mapa = new Map<string, T>()
+
+    for (const item of itens) {
+
+        const fingerprint =
+            gerarFingerprint(item)
+
+        if (!mapa.has(fingerprint)) {
+
+            mapa.set(
+                fingerprint,
+                item
+            )
+        }
+    }
+
+    return Array.from(
+        mapa.values()
+    )
+}
+
 export async function BaseProdutoService<
     TJson,
     TResult
@@ -89,6 +115,19 @@ export async function BaseProdutoService<
                 options.tipo
             ) as TJson[]
             : []
+
+    const jsonUnico =
+        options.gerarFingerprint
+
+        ? removerDuplicadosPorFingerprint(
+
+            jsonData,
+
+            options.gerarFingerprint
+
+        )
+
+        : jsonData
 
     const [rows] =
         await connection.query(`
@@ -219,7 +258,7 @@ export async function BaseProdutoService<
     // =========================
 
     const result =
-        jsonData.map((
+        jsonUnico.map((
             json,
             index
         ) => {

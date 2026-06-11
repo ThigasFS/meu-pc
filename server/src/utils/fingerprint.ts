@@ -60,7 +60,7 @@ function removerRuidoUniversal(nome: string) {
         .replace(/video integrado/gi, "")
 }
 
-function normalizarModelo(
+export function normalizarModelo(
     tipo: string,
     nome: string
 ) {
