@@ -3,6 +3,11 @@ export interface OpcaoFiltro {
     value: string
 }
 
+export interface OrdenacaoOption {
+    id: string,
+    label: string
+}
+
 export interface ConfigFiltro {
     id: string,
     titulo: string,
@@ -14,7 +19,12 @@ export interface FiltroProdutosProps {
     onPesquisaChange: (value: string) => void,
     filtros: ConfigFiltro[],
     valores: Record<string, string>,
-    onFiltroChange: (filtroId: string, value: string) => void
+    onFiltroChange: (filtroId: string, value: string) => void,
     ordenacao: string,
-    onOrdenacaoChange: (value: string) => void
+    onOrdenacaoChange: (value: string) => void,
+    ordenacoes: OrdenacaoOption[],
+    preco: number[],
+    onPrecoChange: (valueMin: number, valueMax: number) => void
+    menorPreco: number,
+    maiorPreco: number
 }

@@ -7,6 +7,8 @@ import axios from "axios"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
 import { Grid } from "@mui/material"
 import LayoutEscolhas from "./LayoutEscolhas/Layout"
+import { FilterDefinition, useProductFilters } from "../../hooks/useProdutoFiltros"
+import ProductFilters from "../FiltroProduto/FiltroProduto"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -84,6 +86,68 @@ function EscolherPlacaMae() {
         navigate(-1)
     }
 
+    const mbFilterDefinitions: FilterDefinition<PlacaMae>[] = [
+        {
+            id: "marca",
+            titulo: "Marca",
+
+            getValue: mb =>
+                mb.marca
+        }
+    ]
+
+    const sortOptions = [
+        {
+            id: "menor_preco",
+            label: "Menor Preço",
+            compare: (a: PlacaMae, b: PlacaMae) =>
+                a.preco -
+                b.preco
+        },
+
+        {
+            id: "maior_preco",
+            label: "Maior Preço",
+            compare: (a: PlacaMae, b: PlacaMae) =>
+                b.preco -
+                a.preco
+        },
+
+        {
+            id: "nome",
+            label: "Nome",
+            compare: (a: PlacaMae, b: PlacaMae) =>
+                a.nome.localeCompare(
+                    b.nome
+                )
+        },
+    ]
+
+    const {
+        pesquisa,
+        setPesquisa,
+        filtros,
+        alterarFiltro,
+        ordenacao,
+        setOrdenacao,
+        itensFiltrados,
+        filtrosConfig,
+        preco,
+        alterarPreco,
+        maiorPreco,
+        menorPreco
+    } = useProductFilters({
+        items: listaPlacasMaes,
+
+        searchFn: mb =>
+            mb.nome,
+
+        filterDefinitions:
+            mbFilterDefinitions,
+
+        sortOptions
+    })
+
     return (
         <LayoutEscolhas
             titulo="Escolha sua Placa Mãe"
@@ -101,8 +165,24 @@ function EscolherPlacaMae() {
                     valor: pcMontado.processador?.socket ?? "N/A"
                 }
             ]}
+            filtros={
+                <ProductFilters
+                    pesquisa={pesquisa}
+                    onPesquisaChange={setPesquisa}
+                    filtros={filtrosConfig}
+                    valores={filtros}
+                    onFiltroChange={alterarFiltro}
+                    ordenacao={ordenacao}
+                    onOrdenacaoChange={setOrdenacao}
+                    ordenacoes={sortOptions}
+                    preco={preco}
+                    onPrecoChange={alterarPreco}
+                    menorPreco={menorPreco}
+                    maiorPreco={maiorPreco}
+                />
+            }
         >
-            {listaPlacasMaes.map(mb =>
+            {itensFiltrados.map(mb =>
                 <Grid
                     size={{
                         xs: 12,

@@ -73,6 +73,7 @@ export interface PlacaVideo {
     marca: string,
     vram: number,
     tdp: number,
+    chipset: string,
     imagem: string,
     preco: number,
     gddr: number,

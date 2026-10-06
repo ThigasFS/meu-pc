@@ -6,7 +6,6 @@ import {
     definirDDR,
     definirMarca,
     menorPreco,
-
     extrairSocketMB,
     extrairChipsetMB,
     extrairFormatoMB
@@ -48,7 +47,7 @@ export async function getMotherboards(): Promise<PlacaMae[]> {
 
                 marca:
                     banco?.marca ??
-                    definirMarca(nome),
+                    definirMarca(nome, 'placamae'),
 
                 socket,
 

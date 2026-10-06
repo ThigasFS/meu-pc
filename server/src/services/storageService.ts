@@ -42,7 +42,7 @@ export async function getStorages(): Promise<Armazenamento[]> {
 
                 marca:
                     banco?.marca ??
-                    definirMarca(json.name),
+                    definirMarca(json.name, 'armazenamento'),
 
                 capacidade:
                     specs.capacidade ??

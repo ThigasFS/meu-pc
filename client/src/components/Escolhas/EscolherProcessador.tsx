@@ -8,7 +8,7 @@ import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
 import { Grid } from "@mui/material"
 import LayoutEscolhas from "./LayoutEscolhas/Layout"
 import ProductFilters from "../FiltroProduto/FiltroProduto"
-import { cpuFilters } from "../../config/cpuFilters"
+import { FilterDefinition, useProductFilters } from "../../hooks/useProdutoFiltros"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -19,22 +19,8 @@ function EscolherProcessador() {
     const [listaProcessadores, setListaProcessadores] = useState<Processador[]>([])
     const [modeloSelecionado, setModeloSelecionado] = useState<number | null>(null)
     const { pcMontado, setPcMontado } = useOutletContext<ContextType>()
-    
-    const [pesquisa, setPesquisa] = useState("")
-    const [ordenacao, setOrdenacao] = useState("preco")
-    const [filtros, setFiltros] = useState<Record<string, string>>({})
 
     const navigate = useNavigate()
-
-    function alterarFiltro(
-        filtroId: string,
-        valor: string
-    ) {
-        setFiltros(prev => ({
-            ...prev,
-            [filtroId]: valor
-        }))
-    }
 
     useEffect(() => {
         axios.get('http://localhost:3000/api/cpu')
@@ -91,57 +77,88 @@ function EscolherProcessador() {
         navigate(-1)
     }
 
-    const processadoresFiltrados =
-    [...listaProcessadores]
-        .filter(cpu => {
+    const cpuFilterDefinitions: FilterDefinition<Processador>[] = [
+        {
+            id: "marca",
+            titulo: "Marca",
 
-            if (
-                pesquisa &&
-                !cpu.nome
-                    .toLowerCase()
-                    .includes(
-                        pesquisa.toLowerCase()
-                    )
-            ) {
-                return false
-            }
+            getValue: cpu =>
+                cpu.marca
+        },
 
-            if (
-                filtros.marca &&
-                cpu.marca !== filtros.marca
-            ) {
-                return false
-            }
+        {
+            id: "socket",
+            titulo: "Socket",
 
-            if (
-                filtros.socket &&
-                cpu.socket !== filtros.socket
-            ) {
-                return false
-            }
+            getValue: cpu =>
+                cpu.socket,
 
-            return true
-        })
-        .sort((a, b) => {
+            dependsOn: [
+                "marca"
+            ]
+        }
+    ]
 
-            switch (ordenacao) {
+    const sortOptions = [
+        {
+            id: "menor_preco",
+            label: "Menor Preço",
+            compare: (a: Processador, b: Processador) =>
+                a.preco -
+                b.preco
+        },
 
-                case "nome":
-                    return a.nome.localeCompare(
-                        b.nome
-                    )
+        {
+            id: "maior_preco",
+            label: "Maior Preço",
+            compare: (a: Processador, b: Processador) =>
+                b.preco -
+                a.preco
+        },
 
-                case "clock":
-                    return b.velocidade - a.velocidade
+        {
+            id: "nome",
+            label: "Nome",
+            compare: (a: Processador, b: Processador) =>
+                a.nome.localeCompare(
+                    b.nome
+                )
+        },
 
-                case "preco":
-                default:
-                    return a.preco - b.preco
-            }
-        })
+        {
+            id: "clock",
+            label: "Maior Clock",
+            compare: (a: Processador, b: Processador) =>
+                b.velocidade -
+                a.velocidade
+        }
+    ]
 
-        console.log(filtros)
-console.log(processadoresFiltrados.length)
+    const {
+        pesquisa,
+        setPesquisa,
+        filtros,
+        alterarFiltro,
+        ordenacao,
+        setOrdenacao,
+        itensFiltrados,
+        filtrosConfig,
+        preco,
+        alterarPreco,
+        menorPreco,
+        maiorPreco
+    } = useProductFilters({
+        items: listaProcessadores,
+
+        searchFn: cpu => cpu.nome,
+
+        getPrice: cpu => cpu.preco,
+
+        filterDefinitions:
+            cpuFilterDefinitions,
+
+        sortOptions,
+    })
 
     return (
         <LayoutEscolhas
@@ -161,16 +178,23 @@ console.log(processadoresFiltrados.length)
                     valor: pcMontado.processador?.socket ?? "N/A"
                 }
             ]}
+            filtros={
+                <ProductFilters
+                    pesquisa={pesquisa}
+                    onPesquisaChange={setPesquisa}
+                    filtros={filtrosConfig}
+                    valores={filtros}
+                    onFiltroChange={alterarFiltro}
+                    ordenacao={ordenacao}
+                    onOrdenacaoChange={setOrdenacao}
+                    ordenacoes={sortOptions}
+                    preco={preco}
+                    onPrecoChange={alterarPreco}
+                    menorPreco={menorPreco}
+                    maiorPreco={maiorPreco}
+                />
+            }
         >
-            <ProductFilters
-                pesquisa={pesquisa}
-                onPesquisaChange={setPesquisa}
-                filtros={cpuFilters}
-                valores={filtros}
-                onFiltroChange={alterarFiltro}
-                ordenacao={ordenacao}
-                onOrdenacaoChange={setOrdenacao}
-            />
 
             <Grid size={12}>
                 <p
@@ -179,11 +203,11 @@ console.log(processadoresFiltrados.length)
                         marginBottom: 20
                     }}
                 >
-                    {processadoresFiltrados.length} processadores encontrados
+                    {itensFiltrados.length} processadores encontrados
                 </p>
             </Grid>
 
-            {processadoresFiltrados.map(cpu =>
+            {itensFiltrados.map(cpu =>
                 <Grid
                     size={{
                         xs: 12,

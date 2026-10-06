@@ -116,7 +116,8 @@ export async function atualizarComponente(
 
                     marca:
                         definirMarca(
-                            produto.nomeEncontrado
+                            produto.nomeEncontrado,
+                            config.tipo
                         ),
 
                     loja:

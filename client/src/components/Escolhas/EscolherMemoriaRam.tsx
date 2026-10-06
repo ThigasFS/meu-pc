@@ -7,6 +7,8 @@ import axios from "axios"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
 import LayoutEscolhas from "./LayoutEscolhas/Layout"
 import { Grid } from "@mui/material"
+import ProductFilters from "../FiltroProduto/FiltroProduto"
+import { FilterDefinition, useProductFilters } from "../../hooks/useProdutoFiltros"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -84,6 +86,79 @@ function EscolherMemoriaRAM() {
         navigate(-1)
     }
 
+    const ramFilterDefinitions: FilterDefinition<MemoriaRAM>[] = [
+        {
+            id: "marca",
+            titulo: "Marca",
+            getValue: ram => ram.marca
+        },
+
+        {
+            id: 'capacidade',
+            titulo: 'Capacidade',
+            getValue: ram => String(ram.capacidade)
+        }
+    ]
+
+    const sortOptions = [
+        {
+            id: "menor_preco",
+            label: "Menor Preço",
+            compare: (a: MemoriaRAM, b: MemoriaRAM) =>
+                a.preco -
+                b.preco
+        },
+
+        {
+            id: "maior_preco",
+            label: "Maior Preço",
+            compare: (a: MemoriaRAM, b: MemoriaRAM) =>
+                b.preco -
+                a.preco
+        },
+
+        {
+            id: "nome",
+            label: "Nome",
+            compare: (a: MemoriaRAM, b: MemoriaRAM) =>
+                a.nome.localeCompare(
+                    b.nome
+                )
+        },
+
+        {
+            id: "cl",
+            label: "Maior CL",
+            compare: (a: MemoriaRAM, b: MemoriaRAM) =>
+                b.cl - a.cl
+        }
+    ]
+
+    const {
+        pesquisa,
+        setPesquisa,
+        filtros,
+        alterarFiltro,
+        ordenacao,
+        setOrdenacao,
+        itensFiltrados,
+        filtrosConfig,
+        preco,
+        alterarPreco,
+        maiorPreco,
+        menorPreco
+    } = useProductFilters({
+        items: listaMemorias,
+
+        searchFn: ram =>
+            ram.nome,
+
+        filterDefinitions:
+            ramFilterDefinitions,
+
+        sortOptions
+    })
+
     return (
         <LayoutEscolhas
             titulo="Escolha sua Memória RAM"
@@ -101,8 +176,24 @@ function EscolherMemoriaRAM() {
                     valor: listaMemorias.length === 0 ? 'Não há nenhuma memória compatível com este DDR' : `Apenas mostrando as memórias com o DDR${pcMontado.placaMae?.ddr}`
                 }
             ]}
+            filtros={
+                <ProductFilters
+                    pesquisa={pesquisa}
+                    onPesquisaChange={setPesquisa}
+                    filtros={filtrosConfig}
+                    valores={filtros}
+                    onFiltroChange={alterarFiltro}
+                    ordenacao={ordenacao}
+                    onOrdenacaoChange={setOrdenacao}
+                    ordenacoes={sortOptions}
+                    preco={preco}
+                    onPrecoChange={alterarPreco}
+                    menorPreco={menorPreco}
+                    maiorPreco={maiorPreco}
+                />
+            }
         >
-            {listaMemorias.map(memoria =>
+            {itensFiltrados.map(memoria =>
                 <Grid
                     size={{
                         xs: 12,

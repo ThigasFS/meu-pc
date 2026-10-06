@@ -41,7 +41,7 @@ export async function getCases(): Promise<Gabinete[]> {
 
                 marca:
                     banco?.marca ??
-                    definirMarca(json.name),
+                    definirMarca(json.name, 'gabinete'),
 
                 qtdFans:
                     specs.qtdFans ??

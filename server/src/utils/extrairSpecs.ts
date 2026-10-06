@@ -37,6 +37,7 @@ import {
 
     extrairQtdFans,
     extrairFormatoGabinete,
+    definirChipsetGpu,
 
 } from "./componenteUtils"
 
@@ -134,7 +135,7 @@ export function extrairSpecs(
                     extrairTDPGPU(texto),
 
                 chipset:
-                    gpuBase?.chipset ?? ""
+                    definirChipsetGpu(texto)
             }
         }
 

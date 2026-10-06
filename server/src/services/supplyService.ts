@@ -39,7 +39,7 @@ export async function getPsus(): Promise<Fonte[]> {
 
                 marca:
                     banco?.marca ??
-                    definirMarca(json.name),
+                    definirMarca(json.name, 'fonte'),
 
                 potencia:
                     specs.potencia ??

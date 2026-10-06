@@ -59,7 +59,7 @@ export async function getRams(): Promise<MemoriaRam[]> {
 
                 marca:
                     banco?.marca ??
-                    definirMarca(nome),
+                    definirMarca(nome, 'ram'),
 
                 capacidade:
                     specs.capacidade ??

@@ -160,231 +160,6 @@ export function definirSocket(
 }
 
 export function definirMarca(
-    nome: string,
-    tipo: string
-): string {
-
-    const upper =
-        nome.toUpperCase()
-
-    switch (tipo.toLowerCase()) {
-
-        case "cpu":
-
-            if (
-                upper.includes("AMD") ||
-                upper.includes("RYZEN")
-            ) {
-                return "AMD"
-            }
-
-            if (
-                upper.includes("INTEL") ||
-                upper.includes("CORE ")
-            ) {
-                return "Intel"
-            }
-
-            return "Genérico"
-
-        case "gpu":
-
-            if (
-                upper.includes("ASUS")
-            ) {
-                return "ASUS"
-            }
-
-            if (
-                upper.includes("MSI")
-            ) {
-                return "MSI"
-            }
-
-            if (
-                upper.includes("GIGABYTE") ||
-                upper.includes("AORUS")
-            ) {
-                return "Gigabyte"
-            }
-
-            if (
-                upper.includes("ASROCK")
-            ) {
-                return "ASRock"
-            }
-
-            if (
-                upper.includes("GALAX")
-            ) {
-                return "Galax"
-            }
-
-            if (
-                upper.includes("ZOTAC")
-            ) {
-                return "Zotac"
-            }
-
-            if (
-                upper.includes("PNY")
-            ) {
-                return "PNY"
-            }
-
-            if (
-                upper.includes("PALIT")
-            ) {
-                return "Palit"
-            }
-
-            if (
-                upper.includes("GAINWARD")
-            ) {
-                return "Gainward"
-            }
-
-            if (
-                upper.includes("EVGA")
-            ) {
-                return "EVGA"
-            }
-
-            return "Genérico"
-
-        default:
-
-            if (
-                upper.includes("ASUS")
-            ) {
-                return "ASUS"
-            }
-
-            if (
-                upper.includes("MSI")
-            ) {
-                return "MSI"
-            }
-
-            if (
-                upper.includes("GIGABYTE") ||
-                upper.includes("AORUS")
-            ) {
-                return "Gigabyte"
-            }
-
-            if (
-                upper.includes("ASROCK")
-            ) {
-                return "ASRock"
-            }
-
-            if (
-                upper.includes("BIOSTAR")
-            ) {
-                return "Biostar"
-            }
-
-            if (
-                upper.includes("CORSAIR")
-            ) {
-                return "Corsair"
-            }
-
-            if (
-                upper.includes("KINGSTON") ||
-                upper.includes("FURY") ||
-                upper.includes("HYPERX")
-            ) {
-                return "Kingston"
-            }
-
-            if (
-                upper.includes("G.SKILL") ||
-                upper.includes("GSKILL")
-            ) {
-                return "G.Skill"
-            }
-
-            if (
-                upper.includes("CRUCIAL")
-            ) {
-                return "Crucial"
-            }
-
-            if (
-                upper.includes("ADATA") ||
-                upper.includes("XPG")
-            ) {
-                return "ADATA"
-            }
-
-            if (
-                upper.includes("TEAMGROUP")
-            ) {
-                return "TeamGroup"
-            }
-
-            if (
-                upper.includes("SAMSUNG")
-            ) {
-                return "Samsung"
-            }
-
-            if (
-                upper.includes("WESTERN DIGITAL") ||
-                upper.includes("WD ")
-            ) {
-                return "Western Digital"
-            }
-
-            if (
-                upper.includes("SEAGATE")
-            ) {
-                return "Seagate"
-            }
-
-            if (
-                upper.includes("COOLER MASTER")
-            ) {
-                return "Cooler Master"
-            }
-
-            if (
-                upper.includes("THERMALTAKE")
-            ) {
-                return "Thermaltake"
-            }
-
-            if (
-                upper.includes("DEEPCOOL")
-            ) {
-                return "DeepCool"
-            }
-
-            if (
-                upper.includes("NOCTUA")
-            ) {
-                return "Noctua"
-            }
-
-            if (
-                upper.includes("INTEL")
-            ) {
-                return "Intel"
-            }
-
-            if (
-                upper.includes("AMD")
-            ) {
-                return "AMD"
-            }
-
-            return "Genérico"
-    }
-}
-
-export function definirChipsetGpu(
     nome: string
 ): string {
 
@@ -392,21 +167,40 @@ export function definirChipsetGpu(
         nome.toUpperCase()
 
     if (
-        upper.includes("RTX") ||
-        upper.includes("GTX") ||
-        upper.includes("GEFORCE")
-    ) {
-        return "NVIDIA"
-    }
-
-    if (
-        upper.includes("RADEON") ||
-        upper.includes("RX ")
+        upper.includes("AMD") ||
+        upper.includes("RYZEN")
     ) {
         return "AMD"
     }
 
-    return "Desconhecido"
+    if (
+        upper.includes("INTEL") ||
+        upper.includes("CORE")
+    ) {
+        return "Intel"
+    }
+
+    if (
+        upper.includes("RTX") ||
+        upper.includes("GTX") ||
+        upper.includes("NVIDIA")
+    ) {
+        return "NVIDIA"
+    }
+
+    if (upper.includes("RADEON")) {
+        return "AMD"
+    }
+
+    if (upper.includes("ASUS")) return "ASUS"
+    if (upper.includes("MSI")) return "MSI"
+    if (upper.includes("GIGABYTE")) return "Gigabyte"
+    if (upper.includes("ASROCK")) return "ASRock"
+    if (upper.includes("CORSAIR")) return "Corsair"
+    if (upper.includes("KINGSTON")) return "Kingston"
+    if (upper.includes("SAMSUNG")) return "Samsung"
+
+    return "Genérico"
 }
 
 export function definirChipset(
@@ -624,7 +418,7 @@ export function extrairGddr(
 
     const match =
         texto.toUpperCase()
-            .match(/DDR(\d)/)
+            .match(/GDDR(\d)/)
 
     return match
         ? Number(match[1])
@@ -897,7 +691,7 @@ export function extrairChipsetMB(
     // AMD
     const amdChipset =
         texto.match(
-            /\b(A|B|X)\d{3}[A-Z0-9\-]*\b/
+            /\b(A|B|X)\d{3}[A-Z0-9-]*\b/
         )
 
     if (amdChipset) {
@@ -907,7 +701,7 @@ export function extrairChipsetMB(
     // Intel
     const intelChipset =
         texto.match(
-            /\b(H|B|Z|X|Q|W)\d{3}[A-Z0-9\-]*\b/
+            /\b(H|B|Z|X|Q|W)\d{3}[A-Z0-9-]*\b/
         )
 
     if (intelChipset) {

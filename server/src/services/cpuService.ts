@@ -33,6 +33,10 @@ export async function getCpus(): Promise<Processador[]> {
 
             const tdp = validarTDP('cpu', specs.tdp)
 
+            const nome =
+                banco?.nome ??
+                json.name
+
             return {
                 id:
                     banco?.id ??
@@ -51,7 +55,7 @@ export async function getCpus(): Promise<Processador[]> {
 
                 marca:
                     banco?.marca ??
-                    definirMarca(json.name),
+                    definirMarca(nome, 'cpu'),
 
                 socket:
                     specs.socket ??

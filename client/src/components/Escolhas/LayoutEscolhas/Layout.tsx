@@ -15,6 +15,7 @@ interface Props {
     acaoDireita?: ReactNode
     infosExtras?: InfoExtra[]
     primeiraEtapa?: boolean
+    filtros?: ReactNode
     children: ReactNode
 }
 
@@ -26,6 +27,7 @@ function LayoutEscolhas({
     acaoDireita,
     infosExtras,
     primeiraEtapa,
+    filtros,
     children
 }: Props) {
     return (
@@ -39,21 +41,44 @@ function LayoutEscolhas({
                 },
                 py: 3
             }}
+        ><Box
+            sx={{
+                position: "sticky",
+                top: 0,
+                zIndex: 1000,
+                backgroundColor: "#0a0a0a",
+                pb: 2
+            }}
         >
-            <HeaderEscolhas
-                titulo={titulo}
-                valorTotal={valorTotal}
-                onAnterior={onAnterior}
-                onCancelar={onCancelar}
-                acaoDireita={acaoDireita}
-                primeiraEtapa={primeiraEtapa}
-                infosExtras={infosExtras}
-            />
+                <HeaderEscolhas
+                    titulo={titulo}
+                    valorTotal={valorTotal}
+                    onAnterior={onAnterior}
+                    onCancelar={onCancelar}
+                    acaoDireita={acaoDireita}
+                    primeiraEtapa={primeiraEtapa}
+                    infosExtras={infosExtras}
+                />
+
+                {filtros && (
+                    <Box
+                        sx={{
+                            position: "sticky",
+                            top: 16,
+                            zIndex: 1000,
+                            mb: 3
+                        }}
+                    >
+                        {filtros}
+                    </Box>
+                )}
+            </Box>
+
 
             <Grid
                 container
                 spacing={3}
-                sx={{alignItems: 'stretch'}}
+                sx={{ alignItems: 'stretch' }}
             >
                 {children}
             </Grid>

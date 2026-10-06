@@ -7,6 +7,7 @@ import ramsRoutes from './routes/ramRoutes'
 import storageRoutes from './routes/storageRoutes'
 import supplyRoutes from './routes/supplyRoutes'
 import caseRoutes from './routes/caseRoutes'
+import datasetRoutes from './routes/datasetRoutes'
 import "./database/connection"
 import { loadAllData } from "./services/dataLoader"
 
@@ -24,6 +25,7 @@ app.use("/api/ram", ramsRoutes)
 app.use("/api/storage", storageRoutes)
 app.use("/api/supply", supplyRoutes)
 app.use("/api/case", caseRoutes)
+app.use("/api/dataset", datasetRoutes)
 
 app.listen(3000, () => {
     console.log("Servidor rodando na porta 3000")

@@ -2,6 +2,7 @@ import {
     Box,
     Grid,
     MenuItem,
+    Slider,
     TextField
 } from "@mui/material"
 
@@ -12,14 +13,16 @@ import {
 function ProductFilters({
     pesquisa,
     onPesquisaChange,
-
     filtros,
     valores,
-
     onFiltroChange,
-
     ordenacao,
-    onOrdenacaoChange
+    onOrdenacaoChange,
+    ordenacoes,
+    preco,
+    onPrecoChange,
+    menorPreco,
+    maiorPreco
 }: FiltroProdutosProps) {
 
     return (
@@ -66,7 +69,7 @@ function ProductFilters({
                             label={filtro.titulo}
                             value={
                                 valores[
-                                    filtro.id
+                                filtro.id
                                 ] ?? ""
                             }
                             onChange={(e) =>
@@ -113,18 +116,55 @@ function ProductFilters({
                             )
                         }
                     >
-                        <MenuItem value="preco">
-                            Menor preço
-                        </MenuItem>
-
-                        <MenuItem value="nome">
-                            Nome
-                        </MenuItem>
-
-                        <MenuItem value="clock">
-                            Maior clock
-                        </MenuItem>
+                        {ordenacoes.map(
+                            ordenacaoItem => (
+                                <MenuItem
+                                    key={
+                                        ordenacaoItem.id
+                                    }
+                                    value={
+                                        ordenacaoItem.id
+                                    }
+                                >
+                                    {
+                                        ordenacaoItem.label
+                                    }
+                                </MenuItem>
+                            )
+                        )}
                     </TextField>
+                </Grid>
+
+                <Grid size={{
+                    xs: 12,
+                    md: 2
+                }}>
+                    <TextField
+                        fullWidth
+                        type="number"
+                        value={preco[0]}
+                        onChange={(e) => onPrecoChange(Number(e.target.value), preco[1])}
+                    />
+                    <Slider
+                        value={preco}
+                        onChange={(_, value) => {
+                            const [min, max] =
+                                value as number[]
+
+                            onPrecoChange(
+                                min,
+                                max
+                            )
+                        }}
+                        min={menorPreco}
+                        max={maiorPreco}
+                        step={250}
+                    />
+                    <TextField
+                        fullWidth
+                        value={preco[1]}
+                        onChange={(e) => onPrecoChange(preco[0], Number(e.target.value))}
+                    />
                 </Grid>
             </Grid>
         </Box>

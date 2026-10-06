@@ -7,6 +7,8 @@ import axios from "axios"
 import BotaoEscolhas from "../BotaoEscolhas/BotaoEscolhas"
 import { Grid } from "@mui/material"
 import LayoutEscolhas from "./LayoutEscolhas/Layout"
+import { FilterDefinition, useProductFilters } from "../../hooks/useProdutoFiltros"
+import ProductFilters from "../FiltroProduto/FiltroProduto"
 
 type ContextType = {
     pcMontado: Partial<PC>
@@ -82,6 +84,72 @@ function EscolherPlacaVideo() {
         navigate(-1)
     }
 
+    const gpuFilterDefinitions: FilterDefinition<PlacaVideo>[] = [
+            {
+                id: "marca",
+                titulo: "Marca",
+                getValue: gpu => gpu.marca
+            },
+            
+            {
+                id: 'chipset',
+                titulo: 'Chipset',
+                getValue: gpu => gpu.chipset
+            }
+        ]
+    
+        const sortOptions = [
+            {
+                id: "menor_preco",
+                label: "Menor Preço",
+                compare: (a: PlacaVideo, b: PlacaVideo) =>
+                    a.preco -
+                    b.preco
+            },
+    
+            {
+                id: "maior_preco",
+                label: "Maior Preço",
+                compare: (a: PlacaVideo, b: PlacaVideo) =>
+                    b.preco -
+                    a.preco
+            },
+    
+            {
+                id: "nome",
+                label: "Nome",
+                compare: (a: PlacaVideo, b: PlacaVideo) =>
+                    a.nome.localeCompare(
+                        b.nome
+                    )
+            },
+        ]
+    
+        const {
+            pesquisa,
+            setPesquisa,
+            filtros,
+            alterarFiltro,
+            ordenacao,
+            setOrdenacao,
+            itensFiltrados,
+            filtrosConfig,
+            preco,
+            alterarPreco,
+            maiorPreco,
+            menorPreco
+        } = useProductFilters({
+            items: listaPlacaVideo,
+    
+            searchFn: gpu =>
+                gpu.nome,
+    
+            filterDefinitions:
+                gpuFilterDefinitions,
+    
+            sortOptions
+        })
+
     return (
         <LayoutEscolhas
             titulo="Escolha sua Placa de Vídeo"
@@ -99,8 +167,24 @@ function EscolherPlacaVideo() {
                     valor: pcMontado.processador?.videoIntegrado ? 'tem vídeo integrado, a GPU é opcional' : 'não tem vídeo integrado, por favor selecionar GPU'
                 }
             ]}
+            filtros={
+                <ProductFilters
+                    pesquisa={pesquisa}
+                    onPesquisaChange={setPesquisa}
+                    filtros={filtrosConfig}
+                    valores={filtros}
+                    onFiltroChange={alterarFiltro}
+                    ordenacao={ordenacao}
+                    onOrdenacaoChange={setOrdenacao}
+                    ordenacoes={sortOptions}
+                    preco={preco}
+                    onPrecoChange={alterarPreco}
+                    menorPreco={menorPreco}
+                    maiorPreco={maiorPreco}
+                />
+            }
         >
-            {listaPlacaVideo.map(gpu =>
+            {itensFiltrados.map(gpu =>
                 <Grid
                     size={{
                         xs: 12,

@@ -6,7 +6,6 @@ import {
 
 import {
     definirMarca,
-    extrairTDPGPU,
     menorPreco
 } from "../utils/componenteUtils"
 
@@ -48,8 +47,7 @@ export async function getGpus(): Promise<PlacaVideo[]> {
                 banco?.nome ??
                 json.name
 
-            const tdp =
-                validarTDP('gpu', specs.tdp)
+            const tdp = validarTDP('gpu', specs.tdp)
 
             return {
 
@@ -63,17 +61,15 @@ export async function getGpus(): Promise<PlacaVideo[]> {
 
                 marca:
                     banco?.marca ??
-                    definirMarca(nome),
+                    definirMarca(nome, 'gpu'),
 
-                vram:
-                    specs.vram ??
-                    json.memory,
+                chipset: specs.chipset,
 
-                tdp:
-                    tdp.valor,
+                vram: specs.vram,
 
-                tdpEstimado:
-                    tdp.estimado,
+                tdp: tdp.valor,
+
+                tdpEstimado: tdp.estimado,
 
                 gddr:
                     specs.gddr ??
