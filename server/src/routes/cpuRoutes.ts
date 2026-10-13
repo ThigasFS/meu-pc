@@ -1,18 +1,18 @@
 import { Router } from "express"
-import { getCpus } from "../services/cpuService"
+import { getCPUs } from "../services/cpuService"
 
 const router = Router()
 
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
     try {
-        const cpus = await getCpus()
+        const cpus = await getCPUs()
 
         res.json(cpus)
     } catch (error) {
-        console.error(error)
+        console.error("Erro ao obter CPUs:", error)
 
         res.status(500).json({
-            erro: "Erro ao buscar CPUs"
+            error: "Erro ao obter CPUs"
         })
     }
 })

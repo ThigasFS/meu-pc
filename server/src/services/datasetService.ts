@@ -1,122 +1,96 @@
-const DATASET = "Doshiba%2Fpcpartpicker-parts-dataset";
-const BASE_URL = "https://datasets-server.huggingface.co";
+import fs from "fs"
+import path from "path"
+import readline from "readline"
 
-const CATEGORIES = [
-    "cpu",
-    "cpu-cooler",
-    "motherboard",
-    "memory",
-    "internal-hard-drive",
-    "video-card",
-    "power-supply",
-    "case",
-];
-
-interface DatasetRow {
-    row: {
-        category: string;
-        name: string;
-        brand: string;
-        url: string;
-        image_url: string;
-        price_eur: number | null;
-        rating_count: number;
-        specs: Record<string, string>;
-    };
+export interface DatasetRecord {
+    source: string
+    source_id: string
+    category: string
+    name: string
+    brand: string
+    url: string
+    image_url: string
+    price_eur: number
+    rating_count: number
+    specs: Record<string, string>
 }
 
-interface DatasetResponse {
-    rows: DatasetRow[];
-    num_rows_total: number;
-}
+const DATASET_PATH = path.join(
+    __dirname,
+    "../data/dataset.jsonl"
+)
 
-async function getRows(offset = 0, length = 100): Promise<DatasetResponse> {
-    const url =
-        `${BASE_URL}/rows` +
-        `?dataset=${DATASET}` +
-        `&config=default` +
-        `&split=train` +
-        `&offset=${offset}` +
-        `&length=${length}`;
+let dataset: DatasetRecord[] | null = null
 
-    const response = await fetch(url);
-
-    if (!response.ok) {
-        throw new Error(
-            `Erro ao consultar Hugging Face: ${response.status} ${response.statusText}`
-        );
+async function loadDataset(): Promise<DatasetRecord[]> {
+    if (dataset) {
+        return dataset
     }
 
-    return response.json();
-}
+    const records: DatasetRecord[] = []
 
-export async function getDatasetSpecs() {
-    const specs: Record<
-        string,
-        {
-            count: number;
-            fields: Record<string, Set<string>>;
-        }
-    > = {};
+    const fileStream = fs.createReadStream(DATASET_PATH, {
+        encoding: "utf-8"
+    })
 
-    let offset = 0;
-    let totalRows = 0;
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    })
 
-    while (true) {
-        const data = await getRows(offset, 100);
-
-        totalRows = data.num_rows_total;
-
-        for (const item of data.rows) {
-            const row = item.row;
-
-            if (!specs[row.category]) {
-                specs[row.category] = {
-                    count: 0,
-                    fields: {},
-                };
-            }
-
-            specs[row.category].count++;
-
-            for (const [key, value] of Object.entries(row.specs ?? {})) {
-                if (!specs[row.category].fields[key]) {
-                    specs[row.category].fields[key] = new Set();
-                }
-
-                if (value !== null && value !== undefined && value !== "") {
-                    specs[row.category].fields[key].add(value);
-                }
-            }
+    for await (const line of rl) {
+        if (!line.trim()) {
+            continue
         }
 
-        offset += data.rows.length;
+        try {
+            const record = JSON.parse(line) as DatasetRecord
 
-        if (offset >= totalRows || data.rows.length === 0) {
-            break;
+            records.push(record)
+        } catch {
+            console.error("Linha inválida encontrada no dataset")
         }
-
-        console.log(`Dataset analisado: ${offset}/${totalRows}`);
     }
 
-    return {
-        totalRows,
-        categories: Object.fromEntries(
-            Object.entries(specs).map(([category, data]) => [
-                category,
-                {
-                    count: data.count,
-                    specs: Object.fromEntries(
-                        Object.entries(data.fields).map(([field, values]) => [
-                            field,
-                            {
-                                uniqueValues: values.size,
-                                values: Array.from(values).sort(),
-                            },
-                        ])
-                    ),
-                },
-            ])
-        ),
-    };
+    dataset = records
+
+    console.log(
+        `Dataset carregado: ${dataset.length} registros`
+    )
+
+    return dataset
+}
+
+export async function getDataset(): Promise<DatasetRecord[]> {
+    return loadDataset()
+}
+
+export async function getDatasetCategories(): Promise<string[]> {
+    const data = await loadDataset()
+
+    return [
+        ...new Set(
+            data.map(record => record.category)
+        )
+    ]
+}
+
+export async function getDatasetByCategory(
+    category: string
+): Promise<DatasetRecord[]> {
+    const data = await loadDataset()
+
+    return data.filter(
+        record => record.category === category
+    )
+}
+
+export async function getDatasetRecord(
+    sourceId: string
+): Promise<DatasetRecord | undefined> {
+    const data = await loadDataset()
+
+    return data.find(
+        record => record.source_id === sourceId
+    )
 }

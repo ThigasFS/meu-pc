@@ -1,98 +1,55 @@
-import { validarTDP } from "../enrichers/tdp"
-import {
-    Processador,
-    ProcessadorJSON
-} from "../interfaces/componente"
+import { getDataset } from "./datasetService"
 
-import {
-    definirMarca,
-    definirSocket,
-    menorPreco
-} from "../utils/componenteUtils"
+export interface CPU {
+    id: string
+    type: "cpu"
 
-import { gerarFingerprintProduto } from "../utils/fingerprint"
+    source: string
+    name: string
+    brand: string
 
-import { BaseProdutoService } from "./BaseProdutoService"
+    url: string
+    image: string
 
-export async function getCpus(): Promise<Processador[]> {
+    price: number
+    ratingCount: number
 
-    return BaseProdutoService<ProcessadorJSON, Processador>({
-        tipo: "cpu",
-        tabelaTipo: "cpu",
+    specs: Record<string, string>
+}
 
-        gerarFingerprint: (cpu) =>
-            gerarFingerprintProduto(
-                "cpu",
-                cpu.name
-            ),
+let cpus: CPU[] | null = null
 
-        mapear: ({ json, banco, index }) => {
+async function loadCPUs(): Promise<CPU[]> {
+    if (cpus) {
+        return cpus
+    }
 
-            const specs =
-                banco?.specs ?? {}
+    const dataset = await getDataset()
 
-            const tdp = validarTDP('cpu', specs.tdp)
+    cpus = dataset
+        .filter(record => record.category === "cpu")
+        .map(record => ({
+            id: record.source_id,
+            type: "cpu",
 
-            const nome =
-                banco?.nome ??
-                json.name
+            source: record.source,
+            name: record.name,
+            brand: record.brand,
 
-            return {
-                id:
-                    banco?.id ??
-                    index + 1,
+            url: record.url,
+            image: record.image_url,
 
-                fingerprint:
-                    banco?.fingerprint ??
-                    gerarFingerprintProduto(
-                        "cpu",
-                        json.name
-                    ),
+            price: record.price_eur,
+            ratingCount: record.rating_count,
 
-                nome:
-                    banco?.nome ??
-                    json.name,
+            specs: record.specs
+        }))
 
-                marca:
-                    banco?.marca ??
-                    definirMarca(nome, 'cpu'),
+    console.log(`CPUs carregadas: ${cpus.length}`)
 
-                socket:
-                    specs.socket ??
-                    definirSocket(
-                        json.microarchitecture
-                    ),
+    return cpus
+}
 
-                velocidade:
-                    specs.clock ??
-                    json.core_clock,
-
-                tdp:
-                    tdp.valor,
-
-                tdpEstimado:
-                    tdp.estimado,
-
-                videoIntegrado:
-                    specs.videoIntegrado ??
-                    !!json.graphics,
-
-                imagem:
-                    banco?.imagem ?? "",
-
-                preco:
-                    menorPreco(
-                        banco?.valores ?? []
-                    ),
-
-                valores:
-                    banco?.valores ?? []
-            }
-        },
-
-        filtro: (cpu) =>
-            cpu.imagem.length > 0 &&
-            cpu.preco > 0 &&
-            (cpu.valores?.length ?? 0) > 0
-    })
+export async function getCPUs(): Promise<CPU[]> {
+    return loadCPUs()
 }
