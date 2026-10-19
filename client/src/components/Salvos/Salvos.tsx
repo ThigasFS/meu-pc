@@ -40,7 +40,7 @@ function Salvos() {
             fontSize: 24
           }}
         >
-          Seus PCs salvos
+          Suas Orientações Salvas
         </Typography>
 
         <ListaSalvos
@@ -48,7 +48,7 @@ function Salvos() {
           onRemove={removerPc}
         />
 
-        <Link to="/criacao">
+        <Link to="/orientacao" style={{textDecoration: 'none'}}>
           <Button
             sx={{
               background: "#52F2B8",
@@ -58,7 +58,7 @@ function Salvos() {
               fontWeight: 600
             }}
           >
-            Criar novo PC
+            Começar uma Orientação
           </Button>
         </Link>
       </Stack>

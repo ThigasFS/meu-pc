@@ -30,7 +30,7 @@ function Cabecalho() {
                         mt: 1
                     }}
                 >
-                    Monte, compare e salve suas configurações
+                    Aprenda as funções que você precisa pro seu novo computador
                 </Typography>
             </Box>
 

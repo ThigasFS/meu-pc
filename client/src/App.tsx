@@ -15,6 +15,15 @@ import SelecaoCriacao from './pages/Criacao/Criacao'
 import { useEffect } from 'react'
 import { initializePreBuilds } from './services/PreBuildStorage'
 import PreBuildPage from './pages/PreMontagem/PreMontagem'
+import Intencao from './pages/Orientacao/Intencao'
+import OrientacaoLayout from './components/Orientacao/Layout'
+import Licao from './pages/Orientacao/Licao'
+import Quiz from './pages/Orientacao/Quiz'
+import ResultadoQuiz from './pages/Orientacao/ResultadoQuiz'
+import Recomendacao from './pages/Orientacao/Recomendacao'
+import ResumoOrientacao from './pages/Orientacao/ResumoOrientacao'
+import CriarOrientacao from './pages/Orientacao/CriarOrientacao'
+import OrientacaoProviderLayout from './components/ProviderLayout/Orientacao'
 
 function App() {
 
@@ -26,6 +35,17 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/orientacao' element={<OrientacaoProviderLayout />}>
+          <Route index element={<CriarOrientacao />} />
+          <Route path=':id' element={<OrientacaoLayout />}>
+            <Route path='intencao' element={<Intencao />} />
+            <Route path="licao" element={<Licao />} />
+            <Route path="quiz" element={<Quiz />} />
+            <Route path="quiz/resultado" element={<ResultadoQuiz />} />
+            <Route path="recomendacao" element={<Recomendacao />} />
+            <Route index element={<ResumoOrientacao />} />
+          </Route>
+        </Route>
         <Route path='/criacao' element={<SelecaoCriacao />} />
         <Route path='/criar-novo-pc' element={<CriarPC />}>
           <Route path='processador' element={<EscolherProcessador />} />

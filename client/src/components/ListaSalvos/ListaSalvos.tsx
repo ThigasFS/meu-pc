@@ -18,21 +18,11 @@ function ListaSalvos({ pcs, onRemove }: Props) {
       >
         <Typography
           sx={{
-            color: "white",
-            fontWeight: 600,
-            fontSize: 24
-          }}
-        >
-          Não há nenhum PC salvo
-        </Typography>
-
-        <Typography
-          sx={{
             color: "rgba(255,255,255,0.6)",
-            mt: 1
+            fontSize: 20
           }}
         >
-          Crie seu primeiro setup
+          Não há orientação salva
         </Typography>
       </Box>
     )
