@@ -1,12 +1,12 @@
 import { IntencaoOrientacao } from '../data/types';
-import PC from './pc';
+import PC, { PCSimples } from './pc';
 
 export interface Orientacao {
   id: string;
   intencao: IntencaoOrientacao | null;
   respostasQuiz: Record<string, string>;
   pontuacaoQuiz: number | null;
-  recomendacao: PC[] | null;
+  recomendacao: PCSimples | null;
   concluida: boolean;
 }
 

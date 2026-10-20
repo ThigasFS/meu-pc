@@ -171,6 +171,11 @@ export default function Licao() {
 
   const licao = montarLicao(intencao);
 
+  function pularQuiz(){
+    orientacao.atualizarOrientacao({pontuacaoQuiz: null, respostasQuiz: {}})
+    navigate('/');
+  }
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Stack spacing={3}>
@@ -214,7 +219,7 @@ export default function Licao() {
           <Button
             variant="outlined"
             size="large"
-            onClick={() => navigate(`/home`)}
+            onClick={pularQuiz}
             color='inherit'
           >
             Voltar
