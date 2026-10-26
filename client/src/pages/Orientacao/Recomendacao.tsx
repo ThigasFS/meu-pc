@@ -36,11 +36,6 @@ const nomesIntencoes: Record<IntencaoOrientacao, string> = {
   casual: 'Uso cotidiano',
 };
 
-const nomesPerfis: Record<PerfilRecomendacao, string> = {
-  'custo-beneficio': 'Custo-benefício',
-  desempenho: 'Maior desempenho',
-};
-
 export default function Recomendacao() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -113,7 +108,7 @@ export default function Recomendacao() {
     // Ajuste para o nome real da função que você expuser no provider.
     orientacao.atualizarOrientacao({recomendacao: pc})
 
-    navigate(`/orientacao/${id}/resumo`);
+    navigate(`/orientacao/${id}`);
   }
 
   return (

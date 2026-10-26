@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react'
-import PC from '../../interfaces/pc.ts'
 import ListaSalvos from '../ListaSalvos/ListaSalvos.tsx'
 import { Link } from 'react-router-dom'
 import { Box, Button, Stack, Typography } from '@mui/material'
+import { Orientacao } from '../../interfaces/orientacao.ts'
 
 function Salvos() {
-  const [listaSalvos, setListaSalvos] = useState<PC[]>([])
+  const [listaOrientacoes, setListaOrientacoes] = useState<Orientacao[]>([])
 
   useEffect(() => {
-    const listaStorage = localStorage.getItem('listaDePcs')
-    if (listaStorage) {
-      setListaSalvos(JSON.parse(listaStorage))
+    const listaOrientacao = sessionStorage.getItem('orientacoes')
+    if (listaOrientacao) {
+      setListaOrientacoes(JSON.parse(listaOrientacao))
     }
   }, [])
 
-  function removerPc(id: number) {
-    const novaLista = listaSalvos.filter(pc => pc.id !== id)
-    setListaSalvos(novaLista)
-    localStorage.setItem('listaDePcs', JSON.stringify(novaLista))
+  function removerOrientacao(id: string) {
+    const novaLista = Object.values(listaOrientacoes).filter(item => item.id !== id)
+    setListaOrientacoes(novaLista)
+    sessionStorage.setItem('orientacoes', JSON.stringify(novaLista))
   }
 
   return (
@@ -44,8 +44,8 @@ function Salvos() {
         </Typography>
 
         <ListaSalvos
-          pcs={listaSalvos}
-          onRemove={removerPc}
+          items={listaOrientacoes}
+          onRemove={removerOrientacao}
         />
 
         <Link to="/orientacao" style={{textDecoration: 'none'}}>

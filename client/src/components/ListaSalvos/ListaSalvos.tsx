@@ -1,14 +1,14 @@
 import { Box, Typography } from "@mui/material"
-import PcCard from "../PcCard/PcCard"
-import PC from "../../interfaces/pc"
+import OrientacaoCard from "../OrientacaoCard/orientacaoCard"
+import { Orientacao } from "../../interfaces/orientacao"
 
 interface Props {
-  pcs: PC[]
-  onRemove: (id: number) => void
+  items: Orientacao[]
+  onRemove: (id: string) => void
 }
 
-function ListaSalvos({ pcs, onRemove }: Props) {
-  if (pcs.length === 0) {
+function ListaSalvos({ items, onRemove }: Props) {
+  if (items.length === 0) {
     return (
       <Box
         sx={{
@@ -28,6 +28,8 @@ function ListaSalvos({ pcs, onRemove }: Props) {
     )
   }
 
+  const orientacoes = Object.values(items)
+
   return (
     <Box
       sx={{
@@ -41,16 +43,13 @@ function ListaSalvos({ pcs, onRemove }: Props) {
         width: "100%"
       }}
     >
-      {pcs.map((pc) => (
-        <PcCard
-          key={pc.id}
-          id={pc.id}
-          processador={pc.processador}
-          preco={pc.valorTotal}
-          nome={pc.nome}
+      {orientacoes.map((item) =>
+        <OrientacaoCard
+          key={item.id}
+          orientacao={item}
           onRemove={onRemove}
         />
-      ))}
+      )}
     </Box>
   )
 }
