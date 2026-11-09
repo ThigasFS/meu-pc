@@ -1,20 +1,14 @@
-
 import { ReactElement, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-
-import {
-  type IntencaoOrientacao,
-} from '../../interfaces/orientacao';
-
 import { useOrientacao } from '../../hooks/useOrientacao';
 import { Backpack, House, SportsEsports, Videocam, Work } from '@mui/icons-material';
+import { IntencaoOrientacao } from '../../data/types';
 
 const intencoes: {
   valor: IntencaoOrientacao;
@@ -70,7 +64,7 @@ export default function Intencao() {
       intencao: selecionada,
     });
 
-    navigate(`/orientacao/${id}/licao`);
+    navigate(`/orientacao/${id}/questionario`);
   }
 
   return (

@@ -91,3 +91,25 @@ export interface ResultadoRecomendacao {
   scoreEficienciaEnergetica?: number;
   justificativa: string[];
 }
+
+export interface Opcao {
+  id: number;
+  etiqueta: string;
+  descricao?: string;
+  valor: string | number;
+}
+
+export interface Questao {
+  id: number;
+  tipo: 'Perfil' | 'Dimensão' | 'Orçamento';
+  pergunta: string;
+  opcoes?: Opcao[];
+  peso: number;
+}
+
+export interface RespostaQuestao {
+  questaoId: number;
+  respostaId: number;
+  min?: number;
+  max?: number;
+}

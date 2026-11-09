@@ -1,19 +1,19 @@
 
 import { IntencaoOrientacao } from '../data/types';
-import { PCSimples } from './pc';
-import type { PerguntaQuiz, ResultadoQuiz } from '../interfaces/quiz';
+import { PCRecomendado } from './pc';
+
+export interface CriteriosOrientacao {
+  orcamento: number;
+  orcamentoMinimo: number;
+  perfil?: 'custo-beneficio' | 'desempenho' | 'hibrido';
+  respostas?: Record<string, unknown>;
+}
 
 export interface Orientacao {
   id: string;
   intencao: IntencaoOrientacao | null;
-
-  respostasQuiz: Record<string, string>;
-  perguntasQuiz: PerguntaQuiz[];
-  indicePerguntaQuiz: number;
-  pontuacaoQuiz: number | null;
-  resultadoQuiz: ResultadoQuiz | null;
-
-  recomendacao: PCSimples | null;
+  criterios: CriteriosOrientacao | null;
+  recomendacoes: PCRecomendado[];
   concluida: boolean;
 }
 
@@ -21,14 +21,9 @@ export function criarOrientacao(id: string): Orientacao {
   return {
     id,
     intencao: null,
-
-    respostasQuiz: {},
-    perguntasQuiz: [],
-    indicePerguntaQuiz: 0,
-    pontuacaoQuiz: null,
-    resultadoQuiz: null,
-
-    recomendacao: null,
+    criterios: null,
+    recomendacoes: [],
     concluida: false,
   };
 }
+

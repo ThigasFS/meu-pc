@@ -36,13 +36,13 @@ export default function OrientacaoCard({
   const navigate = useNavigate();
 
   const temIntencao = orientacao.intencao !== null;
-  const quizConcluido = orientacao.resultadoQuiz !== null;
-  const recomendacaoSelecionada = orientacao.recomendacao !== null;
+  const questionarioConcluido = orientacao.criterios !== null;
+  const recomendacoes = orientacao.recomendacoes !== null;
 
   const etapasConcluidas = [
     temIntencao,
-    quizConcluido,
-    recomendacaoSelecionada,
+    questionarioConcluido,
+    recomendacoes,
   ].filter(Boolean).length;
 
   const progresso = (etapasConcluidas / 3) * 100;
@@ -178,7 +178,7 @@ export default function OrientacaoCard({
 
             <Chip
               size="small"
-              label={quizConcluido ? 'Quiz concluído' : 'Quiz pendente'}
+              label={questionarioConcluido ? 'Questionário concluído' : 'Questionário pendente'}
               variant="outlined"
               sx={{ color: 'white' }}
             />
@@ -186,9 +186,9 @@ export default function OrientacaoCard({
             <Chip
               size="small"
               label={
-                recomendacaoSelecionada
-                  ? 'PC selecionado'
-                  : 'PC não selecionado'
+                recomendacoes
+                  ? 'PCs recomendados'
+                  : 'PCs não recomendados'
               }
               variant="outlined"
               sx={{ color: 'white' }}

@@ -5,6 +5,7 @@ import { useOrientacoes } from '../contexts/OrientacaoContext';
 import type { Orientacao } from '../interfaces/orientacao';
 
 interface UseOrientacaoResult extends Partial<Orientacao> {
+  encontrada: boolean;
   atualizarOrientacao: (
     alteracoes: Partial<Orientacao>,
   ) => void;
@@ -29,6 +30,7 @@ export function useOrientacao(): UseOrientacaoResult {
   return {
     ...dados,
     id,
+    encontrada: Boolean(dados),
     atualizarOrientacao,
   };
 }

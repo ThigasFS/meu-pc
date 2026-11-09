@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import {
@@ -16,10 +16,9 @@ import {
 
 import { useOrientacao } from '../../hooks/useOrientacao';
 import { IntencaoOrientacao } from '../../data/types';
-import { PCSimples } from '../../interfaces/pc';
 import { recomendacoesPorIntencao } from '../../data/recomendacoesPorIntencao';
 
-type PerfilRecomendacao = 'custo-beneficio' | 'desempenho';
+type PerfilRecomendacao = 'custo-beneficio' | 'desempenho' | 'hibrido';
 
 const formatarPreco = (valor: number) =>
   valor.toLocaleString('pt-BR', {
@@ -43,31 +42,19 @@ export default function Recomendacao() {
 
   const intencao = orientacao.intencao;
 
-  const [perfilSelecionado, setPerfilSelecionado] =
-    useState<PerfilRecomendacao>('custo-beneficio');
-
-  const dados = useMemo(() => intencao
-        ? recomendacoesPorIntencao[intencao]
-        : [],
-    [intencao],
-  );
-
   const computadores = useMemo(() => {
-    if (!intencao) return [];
+  if (!intencao) return [];
 
-    const recomendacoes = recomendacoesPorIntencao[intencao];
+  const recomendacoes = recomendacoesPorIntencao[intencao] ?? [];
+  const perfil = orientacao.criterios?.perfil;
 
-    return [
-      ...recomendacoes.filter(
-        (pc) => pc.perfil === 'custo-beneficio',
-      ),
-      ...recomendacoes.filter(
-        (pc) => pc.perfil === 'desempenho',
-      ),
-    ];
-  }, [intencao]);
+  if (perfil === 'custo-beneficio' || perfil === 'desempenho') {
+    return recomendacoes.filter((pc) => pc.perfil === perfil);
+  }
 
-  const quizPulado = orientacao.pontuacaoQuiz === null && Object.keys(orientacao.respostasQuiz ?? {}).length === 0;
+  // Perfil híbrido ou não definido: apresenta ambas as opções.
+  return recomendacoes;
+}, [intencao, orientacao.criterios?.perfil]);
 
   if (!id) {
     return <Navigate to="/orientacao" replace />;
@@ -82,7 +69,7 @@ export default function Recomendacao() {
     );
   }
 
-  if (!dados || dados.length === 0) {
+  if (!computadores || computadores.length === 0) {
     return (
       <Container sx={{ maxWidth: '900px', mx: 'auto', py: 5 }}>
         <Typography sx={{ fontSize: '1.5rem', fontWeight: 700 }}>
@@ -101,14 +88,6 @@ export default function Recomendacao() {
         </Button>
       </Container>
     );
-  }
-
-  function selecionarComputador(pc: PCSimples) {
-    // A seleção precisa ser salva pelo contexto da orientação.
-    // Ajuste para o nome real da função que você expuser no provider.
-    orientacao.atualizarOrientacao({recomendacao: pc})
-
-    navigate(`/orientacao/${id}`);
   }
 
   return (
@@ -144,78 +123,16 @@ export default function Recomendacao() {
         </Box>
 
         {/* Seleção do perfil */}
-        <Box>
-          <Typography sx={{ fontSize: '1.2rem', fontWeight: 700, mb: 1 }}>
-            Qual é sua prioridade?
-          </Typography>
-
-          <Grid container spacing={2}>
-            {(
-              [
-                {
-                  id: 'custo-beneficio',
-                  titulo: 'Custo-benefício',
-                  descricao:
-                    'Boas opções para equilibrar preço e desempenho.',
-                },
-                {
-                  id: 'desempenho',
-                  titulo: 'Desempenho',
-                  descricao:
-                    'Configurações voltadas a resultados superiores.',
-                },
-              ] as const
-            ).map((perfil) => {
-              const selecionado =
-                perfilSelecionado === perfil.id;
-
-              return (
-                <Grid key={perfil.id} size={{ xs: 12, sm: 6 }}>
-                  <Card
-                    onClick={() => setPerfilSelecionado(perfil.id)}
-                    sx={{
-                      height: '100%',
-                      cursor: 'pointer',
-                      border: 2,
-                      borderColor: selecionado
-                        ? 'primary.main'
-                        : 'divider',
-                      borderRadius: 3,
-                      boxShadow: 'none',
-                      transition: 'border-color 0.2s',
-                      '&:hover': {
-                        borderColor: 'primary.main',
-                      },
-                    }}
-                  >
-                    <CardContent sx={{ p: 2.5 }}>
-                      <Typography sx={{ fontWeight: 700, mb: 1 }}>
-                        {perfil.titulo}
-                      </Typography>
-
-                      <Typography
-                        sx={{ color: 'text.secondary', fontSize: '0.9rem' }}
-                      >
-                        {perfil.descricao}
-                      </Typography>
-
-                      {selecionado && (
-                        <Chip
-                          label="Selecionado"
-                          sx={{
-                            mt: 2,
-                            bgcolor: 'action.selected',
-                            fontWeight: 600,
-                          }}
-                        />
-                      )}
-                    </CardContent>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid>
-        </Box>
+        <Chip
+          label={`Perfil: ${
+            orientacao.criterios?.perfil === 'custo-beneficio'
+              ? 'Custo-benefício'
+              : orientacao.criterios?.perfil === 'desempenho'
+                ? 'Desempenho'
+                : 'Híbrido'
+          }`}
+          sx={{ mb: 2 }}
+        />
 
         {/* Lista de computadores */}
         <Grid container spacing={3} sx={{ alignItems: 'stretch' }}>
@@ -540,17 +457,6 @@ export default function Recomendacao() {
                       )}
 
                       <Box sx={{ flexGrow: 1 }} />
-                <Button
-                  fullWidth
-                  onClick={() => selecionarComputador(pc)}
-                  sx={{
-                    bgcolor: '#52F2B8',
-                    color: '#000',
-                    '&:hover': { bgcolor: '#35DDA0' },
-                  }}
-                >
-                  Selecionar computador
-                </Button>
                 </CardContent>
               </Card>
             </Grid>
@@ -567,13 +473,7 @@ export default function Recomendacao() {
           }}
         >
           <Button
-            onClick={() =>
-              navigate(
-                quizPulado
-                  ? `/orientacao/${id}/licao`
-                  : `/orientacao/${id}/quiz/resultado`,
-              )
-            }
+            onClick={() => navigate(`/orientacao/${id}/questionario`)}
             sx={{
               color: 'text.primary',
               border: 1,
@@ -583,16 +483,22 @@ export default function Recomendacao() {
             Voltar
           </Button>
 
-          <Typography
-            sx={{
-              alignSelf: 'center',
-              color: 'text.secondary',
-              fontSize: '0.8rem',
-              textAlign: { xs: 'center', sm: 'right' },
+          <Button
+            onClick={() => {
+            orientacao.atualizarOrientacao({
+              recomendacoes: computadores,
+            });
+
+            navigate(`/orientacao/${id}/licao`);
             }}
-          >
-            Escolha uma configuração para continuar ao resumo.
-          </Typography>
+            sx={{
+            bgcolor: '#52F2B8',
+            color: '#000',
+            '&:hover': { bgcolor: '#35DDA0' },
+            }}
+            >
+            Continuar para a lição
+          </Button>
         </Box>
       </Stack>
     </Container>

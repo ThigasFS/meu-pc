@@ -7,7 +7,6 @@ import {
   Button,
   Chip,
   Divider,
-  LinearProgress,
   Paper,
   Stack,
   Typography,
@@ -15,6 +14,7 @@ import {
 
 import { useOrientacoes } from '../../contexts/OrientacaoContext';
 import type { IntencaoOrientacao } from '../../data/types';
+import { questoes } from '../../data/questoes';
 
 const resumoIntencoes: Record<IntencaoOrientacao, { titulo: string; descricao: string; focos: string[]; }> = {
   jogos: {
@@ -74,13 +74,6 @@ const resumoIntencoes: Record<IntencaoOrientacao, { titulo: string; descricao: s
   },
 };
 
-function formatarPreco(valor: number) {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(valor);
-}
-
 export default function ResumoOrientacao() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -110,18 +103,28 @@ export default function ResumoOrientacao() {
     ? resumoIntencoes[orientacao.intencao]
     : null;
 
-  const resultado = orientacao.resultadoQuiz;
-  const recomendacao = orientacao.recomendacao;
+  function concluirOrientacao() {
+    if (!id || !orientacao) return
 
-  const quizConcluido = resultado !== null;
-  const recomendacaoSelecionada = recomendacao !== null;
-
-  function concluirOrientacao(){
-    if(!id || !orientacao) return
-
-    atualizar(id, {concluida: true})
+    atualizar(id, { concluida: true })
     navigate('/')
   }
+
+  const respostas = orientacao.criterios?.respostas ?? {};
+
+  const respostasExibicao = questoes.map((questao) => {
+    const respostaId = respostas[questao.id];
+
+    const opcao = questao.opcoes?.find(
+      (item) => item.id === Number(respostaId),
+    );
+
+    return {
+      id: questao.id,
+      pergunta: questao.pergunta,
+      resposta: opcao?.etiqueta ?? 'Não informado',
+    };
+  });
 
   return (
     <Box
@@ -219,6 +222,191 @@ export default function ResumoOrientacao() {
           </Stack>
         </Paper>
 
+        {/* 3. Recomendações */}
+        <Paper
+          variant="outlined"
+          sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 3 }}
+        >
+          <Stack spacing={3}>
+            <Box>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                2. Computadores recomendados
+              </Typography>
+
+              <Typography color="text.secondary" sx={{ mt: 1 }}>
+                Com base na sua intenção e nos critérios informados,
+                o sistema gerou as seguintes recomendações.
+              </Typography>
+            </Box>
+
+            {/* Critérios utilizados */}
+            <Box>
+              <Typography sx={{ fontWeight: 700, mb: 1 }}>
+                Critérios considerados
+              </Typography>
+
+              <Stack direction="row" spacing={1} useFlexGap sx={{}}>
+                {orientacao.criterios?.orcamento != null && (
+                  <Chip
+                    label={`Orçamento: ${orientacao.criterios.orcamento.toLocaleString(
+                      'pt-BR',
+                      { style: 'currency', currency: 'BRL' },
+                    )}`}
+                    variant="outlined"
+                  />
+                )}
+
+                {orientacao.criterios?.perfil && (
+                  <Chip
+                    label={`Perfil: ${orientacao.criterios.perfil === 'custo-beneficio'
+                        ? 'Custo-benefício'
+                        : orientacao.criterios.perfil === 'desempenho'
+                          ? 'Desempenho'
+                          : 'Híbrido'
+                      }`}
+                    variant="outlined"
+                  />
+                )}
+              </Stack>
+            </Box>
+
+            <Button
+              variant="outlined"
+              sx={{ alignSelf: 'flex-start' }}
+              onClick={() => navigate(`/orientacao/${id}/recomendacao`)}
+            >
+              Consultar recomendações completas
+            </Button>
+
+            {/* Lista de recomendações */}
+            {orientacao.recomendacoes?.length > 0 ? (
+              <Stack spacing={2}>
+                {orientacao.recomendacoes.map((pc, index) => (
+                  <Paper
+                    key={pc.id}
+                    variant="outlined"
+                    sx={{ p: 2.5, borderRadius: 2 }}
+                  >
+                    <Stack spacing={2}>
+                      <Box>
+                        <Chip
+                          size="small"
+                          label={`Recomendação ${index + 1}`}
+                          color="primary"
+                          variant="outlined"
+                          sx={{ mb: 1 }}
+                        />
+
+                        <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                          {pc.nome}
+                        </Typography>
+
+                        <Typography color="text.secondary">
+                          {pc.descricao}
+                        </Typography>
+                      </Box>
+
+                      <Typography
+                        variant="h5"
+                        sx={{ fontWeight: 700 }}
+                      >
+                        {pc.valorTotal.toLocaleString('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        })}
+                      </Typography>
+
+                      <Divider />
+
+                      <Typography sx={{ fontWeight: 700 }}>
+                        Configuração
+                      </Typography>
+
+                      <Stack spacing={1}>
+                        {[
+                          {
+                            titulo: 'Processador',
+                            nome: pc.processador.nome,
+                          },
+                          {
+                            titulo: 'Placa-mãe',
+                            nome: pc.placaMae.nome,
+                          },
+                          {
+                            titulo: 'Memória RAM',
+                            nome: `${pc.memoriaRam.capacidade} GB`,
+                          },
+                          {
+                            titulo: 'Armazenamento',
+                            nome: `${pc.armazenamento.capacidade} ${pc.armazenamento.unidade}`,
+                          },
+                          ...(pc.placaVideo
+                            ? [{
+                              titulo: 'Placa de vídeo',
+                              nome: pc.placaVideo.nome,
+                            }]
+                            : [{
+                              titulo: 'Gráficos',
+                              nome: pc.videoIntegrado
+                                ? 'Integrados ao processador'
+                                : 'Não informado',
+                            }]),
+                        ].map((item) => (
+                          <Box
+                            key={item.titulo}
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              gap: 2,
+                            }}
+                          >
+                            <Typography color="text.secondary">
+                              {item.titulo}
+                            </Typography>
+
+                            <Typography
+                              sx={{ fontWeight: 600, textAlign: 'right' }}
+                            >
+                              {item.nome}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </Stack>
+
+                      <Divider />
+
+                      <Typography sx={{ fontWeight: 700 }}>
+                        Pontos fortes
+                      </Typography>
+
+                      {pc.vantagens.map((vantagem) => (
+                        <Typography key={vantagem} variant="body2">
+                          • {vantagem}
+                        </Typography>
+                      ))}
+
+                      <Typography sx={{ fontWeight: 700 }}>
+                        Pontos de atenção
+                      </Typography>
+
+                      {pc.limitacoes.map((limitacao) => (
+                        <Typography key={limitacao} variant="body2">
+                          • {limitacao}
+                        </Typography>
+                      ))}
+                    </Stack>
+                  </Paper>
+                ))}
+              </Stack>
+            ) : (
+              <Alert severity="info">
+                Ainda não existem recomendações registradas para esta orientação.
+                Acesse a etapa de recomendação para gerar as configurações.
+              </Alert>
+            )}
+          </Stack>
+        </Paper>
+
         {/* 2. Aprendizados */}
         <Paper
           variant="outlined"
@@ -226,7 +414,7 @@ export default function ResumoOrientacao() {
         >
           <Stack spacing={2}>
             <Typography variant="h5" sx={{ fontWeight: 700 }}>
-              2. O que você aprendeu
+              3. O que você aprendeu
             </Typography>
 
             {intencao ? (
@@ -297,274 +485,6 @@ export default function ResumoOrientacao() {
                 Revisar lição completa
               </Button>
             </Box>
-          </Stack>
-        </Paper>
-
-        {/* 3. Resultado do quiz */}
-        <Paper
-          variant="outlined"
-          sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 3 }}
-        >
-          <Stack spacing={2}>
-            <Stack
-              direction="row"
-              spacing={1}
-              useFlexGap
-              sx={{ alignItems: 'center', flexWrap: 'wrap' }}
-            >
-              <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                3. Resultado do quiz
-              </Typography>
-
-              <Chip
-                size="small"
-                label={quizConcluido ? 'Concluído' : 'Pendente'}
-                color={quizConcluido ? 'success' : 'default'}
-              />
-            </Stack>
-
-            {resultado ? (
-              <>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: { xs: 'column', sm: 'row' },
-                    alignItems: { xs: 'flex-start', sm: 'center' },
-                    gap: 3,
-                  }}
-                >
-                  <Box sx={{ minWidth: { sm: 150 } }}>
-                    <Typography
-                      variant="h2"
-                      sx={{ fontWeight: 800, color: 'primary.main' }}
-                    >
-                      {resultado.pontuacao}%
-                    </Typography>
-
-                    <Typography color="text.secondary">
-                      de aproveitamento
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ flex: 1, width: '100%' }}>
-                    <LinearProgress
-                      variant="determinate"
-                      value={resultado.pontuacao}
-                      sx={{ height: 10, borderRadius: 5, mb: 2 }}
-                    />
-
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      useFlexGap
-                      sx={{ flexWrap: 'wrap' }}
-                    >
-                      <Chip
-                        color="success"
-                        label={`${resultado.totalAcertos} acertos`}
-                      />
-
-                      <Chip
-                        color="error"
-                        label={`${resultado.totalErros} erros`}
-                      />
-
-                      <Chip
-                        label={`${resultado.totalPerguntas} perguntas`}
-                      />
-                    </Stack>
-                  </Box>
-                </Box>
-
-                <Typography color="text.secondary">
-                  {resultado.pontuacao >= 80
-                    ? 'Excelente! Você demonstrou um bom domínio dos conceitos abordados.'
-                    : resultado.pontuacao >= 60
-                      ? 'Bom trabalho! Revisar alguns conceitos pode ajudar você a avançar ainda mais.'
-                      : 'Continue estudando! Revisar a lição e as explicações das respostas pode ajudar.'}
-                </Typography>
-
-                <Box>
-                  <Button
-                    variant="outlined"
-                    onClick={() =>
-                      navigate(`/orientacao/${id}/quiz/resultado`)
-                    }
-                  >
-                    Revisar respostas
-                  </Button>
-                </Box>
-              </>
-            ) : (
-              <>
-                <Typography color="text.secondary">
-                  Você ainda não concluiu o quiz. Responda às perguntas
-                  para conferir seu desempenho e revisar os conceitos.
-                </Typography>
-
-                <Box>
-                  <Button
-                    variant="contained"
-                    disabled={!orientacao.intencao}
-                    onClick={() =>
-                      navigate(`/orientacao/${id}/quiz`)
-                    }
-                  >
-                    Começar quiz
-                  </Button>
-                </Box>
-              </>
-            )}
-          </Stack>
-        </Paper>
-
-        {/* 4. Recomendação */}
-        <Paper
-          variant="outlined"
-          sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 3 }}
-        >
-          <Stack spacing={2}>
-            <Stack
-              direction="row"
-              spacing={1}
-              useFlexGap
-              sx={{ alignItems: 'center', flexWrap: 'wrap' }}
-            >
-              <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                4. Sua recomendação
-              </Typography>
-
-              <Chip
-                size="small"
-                label={
-                  recomendacaoSelecionada
-                    ? 'Selecionada'
-                    : 'Pendente'
-                }
-                color={recomendacaoSelecionada ? 'success' : 'default'}
-              />
-            </Stack>
-
-            {recomendacao ? (
-              <>
-                <Typography variant="h6" color="primary">
-                  {recomendacao.nome}
-                </Typography>
-
-                <Typography color="text.secondary">
-                  {recomendacao.descricao}
-                </Typography>
-
-                <Divider />
-
-                <Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 0.5 }}
-                  >
-                    Valor total estimado
-                  </Typography>
-
-                  <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                    {formatarPreco(recomendacao.valorTotal)}
-                  </Typography>
-                </Box>
-
-                <Box>
-                  <Typography sx={{ fontWeight: 700, mb: 1 }}>
-                    Perfil
-                  </Typography>
-
-                  <Chip
-                    label={
-                      recomendacao.perfil === 'custo-beneficio'
-                        ? 'Custo-benefício'
-                        : 'Desempenho'
-                    }
-                    color="primary"
-                    variant="outlined"
-                  />
-                </Box>
-
-                {recomendacao.vantagens.length > 0 && (
-                  <Box>
-                    <Typography sx={{ fontWeight: 700, mb: 1 }}>
-                      Pontos fortes
-                    </Typography>
-
-                    <Stack spacing={1}>
-                      {recomendacao.vantagens.map((vantagem) => (
-                        <Typography key={vantagem}>
-                          <Typography
-                            component="span"
-                            color="success.main"
-                            sx={{ fontWeight: 700, mr: 1 }}
-                          >
-                            +
-                          </Typography>
-                          {vantagem}
-                        </Typography>
-                      ))}
-                    </Stack>
-                  </Box>
-                )}
-
-                {recomendacao.limitacoes.length > 0 && (
-                  <Box>
-                    <Typography sx={{ fontWeight: 700, mb: 1 }}>
-                      Limitações
-                    </Typography>
-
-                    <Stack spacing={1}>
-                      {recomendacao.limitacoes.map((limitacao) => (
-                        <Typography key={limitacao}>
-                          <Typography
-                            component="span"
-                            color="warning.main"
-                            sx={{ fontWeight: 700, mr: 1 }}
-                          >
-                            !
-                          </Typography>
-                          {limitacao}
-                        </Typography>
-                      ))}
-                    </Stack>
-                  </Box>
-                )}
-
-                <Box>
-                  <Button
-                    variant="outlined"
-                    onClick={() =>
-                      navigate(`/orientacao/${id}/recomendacao`)
-                    }
-                  >
-                    Ver recomendação completa
-                  </Button>
-                </Box>
-              </>
-            ) : (
-              <>
-                <Typography color="text.secondary">
-                  Você ainda não selecionou um computador. Compare as
-                  configurações disponíveis e escolha a que melhor
-                  atende ao seu objetivo.
-                </Typography>
-
-                <Box>
-                  <Button
-                    variant="contained"
-                    disabled={!orientacao.intencao}
-                    onClick={() =>
-                      navigate(`/orientacao/${id}/recomendacao`)
-                    }
-                  >
-                    Ver computadores recomendados
-                  </Button>
-                </Box>
-              </>
-            )}
           </Stack>
         </Paper>
 

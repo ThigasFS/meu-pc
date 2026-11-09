@@ -169,12 +169,16 @@ export default function Licao() {
     );
   }
 
-  const licao = montarLicao(intencao);
-
-  function pularQuiz(){
-    orientacao.atualizarOrientacao({pontuacaoQuiz: null, respostasQuiz: {}})
-    navigate('/');
+  if (!orientacao.recomendacoes || orientacao.recomendacoes.length === 0) {
+    return (
+      <Navigate
+        to={`/orientacao/${id}/recomendacao`}
+        replace
+      />
+    );
   }
+
+  const licao = montarLicao(intencao);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -215,33 +219,29 @@ export default function Licao() {
 
         <Divider />
 
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: 'center' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
           <Button
             variant="outlined"
             size="large"
-            onClick={pularQuiz}
-            color='inherit'
+            onClick={() => navigate(`/orientacao/${id}/recomendacao`)}
+            color="inherit"
           >
-            Voltar
+            Voltar às recomendações
           </Button>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              variant="outlined"
-              size="large"
-              onClick={() => navigate(`/orientacao/${id}/recomendacao`)}
-              color='secondary'
-            >
-              Pular Quiz
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              onClick={() => navigate(`/orientacao/${id}/quiz`)}
-            >
-              Ir para o quiz
-            </Button>
-          </Box>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate(`/orientacao/${id}`)}
+          >
+            Finalizar orientação
+          </Button>
         </Box>
       </Stack>
     </Container>
